@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Navbar from "@/components/Navbar";
 
 export default function ActivitiesHobbiesPage() {
@@ -6,7 +7,13 @@ export default function ActivitiesHobbiesPage() {
       <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/90 backdrop-blur-sm">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 lg:px-8">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-sky-100 text-lg font-bold text-sky-700">I</div>
+            <Image
+              src="/fa.png"
+              alt="IELTS Logo"
+              width={40}
+              height={40}
+              className="rounded-full"
+            />
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.25em] text-sky-600">IELTS</p>
               <p className="text-lg font-bold text-slate-900">Personal Study</p>
