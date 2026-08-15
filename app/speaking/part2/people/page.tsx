@@ -198,33 +198,16 @@ export default function PeoplePage() {
         </div>
 
         {/* 15 Universal Expressions */}
-        <div className="mt-12 rounded-2xl border border-sky-300 bg-sky-50 p-8 shadow-sm">
-          <h2 className="text-2xl font-bold text-slate-900 mb-6">⭐ 15 Universal PEOPLE Expressions</h2>
-          <p className="text-slate-600 mb-6">
-            These expressions work for almost any People cue card. Memorize and adapt them:
-          </p>
-          <div className="grid gap-3 md:grid-cols-2">
+        <div className="mt-12 p-8">
+          <h2 className="text-2xl font-bold text-slate-900 mb-8">15 Universal PEOPLE Expressions</h2>
+          <div className="grid gap-6 md:grid-cols-2">
             {universalExpressions.map((expr, idx) => (
-              <div key={idx} className="flex gap-3 items-start">
-                <span className="text-sky-600 font-bold mt-1">{idx + 1}.</span>
+              <div key={idx} className="flex gap-4">
+                <span className="text-sky-600 font-bold text-lg flex-shrink-0">{idx + 1}.</span>
                 <span className="text-slate-700">{expr}</span>
               </div>
             ))}
           </div>
-          <div className="mt-8 p-4 rounded-lg bg-white border border-sky-200">
-            <p className="text-xs font-semibold text-sky-700 uppercase tracking-wider mb-2">💡 Pro Tip</p>
-            <p className="text-slate-700 text-sm">
-              The last expression <strong>("I wouldn't say he/she is perfect, but...")</strong> is especially powerful for Band 8 because it allows you to give <strong>balanced, natural descriptions</strong> rather than unrealistically praising someone.
-            </p>
-          </div>
-        </div>
-
-        {/* Example */}
-        <div className="mt-8 rounded-2xl border border-slate-200 bg-slate-50 p-6 shadow-sm">
-          <h3 className="text-lg font-bold text-slate-900 mb-3">📝 Example using Band 8 approach:</h3>
-          <p className="text-slate-700 italic">
-            "I wouldn't say my brother is perfect, because he can be a little stubborn at times, but he's incredibly <strong>dependable and supportive</strong>, and he's always <strong>been there for me</strong> whenever I've needed advice."
-          </p>
         </div>
       </section>
     </main>
