@@ -25,7 +25,7 @@ export default function Navbar() {
         const isActive = pathname === item.href;
 
         if (item.submenu) {
-          const isSubmenuActive = item.submenu.some((sub) => pathname === sub.href);
+          const isSubmenuActive = item.submenu.some((sub) => pathname === sub.href || pathname.startsWith(sub.href + "/"));
 
           return (
             <div key={item.label} className="group relative">

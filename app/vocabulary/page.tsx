@@ -1,18 +1,55 @@
-import Link from "next/link";
 import Navbar from "@/components/Navbar";
 
-const topics = [
-  "Education and learning",
-  "Health and lifestyle",
-  "Environment and climate",
-  "Technology and innovation",
-  "Work and career",
-  "Travel and culture",
+const linkingWords = [
+  {
+    category: "AND",
+    items: [
+      "In addition",
+      "Moreover",
+      "Furthermore",
+      "Not to mention",
+      "What's more",
+      "Additionally",
+    ]
+  },
+  {
+    category: "SO",
+    items: [
+      "Therefore",
+      "Consequently",
+      "As a result",
+      "Thus",
+      "For this reason",
+      "Hence",
+    ]
+  },
+  {
+    category: "BECAUSE",
+    items: [
+      "Due to",
+      "Owing to",
+      "As a result of",
+      "Given that",
+      "Since",
+      "In light of",
+    ]
+  },
+  {
+    category: "BUT",
+    items: [
+      "However",
+      "Nevertheless",
+      "Nonetheless",
+      "On the contrary",
+      "That being said",
+      "Even so",
+    ]
+  }
 ];
 
 export default function VocabularyPage() {
   return (
-    <main className="min-h-screen bg-white text-slate-800">
+    <main className="min-h-screen bg-white text-slate-800" style={{ fontFamily: "'Times New Roman', Times, serif" }}>
       <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/90 backdrop-blur-sm">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4 lg:px-8">
           <div className="flex items-center gap-3">
@@ -24,29 +61,18 @@ export default function VocabularyPage() {
               <p className="text-lg font-bold text-slate-900">Personal Study</p>
             </div>
           </div>
-
           <Navbar />
         </div>
       </header>
 
       <section className="mx-auto max-w-5xl px-6 py-16 lg:px-8">
-        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-sky-600">Vocabulary</p>
-        <h1 className="mt-4 text-4xl font-black text-slate-900 md:text-5xl">Improve your IELTS word power.</h1>
-        <p className="mt-5 max-w-2xl text-lg leading-8 text-slate-600">
-          Learning vocabulary is not only about memorizing words. It is also about using them naturally in speaking and writing.
-        </p>
-
-        <div className="mt-10 grid gap-5 md:grid-cols-2">
-          {topics.map((topic) => (
-            <div key={topic} className="rounded-2xl border border-slate-200 bg-slate-50 p-5 shadow-sm">
-              <div className="mb-3 text-2xl">📘</div>
-              <h2 className="text-xl font-bold text-slate-900">{topic}</h2>
-              <p className="mt-2 text-slate-600">
-                Learn key terms, collocations, and example sentences for a clear IELTS topic-based vocabulary set.
-              </p>
-            </div>
+        <ul className="space-y-6 ml-6">
+          {linkingWords.map((section) => (
+            <li key={section.category} className="text-slate-700 text-lg leading-relaxed">
+              <span className="font-bold">{section.category}</span> - {section.items.join(", ")}
+            </li>
           ))}
-        </div>
+        </ul>
       </section>
     </main>
   );
