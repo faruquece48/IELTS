@@ -15,6 +15,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "IELTS Mastery Path | Personal IELTS Coaching",
   description: "Personal IELTS coaching website for speaking, writing, reading, and listening improvement.",
+  icons: {
+    icon: "/fa.png",
+    shortcut: "/fa.png",
+    apple: "/fa.png",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

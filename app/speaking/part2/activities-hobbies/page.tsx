@@ -13,6 +13,7 @@ export default function ActivitiesHobbiesPage() {
               width={40}
               height={40}
               className="rounded-full"
+              unoptimized
             />
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.25em] text-sky-600">IELTS</p>
