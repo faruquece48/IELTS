@@ -18,8 +18,8 @@ export default function SpeakingPage() {
             <Image
               src="/fa.png"
               alt="IELTS Logo"
-              width={40}
-              height={40}
+              width={80}
+              height={80}
               className="rounded-full"
               unoptimized
             />
