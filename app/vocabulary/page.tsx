@@ -103,6 +103,37 @@ const sportsSentences = [
   "I think this trend will continue in the future because team sports help people communicate and work together.",
 ];
 
+const houseworkTopics = [
+  "Clean space",
+  "Fostering important qualities",
+  "Fostering stronger family relationships",
+  "Own responsibilities",
+  "Hard-working skills",
+  "Encourages them to work",
+  "Beneficial for their physical activity",
+  "Burn a lot of energy",
+  "Adolescents (কিশোর)",
+  "Washing their dishes or cleaning",
+  "Wiping down the tables",
+  "Mopping the floor",
+  "Living independently",
+  "Personal development",
+  "Chores",
+  "Express gratitude to their parents",
+  "Develop empathy",
+  "Instill essential life skills",
+];
+
+const advertisementTopics = [
+  "What they are presented with",
+  "Recognize",
+  "Distinguish",
+  "Awareness",
+  "Unique features",
+  "Shape people's preferences",
+  "Function that",
+];
+
 export default function VocabularyPage() {
   return (
     <main className="min-h-screen bg-white text-slate-800" style={{ fontFamily: "'Times New Roman', Times, serif" }}>
@@ -277,6 +308,52 @@ export default function VocabularyPage() {
                   </blockquote>
                 ))}
               </div>
+            </div>
+          </article>
+
+          <article className="overflow-hidden rounded-2xl border border-violet-200 bg-violet-50/60 shadow-sm md:col-span-2">
+            <div className="border-b border-violet-200 bg-violet-100/70 px-6 py-5">
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-violet-700">Segment</p>
+              <h2 className="mt-1 text-2xl font-bold text-slate-900">Housework</h2>
+            </div>
+            <div className="p-6">
+              <h3 className="mb-4 text-sm font-bold uppercase tracking-[0.15em] text-slate-500">
+                Topics
+              </h3>
+              <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {houseworkTopics.map((topic) => (
+                  <li
+                    key={topic}
+                    className="flex items-start gap-3 rounded-xl border border-violet-100 bg-white px-4 py-3 text-lg text-slate-700"
+                  >
+                    <span aria-hidden="true" className="mt-2 h-2 w-2 shrink-0 rounded-full bg-violet-500" />
+                    <span>{topic}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </article>
+
+          <article className="overflow-hidden rounded-2xl border border-cyan-200 bg-cyan-50/60 shadow-sm md:col-span-2">
+            <div className="border-b border-cyan-200 bg-cyan-100/70 px-6 py-5">
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-cyan-700">Segment</p>
+              <h2 className="mt-1 text-2xl font-bold text-slate-900">Advertisement</h2>
+            </div>
+            <div className="p-6">
+              <h3 className="mb-4 text-sm font-bold uppercase tracking-[0.15em] text-slate-500">
+                Topics
+              </h3>
+              <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {advertisementTopics.map((topic) => (
+                  <li
+                    key={topic}
+                    className="flex items-start gap-3 rounded-xl border border-cyan-100 bg-white px-4 py-3 text-lg text-slate-700"
+                  >
+                    <span aria-hidden="true" className="mt-2 h-2 w-2 shrink-0 rounded-full bg-cyan-500" />
+                    <span>{topic}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
           </article>
 

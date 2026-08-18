@@ -13,6 +13,7 @@ const navItems = [
     ]
   },
   { label: "High frequency word", href: "/high-frequency-word" },
+  { label: "Sentence", href: "/sentence" },
   { label: "Writing task", href: "/writing-task" },
 ];
 
