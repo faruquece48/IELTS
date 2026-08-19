@@ -1,4 +1,7 @@
+"use client";
+
 import Image from "next/image";
+import { useState } from "react";
 import Navbar from "@/components/Navbar";
 
 const linkingWords = [
@@ -134,7 +137,42 @@ const advertisementTopics = [
   "Function that",
 ];
 
+const oldPeopleTopics = [
+  "Healthy lifestyle",
+  "Active",
+  "Walks",
+  "Light exercise",
+  "Learning something new",
+  "Working in garden",
+  "Visit friends and neighbours",
+  "Traveling",
+  "Playing chess and other light indoor games",
+];
+
+const friendTopics = [
+  "Emotional support",
+  "Cope with stress and challenges",
+  "Fresh perspectives, ideas, and experiences",
+  "Happiness",
+  "Enjoyable",
+  "Fulfilling",
+];
+
 export default function VocabularyPage() {
+  const [search, setSearch] = useState("");
+  const query = search.trim().toLowerCase();
+
+  const matchesQuery = (value: string) => value.toLowerCase().includes(query);
+
+  const showTechnology = !query || ["technology", ...technologyTopics].some(matchesQuery);
+  const showFamily = !query || ["family", ...familyTopics, ...familySentences].some(matchesQuery);
+  const showCelebration = !query || ["celebration", ...celebrationTopics, ...celebrationSentences].some(matchesQuery);
+  const showSports = !query || ["sports", ...sportsTopics, ...sportsSentences].some(matchesQuery);
+  const showHousework = !query || ["housework", ...houseworkTopics].some(matchesQuery);
+  const showAdvertisement = !query || ["advertisement", ...advertisementTopics].some(matchesQuery);
+  const showOldPeople = !query || ["old people", "old people", ...oldPeopleTopics].some(matchesQuery);
+  const showFriend = !query || ["friend", "friends", ...friendTopics].some(matchesQuery);
+
   return (
     <main className="min-h-screen bg-white text-slate-800" style={{ fontFamily: "'Times New Roman', Times, serif" }}>
       <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/90 backdrop-blur-sm">
@@ -157,218 +195,269 @@ export default function VocabularyPage() {
         </div>
       </header>
 
-      <section className="mx-auto max-w-5xl px-6 py-12 lg:px-8">
-        <div className="mb-10">
+      <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
+        <div className="mb-6">
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-sky-600">
             Vocabulary library
           </p>
-          <h1 className="mt-2 text-4xl font-bold text-slate-900">Segments</h1>
-          <p className="mt-3 text-lg text-slate-600">
+          <h1 className="mt-2 text-3xl font-bold text-slate-900 sm:text-4xl">Segments</h1>
+          <p className="mt-2 text-base text-slate-600">
             Explore useful words and expressions by subject.
           </p>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-2">
-          <article className="overflow-hidden rounded-2xl border border-sky-200 bg-sky-50/60 shadow-sm">
-            <div className="border-b border-sky-200 bg-sky-100/70 px-6 py-5">
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-sky-700">Segment</p>
-              <h2 className="mt-1 text-2xl font-bold text-slate-900">Technology</h2>
-            </div>
-            <div className="p-6">
-              <h3 className="mb-4 text-sm font-bold uppercase tracking-[0.15em] text-slate-500">
-                Topics
-              </h3>
-              <ul className="grid gap-3 sm:grid-cols-2 md:grid-cols-1 lg:grid-cols-2">
-                {technologyTopics.map((topic) => (
-                  <li
-                    key={topic}
-                    className="flex items-start gap-3 rounded-xl border border-sky-100 bg-white px-4 py-3 text-lg text-slate-700"
-                  >
-                    <span aria-hidden="true" className="mt-2 h-2 w-2 shrink-0 rounded-full bg-sky-500" />
-                    <span>{topic}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </article>
+        <div className="mb-8 flex justify-end">
+          <label className="flex w-full max-w-md items-center gap-3 rounded-full border border-slate-200 bg-white px-4 py-3 shadow-sm ring-0 transition focus-within:border-sky-400 focus-within:ring-2 focus-within:ring-sky-100">
+            <span className="text-lg text-slate-400">⌕</span>
+            <input
+              type="text"
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Search segment or topic"
+              className="w-full border-0 bg-transparent text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none"
+            />
+          </label>
+        </div>
 
-          <article className="overflow-hidden rounded-2xl border border-rose-200 bg-rose-50/60 shadow-sm md:col-span-2">
-            <div className="border-b border-rose-200 bg-rose-100/70 px-6 py-5">
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-rose-700">Segment</p>
-              <h2 className="mt-1 text-2xl font-bold text-slate-900">Family</h2>
-            </div>
-            <div className="grid gap-8 p-6 lg:grid-cols-[1.1fr_0.9fr]">
-              <div>
-                <h3 className="mb-4 text-sm font-bold uppercase tracking-[0.15em] text-slate-500">
-                  Topics
-                </h3>
-                <ul className="grid gap-3 sm:grid-cols-2">
-                  {familyTopics.map((topic) => (
+        <div className="grid gap-4 md:grid-cols-2">
+          {showTechnology && (
+            <article className="overflow-hidden rounded-2xl border border-sky-200 bg-sky-50/60 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md md:col-span-2">
+              <div className="border-b border-sky-200 bg-sky-100/70 px-4 py-4">
+                <h2 className="text-xl font-bold text-slate-900">Technology</h2>
+              </div>
+              <div className="p-4">
+                <ul className="grid gap-3 sm:grid-cols-2 md:grid-cols-4">
+                  {technologyTopics.map((topic) => (
                     <li
                       key={topic}
-                      className="flex items-start gap-3 rounded-xl border border-rose-100 bg-white px-4 py-3 text-lg text-slate-700"
+                      className="flex items-start gap-3 rounded-xl border border-sky-100 bg-white px-3 py-2.5 text-base text-slate-700"
                     >
-                      <span aria-hidden="true" className="mt-2 h-2 w-2 shrink-0 rounded-full bg-rose-500" />
+                      <span aria-hidden="true" className="mt-2 h-2 w-2 shrink-0 rounded-full bg-sky-500" />
                       <span>{topic}</span>
                     </li>
                   ))}
                 </ul>
               </div>
+            </article>
+          )}
 
-              <div>
-                <h3 className="mb-4 text-sm font-bold uppercase tracking-[0.15em] text-slate-500">
-                  Sentences
-                </h3>
-                <div className="space-y-4">
-                  {familySentences.map((sentence) => (
+          {showFamily && (
+            <article className="overflow-hidden rounded-2xl border border-rose-200 bg-rose-50/60 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md md:col-span-2">
+              <div className="border-b border-rose-200 bg-rose-100/70 px-4 py-4">
+                <h2 className="text-xl font-bold text-slate-900">Family</h2>
+              </div>
+              <div className="grid gap-5 p-4 lg:grid-cols-[1.1fr_0.9fr]">
+                <div>
+                  <h3 className="mb-3 text-[11px] font-bold uppercase tracking-[0.15em] text-slate-500">
+                    Topics
+                  </h3>
+                  <ul className="grid gap-3 sm:grid-cols-2">
+                    {familyTopics.map((topic) => (
+                      <li
+                        key={topic}
+                        className="flex items-start gap-3 rounded-xl border border-rose-100 bg-white px-3 py-2.5 text-base text-slate-700"
+                      >
+                        <span aria-hidden="true" className="mt-2 h-2 w-2 shrink-0 rounded-full bg-rose-500" />
+                        <span>{topic}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div>
+                  <h3 className="mb-3 text-[11px] font-bold uppercase tracking-[0.15em] text-slate-500">
+                    Sentences
+                  </h3>
+                  <div className="space-y-3">
+                    {familySentences.map((sentence) => (
+                      <blockquote
+                        key={sentence}
+                        className="rounded-xl border border-rose-100 bg-white px-4 py-3 text-base italic leading-relaxed text-slate-700"
+                      >
+                        “{sentence}”
+                      </blockquote>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </article>
+          )}
+
+          {showCelebration && (
+            <article className="overflow-hidden rounded-2xl border border-amber-200 bg-amber-50/60 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md md:col-span-2">
+              <div className="border-b border-amber-200 bg-amber-100/70 px-4 py-4">
+                <h2 className="text-xl font-bold text-slate-900">Celebration</h2>
+              </div>
+              <div className="grid gap-5 p-4 lg:grid-cols-[1.1fr_0.9fr]">
+                <div>
+                  <h3 className="mb-3 text-[11px] font-bold uppercase tracking-[0.15em] text-slate-500">
+                    Topics
+                  </h3>
+                  <ul className="grid gap-3 sm:grid-cols-2">
+                    {celebrationTopics.map((topic) => (
+                      <li
+                        key={topic}
+                        className="flex items-start gap-3 rounded-xl border border-amber-100 bg-white px-3 py-2.5 text-base text-slate-700"
+                      >
+                        <span aria-hidden="true" className="mt-2 h-2 w-2 shrink-0 rounded-full bg-amber-500" />
+                        <span>{topic}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div>
+                  <h3 className="mb-3 text-[11px] font-bold uppercase tracking-[0.15em] text-slate-500">
+                    Sentence
+                  </h3>
+                  {celebrationSentences.map((sentence) => (
                     <blockquote
                       key={sentence}
-                      className="rounded-xl border border-rose-100 bg-white px-5 py-4 text-lg italic leading-relaxed text-slate-700"
+                      className="rounded-xl border border-amber-100 bg-white px-4 py-3 text-base italic leading-relaxed text-slate-700"
                     >
                       “{sentence}”
                     </blockquote>
                   ))}
                 </div>
               </div>
-            </div>
-          </article>
+            </article>
+          )}
 
-          <article className="overflow-hidden rounded-2xl border border-amber-200 bg-amber-50/60 shadow-sm md:col-span-2">
-            <div className="border-b border-amber-200 bg-amber-100/70 px-6 py-5">
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-700">Segment</p>
-              <h2 className="mt-1 text-2xl font-bold text-slate-900">Celebration</h2>
-            </div>
-            <div className="grid gap-8 p-6 lg:grid-cols-[1.1fr_0.9fr]">
-              <div>
-                <h3 className="mb-4 text-sm font-bold uppercase tracking-[0.15em] text-slate-500">
-                  Topics
-                </h3>
-                <ul className="grid gap-3 sm:grid-cols-2">
-                  {celebrationTopics.map((topic) => (
+          {showSports && (
+            <article className="overflow-hidden rounded-2xl border border-emerald-200 bg-emerald-50/60 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md md:col-span-2">
+              <div className="border-b border-emerald-200 bg-emerald-100/70 px-4 py-4">
+                <h2 className="text-xl font-bold text-slate-900">Sports</h2>
+              </div>
+              <div className="grid gap-5 p-4 lg:grid-cols-[1.1fr_0.9fr]">
+                <div>
+                  <h3 className="mb-3 text-[11px] font-bold uppercase tracking-[0.15em] text-slate-500">
+                    Topics
+                  </h3>
+                  <ul className="grid gap-3 sm:grid-cols-2">
+                    {sportsTopics.map((topic) => (
+                      <li
+                        key={topic}
+                        className="flex items-start gap-3 rounded-xl border border-emerald-100 bg-white px-3 py-2.5 text-base text-slate-700"
+                      >
+                        <span aria-hidden="true" className="mt-2 h-2 w-2 shrink-0 rounded-full bg-emerald-500" />
+                        <span>{topic}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div>
+                  <h3 className="mb-3 text-[11px] font-bold uppercase tracking-[0.15em] text-slate-500">
+                    Sentence
+                  </h3>
+                  {sportsSentences.map((sentence) => (
+                    <blockquote
+                      key={sentence}
+                      className="rounded-xl border border-emerald-100 bg-white px-4 py-3 text-base italic leading-relaxed text-slate-700"
+                    >
+                      “{sentence}”
+                    </blockquote>
+                  ))}
+                </div>
+              </div>
+            </article>
+          )}
+
+          {showHousework && (
+            <article className="overflow-hidden rounded-2xl border border-violet-200 bg-violet-50/60 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md md:col-span-2">
+              <div className="border-b border-violet-200 bg-violet-100/70 px-4 py-4">
+                <h2 className="text-xl font-bold text-slate-900">Housework</h2>
+              </div>
+              <div className="p-4">
+                <ul className="grid gap-3 sm:grid-cols-2 md:grid-cols-4">
+                  {houseworkTopics.map((topic) => (
                     <li
                       key={topic}
-                      className="flex items-start gap-3 rounded-xl border border-amber-100 bg-white px-4 py-3 text-lg text-slate-700"
+                      className="flex items-start gap-3 rounded-xl border border-violet-100 bg-white px-3 py-2.5 text-base text-slate-700"
                     >
-                      <span aria-hidden="true" className="mt-2 h-2 w-2 shrink-0 rounded-full bg-amber-500" />
+                      <span aria-hidden="true" className="mt-2 h-2 w-2 shrink-0 rounded-full bg-violet-500" />
                       <span>{topic}</span>
                     </li>
                   ))}
                 </ul>
               </div>
+            </article>
+          )}
 
-              <div>
-                <h3 className="mb-4 text-sm font-bold uppercase tracking-[0.15em] text-slate-500">
-                  Sentence
-                </h3>
-                {celebrationSentences.map((sentence) => (
-                  <blockquote
-                    key={sentence}
-                    className="rounded-xl border border-amber-100 bg-white px-5 py-4 text-lg italic leading-relaxed text-slate-700"
-                  >
-                    “{sentence}”
-                  </blockquote>
-                ))}
+          {showAdvertisement && (
+            <article className="overflow-hidden rounded-2xl border border-cyan-200 bg-cyan-50/60 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md md:col-span-2">
+              <div className="border-b border-cyan-200 bg-cyan-100/70 px-4 py-4">
+                <h2 className="text-xl font-bold text-slate-900">Advertisement</h2>
               </div>
-            </div>
-          </article>
-
-          <article className="overflow-hidden rounded-2xl border border-emerald-200 bg-emerald-50/60 shadow-sm md:col-span-2">
-            <div className="border-b border-emerald-200 bg-emerald-100/70 px-6 py-5">
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-emerald-700">Segment</p>
-              <h2 className="mt-1 text-2xl font-bold text-slate-900">Sports</h2>
-            </div>
-            <div className="grid gap-8 p-6 lg:grid-cols-[1.1fr_0.9fr]">
-              <div>
-                <h3 className="mb-4 text-sm font-bold uppercase tracking-[0.15em] text-slate-500">
-                  Topics
-                </h3>
-                <ul className="grid gap-3 sm:grid-cols-2">
-                  {sportsTopics.map((topic) => (
+              <div className="p-4">
+                <ul className="grid gap-3 sm:grid-cols-2 md:grid-cols-4">
+                  {advertisementTopics.map((topic) => (
                     <li
                       key={topic}
-                      className="flex items-start gap-3 rounded-xl border border-emerald-100 bg-white px-4 py-3 text-lg text-slate-700"
+                      className="flex items-start gap-3 rounded-xl border border-cyan-100 bg-white px-3 py-2.5 text-base text-slate-700"
                     >
-                      <span aria-hidden="true" className="mt-2 h-2 w-2 shrink-0 rounded-full bg-emerald-500" />
+                      <span aria-hidden="true" className="mt-2 h-2 w-2 shrink-0 rounded-full bg-cyan-500" />
                       <span>{topic}</span>
                     </li>
                   ))}
                 </ul>
               </div>
+            </article>
+          )}
 
-              <div>
-                <h3 className="mb-4 text-sm font-bold uppercase tracking-[0.15em] text-slate-500">
-                  Sentence
-                </h3>
-                {sportsSentences.map((sentence) => (
-                  <blockquote
-                    key={sentence}
-                    className="rounded-xl border border-emerald-100 bg-white px-5 py-4 text-lg italic leading-relaxed text-slate-700"
-                  >
-                    “{sentence}”
-                  </blockquote>
-                ))}
+          {showOldPeople && (
+            <article className="overflow-hidden rounded-2xl border border-orange-200 bg-orange-50/60 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md md:col-span-2">
+              <div className="border-b border-orange-200 bg-orange-100/70 px-4 py-4">
+                <h2 className="text-xl font-bold text-slate-900">Old people</h2>
               </div>
-            </div>
-          </article>
+              <div className="p-4">
+                <ul className="grid gap-3 sm:grid-cols-2 md:grid-cols-4">
+                  {oldPeopleTopics.map((topic) => (
+                    <li
+                      key={topic}
+                      className="flex items-start gap-3 rounded-xl border border-orange-100 bg-white px-3 py-2.5 text-base text-slate-700"
+                    >
+                      <span aria-hidden="true" className="mt-2 h-2 w-2 shrink-0 rounded-full bg-orange-500" />
+                      <span>{topic}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </article>
+          )}
 
-          <article className="overflow-hidden rounded-2xl border border-violet-200 bg-violet-50/60 shadow-sm md:col-span-2">
-            <div className="border-b border-violet-200 bg-violet-100/70 px-6 py-5">
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-violet-700">Segment</p>
-              <h2 className="mt-1 text-2xl font-bold text-slate-900">Housework</h2>
-            </div>
-            <div className="p-6">
-              <h3 className="mb-4 text-sm font-bold uppercase tracking-[0.15em] text-slate-500">
-                Topics
-              </h3>
-              <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {houseworkTopics.map((topic) => (
-                  <li
-                    key={topic}
-                    className="flex items-start gap-3 rounded-xl border border-violet-100 bg-white px-4 py-3 text-lg text-slate-700"
-                  >
-                    <span aria-hidden="true" className="mt-2 h-2 w-2 shrink-0 rounded-full bg-violet-500" />
-                    <span>{topic}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </article>
-
-          <article className="overflow-hidden rounded-2xl border border-cyan-200 bg-cyan-50/60 shadow-sm md:col-span-2">
-            <div className="border-b border-cyan-200 bg-cyan-100/70 px-6 py-5">
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-cyan-700">Segment</p>
-              <h2 className="mt-1 text-2xl font-bold text-slate-900">Advertisement</h2>
-            </div>
-            <div className="p-6">
-              <h3 className="mb-4 text-sm font-bold uppercase tracking-[0.15em] text-slate-500">
-                Topics
-              </h3>
-              <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {advertisementTopics.map((topic) => (
-                  <li
-                    key={topic}
-                    className="flex items-start gap-3 rounded-xl border border-cyan-100 bg-white px-4 py-3 text-lg text-slate-700"
-                  >
-                    <span aria-hidden="true" className="mt-2 h-2 w-2 shrink-0 rounded-full bg-cyan-500" />
-                    <span>{topic}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </article>
+          {showFriend && (
+            <article className="overflow-hidden rounded-2xl border border-pink-200 bg-pink-50/60 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md md:col-span-2">
+              <div className="border-b border-pink-200 bg-pink-100/70 px-4 py-4">
+                <h2 className="text-xl font-bold text-slate-900">Friend</h2>
+              </div>
+              <div className="p-4">
+                <ul className="grid gap-3 sm:grid-cols-2 md:grid-cols-4">
+                  {friendTopics.map((topic) => (
+                    <li
+                      key={topic}
+                      className="flex items-start gap-3 rounded-xl border border-pink-100 bg-white px-3 py-2.5 text-base text-slate-700"
+                    >
+                      <span aria-hidden="true" className="mt-2 h-2 w-2 shrink-0 rounded-full bg-pink-500" />
+                      <span>{topic}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </article>
+          )}
 
           <article className="overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 shadow-sm md:col-span-2">
-            <div className="border-b border-slate-200 bg-slate-100 px-6 py-5">
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-slate-500">Folder</p>
-              <h2 className="mt-1 text-2xl font-bold text-slate-900">Other</h2>
+            <div className="border-b border-slate-200 bg-slate-100 px-4 py-4">
+              <h2 className="text-xl font-bold text-slate-900">Other</h2>
             </div>
-            <div className="p-6">
-              <h3 className="mb-4 text-sm font-bold uppercase tracking-[0.15em] text-slate-500">
+            <div className="p-4">
+              <h3 className="mb-3 text-[11px] font-bold uppercase tracking-[0.15em] text-slate-500">
                 Linking words
               </h3>
-              <ul className="space-y-5">
+              <ul className="space-y-3">
                 {linkingWords.map((section) => (
-                  <li key={section.category} className="text-lg leading-relaxed text-slate-700">
+                  <li key={section.category} className="text-base leading-relaxed text-slate-700">
                     <span className="font-bold text-slate-900">{section.category}</span>
                     <span className="mx-2 text-slate-400">—</span>
                     {section.items.join(", ")}

@@ -3,6 +3,8 @@ import Navbar from "@/components/Navbar";
 
 const sentences = [
   "I foresee a blended approach combining both methods becoming the norm.",
+  "This keeps their minds engaged and gives them a sense of purpose.",
+  "Therefore, these skills will allow individuals to react, respond to crises, and save themselves and others.",
 ];
 
 export default function SentencePage() {
