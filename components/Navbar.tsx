@@ -15,7 +15,12 @@ const navItems = [
   { label: "High frequency word", href: "/high-frequency-word" },
   { label: "Sentence", href: "/sentence" },
   { label: "Q&A", href: "/qa" },
-  { label: "Writing task", href: "/writing-task" },
+  { label: "Writing task", href: "/writing-task", submenu: [
+      { label: "Task 1", href: "/writing-task/task1" },
+      { label: "Task 2", href: "/writing-task/task2" },
+    ]
+  },
+  { label: "Download", href: "/download" },
 ];
 
 export default function Navbar() {

@@ -14,10 +14,6 @@ export default function EnvironmentFuturePage() {
               height={80}
               className="rounded-full"
             />
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.25em] text-sky-600">IELTS</p>
-              <p className="text-lg font-bold text-slate-900">Personal Study</p>
-            </div>
           </div>
           <Navbar />
         </div>

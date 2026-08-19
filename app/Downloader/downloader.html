@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Video Downloader</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f4f6f8;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        padding: 20px 0;
+    }
+    .card {
+        background: white;
+        width: 600px;
+        max-width: 90vw;
+        padding: 35px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+    }
+    h1 { margin-top: 0; font-size: 22px; }
+    p.sub { color: #666; margin-top: -8px; font-size: 14px; }
+    label { display: block; margin-top: 14px; font-size: 13px; color: #555; }
+    input, select {
+        width: 100%;
+        padding: 14px;
+        font-size: 15px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        box-sizing: border-box;
+        margin-top: 6px;
+    }
+    .hint { font-size: 12px; color: #888; margin-top: 4px; }
+    #siteBadge {
+        display: inline-block;
+        margin-top: 10px;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: bold;
+        background: #e5e7eb;
+        color: #374151;
+    }
+    button {
+        margin-top: 18px;
+        width: 100%;
+        padding: 14px;
+        font-size: 16px;
+        border: none;
+        border-radius: 8px;
+        background: #2563eb;
+        color: white;
+        cursor: pointer;
+    }
+    button:hover { background: #1d4ed8; }
+    button:disabled { background: #93c5fd; cursor: not-allowed; }
+    #status {
+        margin-top: 18px;
+        white-space: pre-wrap;
+        font-family: Consolas, monospace;
+        font-size: 13px;
+        background: #0f172a;
+        color: #e2e8f0;
+        padding: 14px;
+        border-radius: 8px;
+        max-height: 250px;
+        overflow-y: auto;
+        display: none;
+    }
+    .ok { color: #4ade80; }
+    .fail { color: #f87171; }
+</style>
+</head>
+<body>
+
+<div class="card">
+    <h1>🎬 Video Downloader</h1>
+    <p class="sub">Paste any video link — YouTube, X/Twitter, 3Speak, or a direct/m3u8 link. The right settings are picked automatically.</p>
+
+    <label>Video link</label>
+    <input id="url" type="text" placeholder="https://... paste link here">
+    <span id="siteBadge">Paste a link above</span>
+
+    <label>Quality</label>
+    <select id="quality">
+        <option value="best">Best available (video + audio)</option>
+        <option value="1080">Up to 1080p</option>
+        <option value="720">Up to 720p</option>
+        <option value="480">Up to 480p</option>
+        <option value="audio">Audio only (MP3)</option>
+    </select>
+
+    <label>Save to folder</label>
+    <input id="folder" type="text" placeholder="C:\Users\HP\Downloads" value="C:\Users\HP\Downloads">
+
+    <label>File name (optional, leave blank for automatic)</label>
+    <input id="filename" type="text" placeholder="e.g. my-video">
+
+    <label>Cookies file (optional, needed for private/login-only videos)</label>
+    <input id="cookies" type="text" placeholder="C:\Users\HP\Downloads\cookies.txt">
+    <div class="hint">Type the path normally, or paste it — don't use "Copy as path" from File Explorer (it wraps the path in quotes). This page strips quotes automatically either way.</div>
+
+    <button id="btn" onclick="downloadVideo()">Download Video</button>
+
+    <div id="status"></div>
+</div>
+
+<script>
+function detectSite(url) {
+    const u = url.toLowerCase();
+    if (u.includes('youtube.com') || u.includes('youtu.be')) return { key: 'youtube', label: '▶️ YouTube' };
+    if (u.includes('x.com') || u.includes('twitter.com')) return { key: 'x', label: '𝕏 X / Twitter' };
+    if (u.includes('3speak.tv')) return { key: '3speak', label: '📡 3Speak' };
+    if (u.includes('.m3u8') || u.includes('/hls?')) return { key: 'stream', label: '🔗 Direct stream link' };
+    if (u.length > 0) return { key: 'other', label: '🌐 Generic link' };
+    return { key: '', label: 'Paste a link above' };
+}
+
+const urlInput = document.getElementById('url');
+const badge = document.getElementById('siteBadge');
+urlInput.addEventListener('input', () => {
+    badge.textContent = detectSite(urlInput.value.trim()).label;
+});
+
+async function downloadVideo() {
+    const url = urlInput.value.trim();
+    const quality = document.getElementById('quality').value;
+    const folder = document.getElementById('folder').value.trim();
+    const filename = document.getElementById('filename').value.trim();
+    const cookies = document.getElementById('cookies').value.trim();
+    const btn = document.getElementById('btn');
+    const status = document.getElementById('status');
+
+    if (!url) {
+        alert('Please paste a link first.');
+        return;
+    }
+
+    const site = detectSite(url).key;
+
+    btn.disabled = true;
+    btn.textContent = 'Downloading... please wait';
+    status.style.display = 'block';
+    status.textContent = 'Sending link to local downloader...\n(this can take a while for long/high-quality videos)';
+
+    try {
+        const res = await fetch('http://127.0.0.1:8765/download', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url, folder, filename, quality, cookies, site })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+            status.innerHTML = '<span class="ok">✔ Download finished! Check your folder.</span>\n\n' + (data.output || '');
+        } else {
+            status.innerHTML = '<span class="fail">✘ Download failed.</span>\n\n' +
+                (data.error || 'Unknown error') +
+                (data.output ? ('\n\n--- debug info ---\n' + data.output) : '');
+        }
+    } catch (err) {
+        status.innerHTML = '<span class="fail">✘ Could not reach the local downloader server.</span>\n\n' +
+            'Make sure you double-clicked "start.bat" first (it must stay running in the background).\n\n' +
+            'Error: ' + err;
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Download Video';
+    }
+}
+
+urlInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') downloadVideo();
+});
+</script>
+
+</body>
+</html>
