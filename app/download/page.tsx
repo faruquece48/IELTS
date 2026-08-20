@@ -47,7 +47,6 @@ export default function DownloadPage() {
   const [form, setForm] = useState<FormState>(defaultForm);
   const [downloading, setDownloading] = useState(false);
   const [result, setResult] = useState<{ ok: boolean; text: string } | null>(null);
-  const [isLocalhost, setIsLocalhost] = useState(true);
 
   const startServer = useCallback(() => {
     if (typeof window === "undefined") return;
@@ -81,10 +80,6 @@ export default function DownloadPage() {
   };
 
   useEffect(() => {
-    setIsLocalhost(
-      window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
-    );
-
     // Guard against React StrictMode's double-invoke in development, which would launch two windows.
     if (hasAutoStarted.current) return;
     hasAutoStarted.current = true;
@@ -177,19 +172,6 @@ export default function DownloadPage() {
       </header>
 
       <section className="mx-auto max-w-2xl px-6 py-10 lg:px-8">
-        {!isLocalhost && (
-          <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-800">
-            <p className="font-semibold">One-time setup needed on this PC</p>
-            <p className="mt-1">
-              Since this is the deployed website, it can&apos;t start your local server directly.
-              In the <span className="font-mono">app/Downloader</span> folder, double-click{" "}
-              <span className="font-semibold">register-protocol.reg</span> once (accept the
-              Windows prompts). After that, this page can launch the downloader automatically —
-              Windows may ask you to confirm opening the link the first time you click Download.
-            </p>
-          </div>
-        )}
-
         <div className="rounded-2xl border border-sky-100 bg-white p-8 shadow-sm">
           <h1 className="text-xl font-bold text-slate-900">🎬 Video Downloader</h1>
           <p className="mt-1 text-sm text-slate-600">
