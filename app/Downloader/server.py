@@ -200,6 +200,7 @@ class Handler(BaseHTTPRequestHandler):
                 target_url,
                 "-P", folder,
                 "-o", output_template,
+                "--force-overwrites",
                 "--extractor-args", "youtube:player_client=android,web",
             ]
 

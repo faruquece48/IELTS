@@ -12,7 +12,7 @@ const navItems = [
       { label: "Part 3", href: "/speaking/part3" },
     ]
   },
-  { label: "High frequency word", href: "/high-frequency-word" },
+  { label: "Word", href: "/high-frequency-word" },
   { label: "Sentence", href: "/sentence" },
   { label: "Q&A", href: "/qa" },
   { label: "Writing task", href: "/writing-task", submenu: [

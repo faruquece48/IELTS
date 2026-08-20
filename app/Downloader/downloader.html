@@ -82,7 +82,7 @@
     <p class="sub">Paste any video link — YouTube, X/Twitter, 3Speak, or a direct/m3u8 link. The right settings are picked automatically.</p>
 
     <label>Video link</label>
-    <input id="url" type="text" placeholder="https://... paste link here">
+    <input id="url" type="text" placeholder="https://... paste link here" autocomplete="off">
     <span id="siteBadge">Paste a link above</span>
 
     <label>Quality</label>
@@ -122,6 +122,40 @@ function detectSite(url) {
 
 const urlInput = document.getElementById('url');
 const badge = document.getElementById('siteBadge');
+const folderInput = document.getElementById('folder');
+const filenameInput = document.getElementById('filename');
+const cookiesInput = document.getElementById('cookies');
+const qualitySelect = document.getElementById('quality');
+
+// Remember the last-used values so they survive page reloads/re-visits.
+const STORAGE_KEY = 'ielts-downloader-form';
+try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    if (saved.url) urlInput.value = saved.url;
+    if (saved.folder) folderInput.value = saved.folder;
+    if (saved.filename) filenameInput.value = saved.filename;
+    if (saved.cookies) cookiesInput.value = saved.cookies;
+    if (saved.quality) qualitySelect.value = saved.quality;
+} catch {
+    // ignore corrupt/missing saved state
+}
+
+function saveFormState() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        url: urlInput.value,
+        folder: folderInput.value,
+        filename: filenameInput.value,
+        cookies: cookiesInput.value,
+        quality: qualitySelect.value,
+    }));
+}
+
+[urlInput, folderInput, filenameInput, cookiesInput, qualitySelect].forEach((el) => {
+    el.addEventListener('input', saveFormState);
+    el.addEventListener('change', saveFormState);
+});
+
+badge.textContent = detectSite(urlInput.value.trim()).label;
 urlInput.addEventListener('input', () => {
     badge.textContent = detectSite(urlInput.value.trim()).label;
 });

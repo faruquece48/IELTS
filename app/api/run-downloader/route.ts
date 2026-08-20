@@ -1,6 +1,8 @@
-import { spawn } from "child_process";
+import { spawn, spawnSync } from "child_process";
 import path from "path";
 import { NextResponse } from "next/server";
+
+const WINDOW_TITLE = "IELTS Downloader";
 
 // Launches the local downloader server (start.bat) in its own console window.
 // Only makes sense when the Next.js app itself is running on the user's own machine.
@@ -8,7 +10,12 @@ export async function POST() {
   const downloaderDir = path.join(process.cwd(), "app", "Downloader");
 
   try {
-    const child = spawn("cmd.exe", ["/c", "start", "", "start.bat"], {
+    // Close any window left over from a previous launch so they don't pile up.
+    spawnSync("taskkill", ["/F", "/T", "/FI", `WINDOWTITLE eq ${WINDOW_TITLE}*`], {
+      stdio: "ignore",
+    });
+
+    const child = spawn("cmd.exe", ["/c", "start", "/min", WINDOW_TITLE, "start.bat"], {
       cwd: downloaderDir,
       detached: true,
       stdio: "ignore",
