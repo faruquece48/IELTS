@@ -56,6 +56,18 @@ export default function DownloadPage() {
     }
   }, []);
 
+  const waitForServer = async () => {
+    for (let attempt = 0; attempt < 15; attempt++) {
+      try {
+        await fetch("http://127.0.0.1:8765/download", { method: "OPTIONS", mode: "cors" });
+        return true;
+      } catch {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      }
+    }
+    return false;
+  };
+
   useEffect(() => {
     // Guard against React StrictMode's double-invoke in development, which would launch two windows.
     if (hasAutoStarted.current) return;
@@ -76,6 +88,20 @@ export default function DownloadPage() {
 
     setDownloading(true);
     setResult(null);
+
+    const serverReady = await waitForServer();
+    if (!serverReady) {
+      setResult({
+        ok: false,
+        text:
+          "✘ Could not reach the local downloader server.\n\n" +
+          "It may still be starting up (installing dependencies on first run can take a while) " +
+          "or failed to launch. Click Download again in a moment, or check the minimized " +
+          '"IELTS Downloader" window for errors.',
+      });
+      setDownloading(false);
+      return;
+    }
 
     try {
       const res = await fetch("http://127.0.0.1:8765/download", {
