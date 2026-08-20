@@ -57,11 +57,16 @@ export default function DownloadPage() {
   }, []);
 
   const waitForServer = async () => {
-    for (let attempt = 0; attempt < 15; attempt++) {
+    for (let attempt = 0; attempt < 20; attempt++) {
       try {
         await fetch("http://127.0.0.1:8765/download", { method: "OPTIONS", mode: "cors" });
         return true;
       } catch {
+        // If the server still isn't up after a few seconds, try (re)launching it
+        // in case the original auto-start on page load never actually fired.
+        if (attempt === 3 || attempt === 8) {
+          startServer();
+        }
         await new Promise((resolve) => setTimeout(resolve, 1000));
       }
     }
