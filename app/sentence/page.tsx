@@ -5,6 +5,9 @@ const sentences = [
   "I foresee a blended approach combining both methods becoming the norm.",
   "This keeps their minds engaged and gives them a sense of purpose.",
   "Therefore, these skills will allow individuals to react, respond to crises, and save themselves and others.",
+  "They capture these moments and then, way down the line, they can flick back through them and relive exactly what was happening at that time",
+  "Honestly, it's a way to freeze a split second and make it last forever, even when the actual moment's long gone.",
+  "The more you practice, the better you get.",
 ];
 
 export default function SentencePage() {
@@ -26,11 +29,8 @@ export default function SentencePage() {
         </div>
       </header>
 
-      <section className="mx-auto max-w-5xl px-6 py-12 lg:px-8">
-        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-sky-600">
-          Sentence library
-        </p>
-        <h1 className="mt-2 text-4xl font-bold text-slate-900">Sentence</h1>
+      <section className="mx-auto max-w-5xl px-6 py-12 lg:px-8">        
+        <h1 className="mt-2 text-4xl font-bold text-sky-600">Sentence library</h1>
 
         <ol className="mt-10 space-y-4">
           {sentences.map((sentence, index) => (

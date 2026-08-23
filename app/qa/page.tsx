@@ -12,6 +12,14 @@ const qaList = [
   { question: "How do family dynamics change as children grow older?", answer: "Family dynamics definitely shift as children grow older. When kids are young, parents often play a protective and guiding role. But as they mature, the relationship becomes more balanced and collaborative. Children become more independent, and parents start to respect their decisions and opinions. In addition, siblings who might have had minor squabbles in childhood often grow closer as they share more meaningful experiences and support each other's life challenges." },
   { question: "How important is it to have rules in school?", answer: "Having rules in a school is absolutely crucial, don't you think? They create a framework that helps maintain order, which is really important for creating a positive learning environment. Without some structure, things can easily spiral out of control, leading to distractions and chaos. Additionally, rules teach students about responsibility and respect, which are essential life skills. They also provide clear expectations so everyone knows what is acceptable and what is not. In the end, rules help foster a sense of community and safety, making it easier for everyone to focus on their studies." },
   { question: "Do you agree that most beauty products are a waste of money?", answer: "I agree. Apart from the essentials like facial cleansers or some supplements, most of the products are just a waste of money. It is easy to hook people because of their insecurities. Most of the time, you don't even need these products because beauty comes from the soul and your daily routine, like exercising, eating healthy food, and essentially your lifestyle." },
+  { question: "How might the increasing reliance on technology impact traditional forms of art and creative expression?", answer: "I think increasing reliance on technology can impact traditional forms of art to a significant extent. The reason is that, at first, technology seems very convenient and can actually create many artworks faster than before. However, advancements in AI, for example, can reduce our creativity as we rely too much on the help of AI and technology to create paintings, sculptures, writing, and so much more. In the end, we end up generating similar art with no new innovation because the technology that is supposed to help us in creating art is actually replacing our creativity, and we end up generating just similar forms of art as before." },
+  { question: "dd?", answer: "ee" },
+  { question: "dd?", answer: "ee" },
+  { question: "dd?", answer: "ee" },
+  { question: "dd?", answer: "ee" },
+  { question: "dd?", answer: "ee" },
+  { question: "dd?", answer: "ee" },
+  { question: "dd?", answer: "ee" },
 ];
 
 const pageSizeOptions = [10, 20, 30, 50];

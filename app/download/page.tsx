@@ -175,8 +175,7 @@ export default function DownloadPage() {
         <div className="rounded-2xl border border-sky-100 bg-white p-8 shadow-sm">
           <h1 className="text-xl font-bold text-slate-900">🎬 Video Downloader</h1>
           <p className="mt-1 text-sm text-slate-600">
-            Paste any video link — YouTube, X/Twitter, 3Speak, or a direct/m3u8 link. The right
-            settings are picked automatically.
+            Paste any video link — YouTube, X/Twitter, Facebook link.
           </p>
 
           <label className="mt-5 block text-xs font-semibold text-slate-600">Video link</label>
