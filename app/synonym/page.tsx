@@ -355,7 +355,7 @@ const synonymGroups = [
   {
     number: 80,
     word: "Advertising",
-    synonyms: ["Advertising", "Promotion", "Marketing", "Publicity"],
+    synonyms: ["Advertising", "Promotion", "Marketing", "Publicity", "Commercial promotion"],
   },
   {
     number: 81,
@@ -380,7 +380,7 @@ const synonymGroups = [
   {
     number: 85,
     word: "Sports",
-    synonyms: ["Sports", "Athletics", "Physical activities", "Games"],
+    synonyms: ["Sports", "Athletics", "Physical activities", "Games", "Exercise"],
   },
   {
     number: 86,
@@ -430,7 +430,67 @@ const synonymGroups = [
   {
     number: 95,
     word: "Pollution",
-    synonyms: ["Pollution", "Contamination", "Environmental damage"],
+    synonyms: ["Pollution", "Contamination", "Environmental damage", "Impurity"],
+  },
+  {
+    number: 96,
+    word: "Parent",
+    synonyms: ["Parent", "Guardian", "Caregiver", "Mother or father"],
+  },
+  {
+    number: 97,
+    word: "Multicultural",
+    synonyms: ["Multicultural", "Multinational", "International", "Diverse"],
+  },
+  {
+    number: 98,
+    word: "Diversity",
+    synonyms: ["Diversity", "Variety", "Difference", "Multiplicity"],
+  },
+  {
+    number: 99,
+    word: "Development",
+    synonyms: ["Development", "Progress", "Advancement", "Growth", "Improvement"],
+  },
+  {
+    number: 100,
+    word: "Development",
+    synonyms: ["Development", "Progress", "Advancement", "Growth", "Improvement", "Expansion"],
+  },
+  {
+    number: 101,
+    word: "Education system",
+    synonyms: ["Education system", "Schooling system", "Academic system", "Learning framework", "Educational structure"],
+  },
+  {
+    number: 102,
+    word: "Technology advancement",
+    synonyms: ["Technological advancement", "Innovation", "Digital progress", "Technological development", "Scientific advancement"],
+  },
+  {
+    number: 103,
+    word: "Urbanization",
+    synonyms: ["Urbanization", "City expansion", "Metropolitan growth", "Urban development"],
+  },
+  {
+    number: 104,
+    word: "Poverty",
+    synonyms: ["Poverty", "Financial hardship", "Economic deprivation", "Lack of resources", "Destitution"],
+  },
+  {
+    number: 105,
+    word: "Employment",
+    synonyms: ["Employment", "Job opportunities", "Occupation", "Profession", "Work opportunities"],
+  },
+  {
+    number: 106,
+    word: "Population",
+    synonyms: ["Population", "Inhabitants", "Residents", "Citizens", "People"],
+  },
+  {
+    number: 107,
+    word: "Improvement",
+    synonyms: ["Improvement", "Enhancement", "Progress", "Development", "Advancement"],
   },
 ];
 
