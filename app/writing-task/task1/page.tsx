@@ -9,6 +9,12 @@ const topics = [
     description: "sample answers describing crime statistics and book sales line charts",
     href: "/writing-task/task1/line-graph",
   },
+  {
+    title: "Bar Chart",
+    icon: "📊",
+    description: "sample answers comparing categories, percentages, and changes in bar charts",
+    href: "/writing-task/task1/bar-chart",
+  },
 ];
 
 export default function Task1Page() {
