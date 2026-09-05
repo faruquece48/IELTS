@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSyncExternalStore } from "react";
 
 const navItems = [
   { label: "Home", href: "/" },
@@ -26,14 +27,22 @@ const navItems = [
 
 export default function Navbar() {
   const pathname = usePathname();
+  const clientPathname = useSyncExternalStore(
+    () => () => {},
+    () => pathname,
+    () => "",
+  );
 
   return (
     <nav className="hidden items-center gap-6 text-sm font-medium md:flex">
       {navItems.map((item) => {
-        const isActive = pathname === item.href;
+        const isActive = clientPathname === item.href;
 
         if (item.submenu) {
-          const isSubmenuActive = item.submenu.some((sub) => pathname === sub.href || pathname.startsWith(sub.href + "/"));
+          const isSubmenuActive = item.submenu.some((sub) =>
+            clientPathname === sub.href ||
+            clientPathname.startsWith(sub.href + "/"),
+          );
 
           return (
             <div key={item.label} className="group relative">
@@ -50,7 +59,7 @@ export default function Navbar() {
 
               <div className="pointer-events-none absolute left-0 top-full z-20 mt-2 w-44 rounded-xl border border-slate-200 bg-white p-2 opacity-0 shadow-lg transition-all duration-200 group-hover:pointer-events-auto group-hover:opacity-100 group-focus-within:pointer-events-auto group-focus-within:opacity-100">
                 {item.submenu.map((subItem) => {
-                  const isSubActive = pathname === subItem.href;
+                  const isSubActive = clientPathname === subItem.href;
 
                   return (
                     <Link
