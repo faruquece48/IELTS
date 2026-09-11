@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>HD Image Upscaler</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .box {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            box-sizing: border-box;
+            margin: 10px 0;
+        }
+
+        button {
+            padding: 12px 20px;
+            margin: 5px;
+            border: 0;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        #processBtn {
+            background: #0066ff;
+            color: white;
+        }
+
+        #downloadBtn {
+            background: #00a650;
+            color: white;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        #preview {
+            max-width: 100%;
+            margin-top: 20px;
+            border-radius: 8px;
+        }
+
+        #status {
+            margin-top: 15px;
+            font-weight: bold;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="box">
+
+    <h2>HD Image Upscaler</h2>
+
+    <label>Ecency Image URL</label>
+
+    <input
+        id="imageUrl"
+        value=""
+    >
+
+    <br>
+
+    <label>Upscale Factor</label>
+
+    <select id="scale">
+        <option value="2">2×</option>
+        <option value="3">3×</option>
+        <option value="4" selected>4×</option>
+    </select>
+
+    <br><br>
+
+    <button id="processBtn" onclick="upscaleImage()">
+        Create HD JPG
+    </button>
+
+    <button id="downloadBtn" onclick="downloadImage()" disabled>
+        Download JPG
+    </button>
+
+    <div id="status"></div>
+
+    <img id="preview">
+
+</div>
+
+
+<script>
+
+let finalBlob = null;
+
+
+async function upscaleImage() {
+
+    const url = document.getElementById("imageUrl").value.trim();
+
+    const scale =
+        parseInt(document.getElementById("scale").value);
+
+    const status =
+        document.getElementById("status");
+
+    const preview =
+        document.getElementById("preview");
+
+    const downloadBtn =
+        document.getElementById("downloadBtn");
+
+    downloadBtn.disabled = true;
+
+    finalBlob = null;
+
+    status.innerHTML = "Loading original image...";
+
+
+    try {
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error("Could not download image.");
+        }
+
+        const blob = await response.blob();
+
+        const image = new Image();
+
+        image.onload = async function() {
+
+            const originalWidth =
+                image.naturalWidth;
+
+            const originalHeight =
+                image.naturalHeight;
+
+
+            status.innerHTML =
+                `Original: ${originalWidth} × ${originalHeight}px<br>
+                 Upscaling ${scale}×...`;
+
+
+            const newWidth =
+                originalWidth * scale;
+
+            const newHeight =
+                originalHeight * scale;
+
+
+            /*
+             * Prevent extremely large canvas
+             * that can crash the browser.
+             */
+
+            const maxDimension = 16000;
+
+            const actualScale =
+                Math.min(
+                    scale,
+                    maxDimension / originalWidth,
+                    maxDimension / originalHeight
+                );
+
+
+            const width =
+                Math.floor(originalWidth * actualScale);
+
+            const height =
+                Math.floor(originalHeight * actualScale);
+
+
+            const canvas =
+                document.createElement("canvas");
+
+            canvas.width = width;
+            canvas.height = height;
+
+
+            const ctx =
+                canvas.getContext("2d");
+
+
+            /*
+             * High quality browser interpolation
+             */
+
+            ctx.imageSmoothingEnabled = true;
+
+            ctx.imageSmoothingQuality = "high";
+
+
+            ctx.drawImage(
+                image,
+                0,
+                0,
+                width,
+                height
+            );
+
+
+            status.innerHTML =
+                `Upscaled image: ${width} × ${height}px<br>
+                 Creating high-quality JPG...`;
+
+
+            /*
+             * Export at maximum JPEG quality.
+             */
+
+            canvas.toBlob(
+                function(blob) {
+
+                    if (!blob) {
+                        status.innerHTML =
+                            "Failed to create JPG.";
+                        return;
+                    }
+
+                    finalBlob = blob;
+
+
+                    const sizeMB =
+                        blob.size / 1024 / 1024;
+
+
+                    preview.src =
+                        URL.createObjectURL(blob);
+
+
+                    status.innerHTML =
+                        `Original: ${originalWidth} × ${originalHeight}px<br>
+                         Final: ${width} × ${height}px<br>
+                         JPG size: ${sizeMB.toFixed(2)} MB<br>
+                         Quality: 100%`;
+
+
+                    downloadBtn.disabled = false;
+
+                },
+                "image/jpeg",
+                1.0
+            );
+
+        };
+
+
+        image.onerror = function() {
+
+            throw new Error(
+                "Browser could not decode the image."
+            );
+
+        };
+
+
+        image.src =
+            URL.createObjectURL(blob);
+
+    }
+
+    catch(error) {
+
+        console.error(error);
+
+        status.innerHTML =
+            `Error: ${error.message}<br><br>
+             Ecency may be blocking browser requests through CORS.`;
+
+    }
+
+}
+
+
+function downloadImage() {
+
+    if (!finalBlob) {
+        return;
+    }
+
+
+    const link =
+        document.createElement("a");
+
+
+    link.href =
+        URL.createObjectURL(finalBlob);
+
+
+    link.download =
+        "Amzadku2.jpg";
+
+
+    document.body.appendChild(link);
+
+    document.getElementById("imageUrl").value = "";
+
+    link.click();
+
+    document.body.removeChild(link);
+
+}
+
+</script>
+
+</body>
+</html>

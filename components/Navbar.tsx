@@ -23,6 +23,11 @@ const navItems = [
     ]
   },
   { label: "Download", href: "/download" },
+  { label: "HTML", href: "/html", submenu: [
+      { label: "4K JPG Finisher", href: "/html/4k-finisher" },
+      { label: "HD Image Upscaler", href: "/html/high" },
+    ]
+  },
 ];
 
 export default function Navbar() {
@@ -34,7 +39,7 @@ export default function Navbar() {
   );
 
   return (
-    <nav className="hidden items-center gap-6 text-sm font-medium md:flex">
+    <nav className="hidden items-center gap-2 text-xs font-medium md:flex lg:gap-3 lg:text-sm">
       {navItems.map((item) => {
         const isActive = clientPathname === item.href;
 
@@ -47,6 +52,7 @@ export default function Navbar() {
           return (
             <div key={item.label} className="group relative">
               <Link
+                suppressHydrationWarning
                 href={item.href}
                 className={`rounded-full border px-3 py-2 transition ${
                   isActive || isSubmenuActive
@@ -63,6 +69,7 @@ export default function Navbar() {
 
                   return (
                     <Link
+                      suppressHydrationWarning
                       key={subItem.label}
                       href={subItem.href}
                       className={`block rounded-lg px-3 py-2 text-left transition ${
@@ -82,6 +89,7 @@ export default function Navbar() {
 
         return (
           <Link
+            suppressHydrationWarning
             key={item.label}
             href={item.href}
             className={`rounded-full border px-3 py-2 transition ${
