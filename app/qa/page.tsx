@@ -123,6 +123,37 @@ const revisionKeywords = [
 ];
 
 const pageSizeOptions = [10, 20, 30, 50];
+const ignoredKeywordWords = new Set(["about", "after", "along", "because", "between", "could", "different", "people", "should", "their", "these", "through", "while", "would"]);
+
+function highlightKeywords(answer: string, keywords: string[]) {
+  const terms = new Set<string>();
+
+  keywords.forEach((keyword) => {
+    terms.add(keyword.toLowerCase());
+    keyword.toLowerCase().match(/[a-z]+/g)?.forEach((word) => {
+      if (word.length >= 5 && !ignoredKeywordWords.has(word)) terms.add(word);
+    });
+  });
+
+  const escapedTerms = [...terms]
+    .sort((a, b) => b.length - a.length)
+    .map((term) => term.replace(/[.*+?^${}()|[\]\\]/g, "\\const pageSizeOptions = [10, 20, 30, 50];"));
+
+  if (escapedTerms.length === 0) return answer;
+
+  const pattern = new RegExp(`\\b(${escapedTerms.join("|")})\\b`, "gi");
+  const keywordSet = new Set([...terms]);
+
+  return answer.split(pattern).map((part, index) =>
+    keywordSet.has(part.toLowerCase()) ? (
+      <strong key={`${part}-${index}`} className="font-bold text-sky-800">
+        {part}
+      </strong>
+    ) : (
+      part
+    ),
+  );
+}
 
 function updatePageUrl(page: number, pageSize: number) {
   const url = new URL(window.location.href);
@@ -260,7 +291,7 @@ export default function QAPage() {
           </label>
         </div>
 
-        {!showAllAnswers && (
+        {(
           <div className="mt-6 flex flex-wrap items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
             <button
               type="button"
@@ -337,31 +368,16 @@ export default function QAPage() {
 
                 {isOpen && (
                   <div className="border-t border-sky-100 bg-white px-5 py-4 text-base leading-8 text-slate-700">
-                    {item.answer}
+                    {highlightKeywords(item.answer, revisionKeywords[globalIndex] ?? [])}
                   </div>
                 )}
 
-                <div className="border-t border-sky-100 bg-white/70 px-5 py-4">
-                  <p className="text-xs font-bold uppercase tracking-[0.16em] text-sky-700">
-                    Revision keywords
-                  </p>
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {revisionKeywords[globalIndex].map((keyword) => (
-                      <span
-                        key={keyword}
-                        className="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-sm font-medium text-slate-700"
-                      >
-                        {keyword}
-                      </span>
-                    ))}
-                  </div>
-                </div>
               </div>
             );
           })}
         </div>
 
-        {!showAllAnswers && (
+        {(
           <div className="mt-6 flex flex-wrap items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
             <button
               type="button"

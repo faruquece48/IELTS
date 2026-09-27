@@ -17,6 +17,7 @@ const navItems = [
   { label: "Word", href: "/word" },
   { label: "Sentence", href: "/sentence" },
   { label: "Q&A", href: "/qa" },
+  { label: "Gmail", href: "/gmail" },
   { label: "Writing task", href: "/writing-task", submenu: [
       { label: "Task 1", href: "/writing-task/task1" },
       { label: "Task 2", href: "/writing-task/task2" },

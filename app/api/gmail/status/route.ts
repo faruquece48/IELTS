@@ -1,0 +1,2 @@
+import { getSession, gmailConfigured } from "@/lib/gmail";
+export async function GET(){const session=await getSession();return Response.json({configured:gmailConfigured(),connected:Boolean(session),email:session?.email||null})}

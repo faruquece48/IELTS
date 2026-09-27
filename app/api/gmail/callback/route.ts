@@ -1,0 +1,4 @@
+import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
+import { exchangeCode, saveSession, STATE_COOKIE } from "@/lib/gmail";
+export async function GET(request: Request) { const url=new URL(request.url); const origin=url.origin; const code=url.searchParams.get("code"); const state=url.searchParams.get("state"); const store=await cookies(); const expected=store.get(STATE_COOKIE)?.value; store.delete(STATE_COOKIE); if(!code||!state||state!==expected) return NextResponse.redirect(new URL("/gmail?error=oauth",origin)); try{await saveSession(await exchangeCode(code,origin));return NextResponse.redirect(new URL("/gmail?connected=1",origin))}catch{return NextResponse.redirect(new URL("/gmail?error=oauth",origin))} }

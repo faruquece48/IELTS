@@ -1,0 +1,3 @@
+import { NextResponse } from "next/server";
+import { authorizationUrl, createState, gmailConfigured, STATE_COOKIE } from "@/lib/gmail";
+export async function GET(request: Request) { const origin=new URL(request.url).origin; if(!gmailConfigured()) return NextResponse.redirect(new URL("/gmail?error=configuration",origin)); const state=createState(); const response=NextResponse.redirect(authorizationUrl(origin,state)); response.cookies.set(STATE_COOKIE,state,{httpOnly:true,sameSite:"lax",secure:process.env.NODE_ENV==="production",path:"/",maxAge:600}); return response; }
