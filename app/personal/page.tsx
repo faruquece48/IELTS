@@ -6,18 +6,18 @@ const tools = [
   {
     title: "4K JPG Finisher",
     description: "Fit or crop an image to 4K dimensions, choose JPEG quality, preview it, and download the result.",
-    href: "/html/4k-finisher",
+    href: "/personal/4k-finisher",
     icon: "🖼️",
   },
   {
     title: "HD Image Upscaler",
     description: "Load an Ecency image URL, enlarge it up to 4×, preview it, and save a high-quality JPG.",
-    href: "/html/high",
+    href: "/personal/high",
     icon: "✨",
   },
 ];
 
-export default function HtmlToolsPage() {
+export default function PersonalPage() {
   return (
     <main className="min-h-screen bg-slate-50 text-slate-800">
       <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/90 backdrop-blur-sm">
@@ -30,10 +30,10 @@ export default function HtmlToolsPage() {
       </header>
 
       <section className="mx-auto max-w-6xl px-6 py-12 lg:px-8">
-        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-sky-600">HTML tools</p>
-        <h1 className="mt-2 text-4xl font-bold text-slate-900">Image utilities</h1>
+        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-sky-600">Personal</p>
+        <h1 className="mt-2 text-4xl font-bold text-slate-900">Personal tools</h1>
         <p className="mt-4 max-w-2xl text-lg leading-8 text-slate-600">
-          Open either tool below. Each runs directly in your browser and keeps its original controls and download workflow.
+          Open your personal utilities below. Each tool keeps its original controls and workflow.
         </p>
 
         <div className="mt-8 grid gap-6 md:grid-cols-2">

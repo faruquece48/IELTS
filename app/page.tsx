@@ -60,12 +60,14 @@ export default function Home() {
 
             <div className="mt-8 flex flex-wrap gap-4">
               <Link
+                suppressHydrationWarning
                 href="/vocabulary"
                 className="rounded-full bg-sky-600 px-6 py-3 text-sm font-semibold text-white transition hover:bg-sky-500"
               >
                 Start learning
               </Link>
               <Link
+                suppressHydrationWarning
                 href="/writing-task"
                 className="rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-slate-800 transition hover:border-slate-400"
               >

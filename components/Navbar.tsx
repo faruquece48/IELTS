@@ -17,16 +17,16 @@ const navItems = [
   { label: "Word", href: "/word" },
   { label: "Sentence", href: "/sentence" },
   { label: "Q&A", href: "/qa" },
-  { label: "Gmail", href: "/gmail" },
   { label: "Writing task", href: "/writing-task", submenu: [
       { label: "Task 1", href: "/writing-task/task1" },
       { label: "Task 2", href: "/writing-task/task2" },
     ]
   },
-  { label: "Download", href: "/download" },
-  { label: "HTML", href: "/html", submenu: [
-      { label: "4K JPG Finisher", href: "/html/4k-finisher" },
-      { label: "HD Image Upscaler", href: "/html/high" },
+  { label: "Personal", href: "/personal", submenu: [
+      { label: "Gmail", href: "/gmail" },
+      { label: "Download", href: "/download" },
+      { label: "4K JPG Finisher", href: "/personal/4k-finisher" },
+      { label: "HD Image Upscaler", href: "/personal/high" },
     ]
   },
 ];
