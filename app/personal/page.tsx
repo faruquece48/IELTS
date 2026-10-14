@@ -4,6 +4,12 @@ import Navbar from "@/components/Navbar";
 
 const tools = [
   {
+    title: "Quran Reader",
+    description: "Read the scanned Mushaf, preview the complete PDF, or jump directly to any Surah.",
+    href: "/personal/quran",
+    icon: "☪",
+  },
+  {
     title: "4K JPG Finisher",
     description: "Fit or crop an image to 4K dimensions, choose JPEG quality, preview it, and download the result.",
     href: "/personal/4k-finisher",
