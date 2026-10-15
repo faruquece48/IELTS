@@ -10,6 +10,12 @@ const tools = [
     icon: "☪",
   },
   {
+    title: "Professor Tracker",
+    description: "Shortlist structural engineering supervisors, assess funding fit, plan outreach, and monitor replies.",
+    href: "/personal/professor",
+    icon: "🎓",
+  },
+  {
     title: "4K JPG Finisher",
     description: "Fit or crop an image to 4K dimensions, choose JPEG quality, preview it, and download the result.",
     href: "/personal/4k-finisher",

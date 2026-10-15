@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import Navbar from "@/components/Navbar";
@@ -52,6 +52,9 @@ const structures = [
     </>,
   },] as const;
 
+const TOTAL_QUESTIONS = 52;
+const PAGE_SIZE_OPTIONS = [10, 20, 30, 50] as const;
+
 function Slot({ children }: { children: React.ReactNode }) {
   return <span className="rounded bg-amber-100 px-1 font-semibold text-amber-900">[{children}]</span>;
 }
@@ -62,7 +65,74 @@ function Formula({ title, children }: { title: string; children: React.ReactNode
 
 export default function OpinionPage() {
   const [pageSize, setPageSize] = useState(20);
+  const [currentPage, setCurrentPage] = useState(1);
   const [showAllAnswers, setShowAllAnswers] = useState(false);
+  const questionListRef = useRef<HTMLDivElement>(null);
+  const totalPages = Math.max(1, Math.ceil(TOTAL_QUESTIONS / pageSize));
+  const currentPageSafe = Math.min(currentPage, totalPages);
+  const pageNumbers = useMemo(() => Array.from({ length: totalPages }, (_, index) => index + 1), [totalPages]);
+
+  useEffect(() => {
+    const start = (currentPageSafe - 1) * pageSize;
+    const end = start + pageSize;
+
+    questionListRef.current?.querySelectorAll<HTMLDetailsElement>(":scope > details").forEach((question, index) => {
+      const isVisible = index >= start && index < end;
+      question.toggleAttribute("hidden", !isVisible);
+
+      if (showAllAnswers) {
+        question.removeAttribute("name");
+        question.open = isVisible;
+      } else {
+        question.setAttribute("name", "opinion-questions");
+        question.open = false;
+      }
+    });
+  }, [currentPageSafe, pageSize, showAllAnswers]);
+
+  function changePage(nextPage: number) {
+    if (nextPage < 1 || nextPage > totalPages) return;
+    setCurrentPage(nextPage);
+  }
+
+  function changePageSize(nextPageSize: number) {
+    setPageSize(nextPageSize);
+    setCurrentPage(1);
+  }
+
+  function renderPagination(label: string) {
+    return (
+      <nav aria-label={label} className="mt-6 flex flex-wrap items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+        <button
+          type="button"
+          onClick={() => changePage(currentPageSafe - 1)}
+          disabled={currentPageSafe === 1}
+          className={`rounded-md px-3 py-2 text-sm font-medium transition ${currentPageSafe === 1 ? "cursor-not-allowed text-slate-300" : "text-slate-700 hover:bg-slate-100"}`}
+        >
+          « Previous
+        </button>
+        {pageNumbers.map((page) => (
+          <button
+            key={page}
+            type="button"
+            aria-current={currentPageSafe === page ? "page" : undefined}
+            onClick={() => changePage(page)}
+            className={`h-10 min-w-10 rounded-md px-3 text-sm font-medium transition ${currentPageSafe === page ? "bg-violet-600 text-white shadow-sm" : "text-slate-700 hover:bg-slate-100"}`}
+          >
+            {page}
+          </button>
+        ))}
+        <button
+          type="button"
+          onClick={() => changePage(currentPageSafe + 1)}
+          disabled={currentPageSafe === totalPages}
+          className={`rounded-md px-3 py-2 text-sm font-medium transition ${currentPageSafe === totalPages ? "cursor-not-allowed text-slate-300" : "text-slate-700 hover:bg-slate-100"}`}
+        >
+          Next »
+        </button>
+      </nav>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-slate-50 text-slate-800">
@@ -123,8 +193,8 @@ export default function OpinionPage() {
           <div className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-4 md:flex-row md:items-center md:justify-between">
             <div className="flex items-center gap-3">
               <label htmlFor="opinion-page-size" className="text-sm font-medium text-slate-700">Questions per page</label>
-              <select id="opinion-page-size" value={pageSize} onChange={(event) => setPageSize(Number(event.target.value))} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-100">
-                {[10, 20, 30, 50].map((size) => <option key={size} value={size}>{size}</option>)}
+              <select id="opinion-page-size" value={pageSize} onChange={(event) => changePageSize(Number(event.target.value))} className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700 focus:border-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-100">
+                {PAGE_SIZE_OPTIONS.map((size) => <option key={size} value={size}>{size}</option>)}
               </select>
             </div>
             <label className="flex items-center gap-3 text-sm font-medium text-slate-700">
@@ -133,7 +203,9 @@ export default function OpinionPage() {
             </label>
           </div>
 
-          <div className="mt-6 space-y-4">
+          {renderPagination("Question pages above the list")}
+
+          <div ref={questionListRef} className="mt-6 space-y-4">
             <details open={showAllAnswers || undefined} name="opinion-questions" className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-colors open:border-violet-300 open:ring-2 open:ring-violet-100">
               <summary className="flex cursor-pointer list-none items-start gap-4 p-6 marker:content-none md:p-8">
                 <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-sm font-black text-violet-700">1.</span>
@@ -144,37 +216,20 @@ export default function OpinionPage() {
               </summary>
 
               <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-6 md:grid-cols-3">
                   <div>
                     <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
                     <span className="inline-flex rounded-full bg-rose-100 px-3 py-1 text-sm font-black text-rose-700">Disagree</span>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Reasons</h3>
-                    <ol className="space-y-2 text-slate-700">
+                  <div className="contents">
+                    <ol className="contents text-slate-700">
                       <li className="flex gap-3"><span className="font-black text-violet-600">1.</span><span>Develop practical life skills</span></li>
                       <li className="flex gap-3"><span className="font-black text-violet-600">2.</span><span>Improve physical and mental health</span></li>
                     </ol>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Synonyms</h3>
-                    <dl className="space-y-2 text-slate-700">
-                      <div className="flex flex-wrap gap-x-2"><dt>remove</dt><dd className="font-bold text-violet-700">→ eliminate / exclude</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>academic work</dt><dd className="font-bold text-violet-700">→ core studies</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>non-academic subjects</dt><dd className="font-bold text-violet-700">→ practical subjects</dd></div>
-                    </dl>
-                  </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Useful phrases</h3>
-                    <ul className="flex flex-wrap gap-2">
-                      {["balanced curriculum", "academic pressure", "essential life skills", "physical well-being"].map((phrase) => (
-                        <li key={phrase} className="rounded-lg border border-violet-200 bg-white px-3 py-1.5 text-sm font-bold text-slate-700">{phrase}</li>
-                      ))}
-                    </ul>
-                  </div>
                 </div>
               </div>
             </details>
@@ -189,15 +244,14 @@ export default function OpinionPage() {
               </summary>
 
               <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-6 md:grid-cols-3">
                   <div>
                     <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
                     <span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-sm font-black text-emerald-700">Agree</span>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Reasons</h3>
-                    <div className="space-y-4 text-slate-700">
+                  <div className="contents">
+<div className="contents">
                       <div>
                         <p className="font-black text-violet-700">1.</p>
                         <ul className="mt-1 list-disc space-y-1 pl-5">
@@ -215,24 +269,7 @@ export default function OpinionPage() {
                     </div>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Synonyms</h3>
-                    <dl className="space-y-2 text-slate-700">
-                      <div className="flex flex-wrap gap-x-2"><dt>rich countries</dt><dd className="font-bold text-violet-700">→ developed nations / wealthy countries</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>poorer countries</dt><dd className="font-bold text-violet-700">→ developing nations / low-income countries</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>financial aid</dt><dd className="font-bold text-violet-700">→ monetary assistance / economic support</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>solve poverty</dt><dd className="font-bold text-violet-700">→ reduce poverty / tackle poverty</dd></div>
-                    </dl>
-                  </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Useful phrases</h3>
-                    <ul className="flex flex-wrap gap-2">
-                      {["long-term development", "sustainable economic growth", "job creation", "technical assistance", "reduce dependency"].map((phrase) => (
-                        <li key={phrase} className="rounded-lg border border-violet-200 bg-white px-3 py-1.5 text-sm font-bold text-slate-700">{phrase}</li>
-                      ))}
-                    </ul>
-                  </div>
                 </div>
               </div>
             </details>
@@ -247,15 +284,14 @@ export default function OpinionPage() {
               </summary>
 
               <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-6 md:grid-cols-3">
                   <div>
                     <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
                     <span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-sm font-black text-emerald-700">Agree</span>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Reasons</h3>
-                    <div className="space-y-4 text-slate-700">
+                  <div className="contents">
+<div className="contents">
                       <div>
                         <p className="font-black text-violet-700">1.</p>
                         <ul className="mt-1 list-disc space-y-1 pl-5">
@@ -273,23 +309,7 @@ export default function OpinionPage() {
                     </div>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Synonyms</h3>
-                    <dl className="space-y-2 text-slate-700">
-                      <div className="flex flex-wrap gap-x-2"><dt>most important aim</dt><dd className="font-bold text-violet-700">→ primary goal / main objective</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>science</dt><dd className="font-bold text-violet-700">→ scientific research / scientific development</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>improve people’s lives</dt><dd className="font-bold text-violet-700">→ enhance quality of life / improve living standards</dd></div>
-                    </dl>
-                  </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Useful phrases</h3>
-                    <ul className="flex flex-wrap gap-2">
-                      {["medical advancement", "better quality of life", "technological innovation", "public well-being", "practical benefits to society"].map((phrase) => (
-                        <li key={phrase} className="rounded-lg border border-violet-200 bg-white px-3 py-1.5 text-sm font-bold text-slate-700">{phrase}</li>
-                      ))}
-                    </ul>
-                  </div>
                 </div>
               </div>
             </details>
@@ -304,15 +324,14 @@ export default function OpinionPage() {
               </summary>
 
               <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-6 md:grid-cols-3">
                   <div>
                     <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
                     <span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-sm font-black text-emerald-700">Agree</span>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Reasons</h3>
-                    <div className="space-y-4 text-slate-700">
+                  <div className="contents">
+<div className="contents">
                       <div>
                         <p className="font-black text-violet-700">1.</p>
                         <ul className="mt-1 list-disc space-y-1 pl-5">
@@ -330,23 +349,7 @@ export default function OpinionPage() {
                     </div>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Synonyms</h3>
-                    <dl className="space-y-2 text-slate-700">
-                      <div className="flex flex-wrap gap-x-2"><dt>foreign language</dt><dd className="font-bold text-violet-700">→ non-native language / second language</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>social problems</dt><dd className="font-bold text-violet-700">→ communication difficulties / social isolation</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>practical problems</dt><dd className="font-bold text-violet-700">→ everyday difficulties / daily-life challenges</dd></div>
-                    </dl>
-                  </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Useful phrases</h3>
-                    <ul className="flex flex-wrap gap-2">
-                      {["language barrier", "social integration", "communication breakdown", "access essential services", "adapt to a new society"].map((phrase) => (
-                        <li key={phrase} className="rounded-lg border border-violet-200 bg-white px-3 py-1.5 text-sm font-bold text-slate-700">{phrase}</li>
-                      ))}
-                    </ul>
-                  </div>
                 </div>
               </div>
             </details>
@@ -361,15 +364,14 @@ export default function OpinionPage() {
               </summary>
 
               <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-6 md:grid-cols-3">
                   <div>
                     <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
                     <span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-sm font-black text-emerald-700">Agree</span>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Reasons</h3>
-                    <div className="space-y-4 text-slate-700">
+                  <div className="contents">
+<div className="contents">
                       <div>
                         <p className="font-black text-violet-700">1.</p>
                         <ul className="mt-1 list-disc space-y-1 pl-5">
@@ -387,24 +389,7 @@ export default function OpinionPage() {
                     </div>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Synonyms</h3>
-                    <dl className="space-y-2 text-slate-700">
-                      <div className="flex flex-wrap gap-x-2"><dt>bringing people together</dt><dd className="font-bold text-violet-700">→ uniting people / connecting people</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>different cultures</dt><dd className="font-bold text-violet-700">→ diverse cultural backgrounds</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>different ages</dt><dd className="font-bold text-violet-700">→ different generations / age groups</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>music</dt><dd className="font-bold text-violet-700">→ musical expression / songs</dd></div>
-                    </dl>
-                  </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Useful phrases</h3>
-                    <ul className="flex flex-wrap gap-2">
-                      {["cultural connection", "shared enjoyment", "common emotional experience", "bridge cultural differences", "strengthen social bonds"].map((phrase) => (
-                        <li key={phrase} className="rounded-lg border border-violet-200 bg-white px-3 py-1.5 text-sm font-bold text-slate-700">{phrase}</li>
-                      ))}
-                    </ul>
-                  </div>
                 </div>
               </div>
             </details>
@@ -419,15 +404,14 @@ export default function OpinionPage() {
               </summary>
 
               <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-6 md:grid-cols-3">
                   <div>
                     <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
                     <span className="inline-flex rounded-full bg-amber-100 px-3 py-1 text-sm font-black text-amber-700">Partly agree</span>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Reasons</h3>
-                    <div className="space-y-4 text-slate-700">
+                  <div className="contents">
+<div className="contents">
                       <div>
                         <p className="font-black text-emerald-700">1. Agree</p>
                         <ul className="mt-1 list-disc space-y-1 pl-5">
@@ -445,24 +429,7 @@ export default function OpinionPage() {
                     </div>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Synonyms</h3>
-                    <dl className="space-y-2 text-slate-700">
-                      <div className="flex flex-wrap gap-x-2"><dt>fossil-fuel cars</dt><dd className="font-bold text-violet-700">→ petrol/diesel vehicles / conventional cars</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>banned</dt><dd className="font-bold text-violet-700">→ prohibited / phased out</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>electric cars</dt><dd className="font-bold text-violet-700">→ electric vehicles / EVs</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>replace</dt><dd className="font-bold text-violet-700">→ substitute / take the place of</dd></div>
-                    </dl>
-                  </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Useful phrases</h3>
-                    <ul className="flex flex-wrap gap-2">
-                      {["reduce greenhouse-gas emissions", "cleaner transportation", "charging infrastructure", "gradual transition", "environmentally friendly vehicles"].map((phrase) => (
-                        <li key={phrase} className="rounded-lg border border-violet-200 bg-white px-3 py-1.5 text-sm font-bold text-slate-700">{phrase}</li>
-                      ))}
-                    </ul>
-                  </div>
                 </div>
               </div>
             </details>
@@ -477,15 +444,14 @@ export default function OpinionPage() {
               </summary>
 
               <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-6 md:grid-cols-3">
                   <div>
                     <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
                     <span className="inline-flex rounded-full bg-amber-100 px-3 py-1 text-sm font-black text-amber-700">Partly agree</span>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Reasons</h3>
-                    <div className="space-y-4 text-slate-700">
+                  <div className="contents">
+<div className="contents">
                       <div>
                         <p className="font-black text-emerald-700">1. Agree</p>
                         <ul className="mt-1 list-disc space-y-1 pl-5">
@@ -503,24 +469,7 @@ export default function OpinionPage() {
                     </div>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Synonyms</h3>
-                    <dl className="space-y-2 text-slate-700">
-                      <div className="flex flex-wrap gap-x-2"><dt>clean water</dt><dd className="font-bold text-violet-700">→ safe drinking water / potable water</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>basic human right</dt><dd className="font-bold text-violet-700">→ fundamental right</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>free of charge</dt><dd className="font-bold text-violet-700">→ at no cost / without payment</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>water supply</dt><dd className="font-bold text-violet-700">→ water provision</dd></div>
-                    </dl>
-                  </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Useful phrases</h3>
-                    <ul className="flex flex-wrap gap-2">
-                      {["universal access to clean water", "public health protection", "basic water allowance", "prevent water wastage", "maintenance costs"].map((phrase) => (
-                        <li key={phrase} className="rounded-lg border border-violet-200 bg-white px-3 py-1.5 text-sm font-bold text-slate-700">{phrase}</li>
-                      ))}
-                    </ul>
-                  </div>
                 </div>
               </div>
             </details>
@@ -535,15 +484,14 @@ export default function OpinionPage() {
               </summary>
 
               <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-6 md:grid-cols-3">
                   <div>
                     <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
                     <span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-sm font-black text-emerald-700">Agree</span>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Reasons</h3>
-                    <div className="space-y-4 text-slate-700">
+                  <div className="contents">
+<div className="contents">
                       <div>
                         <p className="font-black text-violet-700">1.</p>
                         <ul className="mt-1 list-disc space-y-1 pl-5">
@@ -561,24 +509,7 @@ export default function OpinionPage() {
                     </div>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Synonyms</h3>
-                    <dl className="space-y-2 text-slate-700">
-                      <div className="flex flex-wrap gap-x-2"><dt>public spaces</dt><dd className="font-bold text-violet-700">→ communal areas / shared spaces</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>towns and cities</dt><dd className="font-bold text-violet-700">→ urban areas</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>parks</dt><dd className="font-bold text-violet-700">→ green spaces</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>important</dt><dd className="font-bold text-violet-700">→ essential / beneficial</dd></div>
-                    </dl>
-                  </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Useful phrases</h3>
-                    <ul className="flex flex-wrap gap-2">
-                      {["urban green spaces", "community interaction", "public recreation", "better quality of life", "healthier urban environment"].map((phrase) => (
-                        <li key={phrase} className="rounded-lg border border-violet-200 bg-white px-3 py-1.5 text-sm font-bold text-slate-700">{phrase}</li>
-                      ))}
-                    </ul>
-                  </div>
                 </div>
               </div>
             </details>
@@ -593,15 +524,14 @@ export default function OpinionPage() {
               </summary>
 
               <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-6 md:grid-cols-3">
                   <div>
                     <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
                     <span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-sm font-black text-emerald-700">Agree</span>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Reasons</h3>
-                    <div className="space-y-4 text-slate-700">
+                  <div className="contents">
+<div className="contents">
                       <div>
                         <p className="font-black text-violet-700">1.</p>
                         <ul className="mt-1 list-disc space-y-1 pl-5">
@@ -619,24 +549,7 @@ export default function OpinionPage() {
                     </div>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Synonyms</h3>
-                    <dl className="space-y-2 text-slate-700">
-                      <div className="flex flex-wrap gap-x-2"><dt>working week</dt><dd className="font-bold text-violet-700">→ workweek / working schedule</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>shorter</dt><dd className="font-bold text-violet-700">→ reduced / fewer working days</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>longer weekend</dt><dd className="font-bold text-violet-700">→ extended weekend</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>workers</dt><dd className="font-bold text-violet-700">→ employees / staff</dd></div>
-                    </dl>
-                  </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Useful phrases</h3>
-                    <ul className="flex flex-wrap gap-2">
-                      {["work-life balance", "employee well-being", "reduce burnout", "improve productivity", "job satisfaction"].map((phrase) => (
-                        <li key={phrase} className="rounded-lg border border-violet-200 bg-white px-3 py-1.5 text-sm font-bold text-slate-700">{phrase}</li>
-                      ))}
-                    </ul>
-                  </div>
                 </div>
               </div>
             </details>
@@ -651,15 +564,14 @@ export default function OpinionPage() {
               </summary>
 
               <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-6 md:grid-cols-3">
                   <div>
                     <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
                     <span className="inline-flex rounded-full bg-amber-100 px-3 py-1 text-sm font-black text-amber-700">Partly agree</span>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Reasons</h3>
-                    <div className="space-y-4 text-slate-700">
+                  <div className="contents">
+<div className="contents">
                       <div>
                         <p className="font-black text-emerald-700">1. Agree</p>
                         <ul className="mt-1 list-disc space-y-1 pl-5">
@@ -688,24 +600,7 @@ export default function OpinionPage() {
                     </ul>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Synonyms</h3>
-                    <dl className="space-y-2 text-slate-700">
-                      <div className="flex flex-wrap gap-x-2"><dt>right and wrong</dt><dd className="font-bold text-violet-700">→ good and bad behaviour / moral distinction</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>punishment</dt><dd className="font-bold text-violet-700">→ disciplinary action / penalty</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>early age</dt><dd className="font-bold text-violet-700">→ young age / childhood</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>good behaviour</dt><dd className="font-bold text-violet-700">→ proper conduct / positive behaviour</dd></div>
-                    </dl>
-                  </div>
 
-                  <div className="md:col-span-2">
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Useful phrases</h3>
-                    <ul className="flex flex-wrap gap-2">
-                      {["learn from consequences", "positive discipline", "set clear boundaries", "encourage responsible behaviour", "avoid physical punishment"].map((phrase) => (
-                        <li key={phrase} className="rounded-lg border border-violet-200 bg-white px-3 py-1.5 text-sm font-bold text-slate-700">{phrase}</li>
-                      ))}
-                    </ul>
-                  </div>
                 </div>
               </div>
             </details>
@@ -720,15 +615,14 @@ export default function OpinionPage() {
               </summary>
 
               <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-6 md:grid-cols-3">
                   <div>
                     <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
                     <span className="inline-flex rounded-full bg-rose-100 px-3 py-1 text-sm font-black text-rose-700">Disagree</span>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Reasons</h3>
-                    <div className="space-y-4 text-slate-700">
+                  <div className="contents">
+<div className="contents">
                       <div>
                         <p className="font-black text-violet-700">1.</p>
                         <ul className="mt-1 list-disc space-y-1 pl-5">
@@ -746,24 +640,7 @@ export default function OpinionPage() {
                     </div>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Synonyms</h3>
-                    <dl className="space-y-2 text-slate-700">
-                      <div className="flex flex-wrap gap-x-2"><dt>become extinct</dt><dd className="font-bold text-violet-700">→ die out / disappear permanently</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>prevent</dt><dd className="font-bold text-violet-700">→ protect / conserve</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>animal species</dt><dd className="font-bold text-violet-700">→ wildlife species</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>natural process</dt><dd className="font-bold text-violet-700">→ natural phenomenon</dd></div>
-                    </dl>
-                  </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Useful phrases</h3>
-                    <ul className="flex flex-wrap gap-2">
-                      {["protect endangered species", "preserve biodiversity", "maintain ecological balance", "human-induced extinction", "wildlife conservation"].map((phrase) => (
-                        <li key={phrase} className="rounded-lg border border-violet-200 bg-white px-3 py-1.5 text-sm font-bold text-slate-700">{phrase}</li>
-                      ))}
-                    </ul>
-                  </div>
                 </div>
               </div>
             </details>
@@ -778,15 +655,14 @@ export default function OpinionPage() {
               </summary>
 
               <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-6 md:grid-cols-3">
                   <div>
                     <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
                     <span className="inline-flex rounded-full bg-amber-100 px-3 py-1 text-sm font-black text-amber-700">Partly agree</span>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Reasons</h3>
-                    <div className="space-y-4 text-slate-700">
+                  <div className="contents">
+<div className="contents">
                       <div>
                         <p className="font-black text-emerald-700">1. Agree</p>
                         <ul className="mt-1 list-disc space-y-1 pl-5">
@@ -804,24 +680,7 @@ export default function OpinionPage() {
                     </div>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Synonyms</h3>
-                    <dl className="space-y-2 text-slate-700">
-                      <div className="flex flex-wrap gap-x-2"><dt>space exploration</dt><dd className="font-bold text-violet-700">→ space research / space missions</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>not justified</dt><dd className="font-bold text-violet-700">→ not worthwhile / difficult to justify</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>beneficial ways</dt><dd className="font-bold text-violet-700">→ more useful purposes</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>spend money</dt><dd className="font-bold text-violet-700">→ allocate funds / invest resources</dd></div>
-                    </dl>
-                  </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Useful phrases</h3>
-                    <ul className="flex flex-wrap gap-2">
-                      {["public spending priorities", "scientific advancement", "essential public services", "technological progress", "long-term benefits"].map((phrase) => (
-                        <li key={phrase} className="rounded-lg border border-violet-200 bg-white px-3 py-1.5 text-sm font-bold text-slate-700">{phrase}</li>
-                      ))}
-                    </ul>
-                  </div>
                 </div>
               </div>
             </details>
@@ -836,15 +695,14 @@ export default function OpinionPage() {
               </summary>
 
               <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-6 md:grid-cols-3">
                   <div>
                     <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
                     <span className="inline-flex rounded-full bg-amber-100 px-3 py-1 text-sm font-black text-amber-700">Partly agree</span>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Reasons</h3>
-                    <div className="space-y-4 text-slate-700">
+                  <div className="contents">
+<div className="contents">
                       <div>
                         <p className="font-black text-emerald-700">1. Agree</p>
                         <ul className="mt-1 list-disc space-y-1 pl-5">
@@ -862,23 +720,7 @@ export default function OpinionPage() {
                     </div>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Synonyms</h3>
-                    <dl className="space-y-2 text-slate-700">
-                      <div className="flex flex-wrap gap-x-2"><dt>prevent climate change</dt><dd className="font-bold text-violet-700">→ combat / mitigate climate change</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>live with it</dt><dd className="font-bold text-violet-700">→ adapt to it / cope with its effects</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>climate change</dt><dd className="font-bold text-violet-700">→ global warming / climatic change</dd></div>
-                    </dl>
-                  </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Useful phrases</h3>
-                    <ul className="flex flex-wrap gap-2">
-                      {["reduce carbon emissions", "climate adaptation", "disaster preparedness", "renewable energy", "limit environmental damage"].map((phrase) => (
-                        <li key={phrase} className="rounded-lg border border-violet-200 bg-white px-3 py-1.5 text-sm font-bold text-slate-700">{phrase}</li>
-                      ))}
-                    </ul>
-                  </div>
                 </div>
               </div>
             </details>
@@ -893,15 +735,14 @@ export default function OpinionPage() {
               </summary>
 
               <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-6 md:grid-cols-3">
                   <div>
                     <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
                     <span className="inline-flex rounded-full bg-amber-100 px-3 py-1 text-sm font-black text-amber-700">Partly agree</span>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Reasons</h3>
-                    <div className="space-y-4 text-slate-700">
+                  <div className="contents">
+<div className="contents">
                       <div>
                         <p className="font-black text-emerald-700">1. Agree</p>
                         <ul className="mt-1 list-disc space-y-1 pl-5">
@@ -919,23 +760,7 @@ export default function OpinionPage() {
                     </div>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Synonyms</h3>
-                    <dl className="space-y-2 text-slate-700">
-                      <div className="flex flex-wrap gap-x-2"><dt>cooperate</dt><dd className="font-bold text-violet-700">→ work together / collaborate</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>team sports</dt><dd className="font-bold text-violet-700">→ group sports / competitive team games</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>teach children</dt><dd className="font-bold text-violet-700">→ educate youngsters / develop children’s skills</dd></div>
-                    </dl>
-                  </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Useful phrases</h3>
-                    <ul className="flex flex-wrap gap-2">
-                      {["team-building skills", "shared goals", "mutual support", "effective communication", "group participation"].map((phrase) => (
-                        <li key={phrase} className="rounded-lg border border-violet-200 bg-white px-3 py-1.5 text-sm font-bold text-slate-700">{phrase}</li>
-                      ))}
-                    </ul>
-                  </div>
                 </div>
               </div>
             </details>
@@ -950,15 +775,14 @@ export default function OpinionPage() {
               </summary>
 
               <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-6 md:grid-cols-3">
                   <div>
                     <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
                     <span className="inline-flex rounded-full bg-rose-100 px-3 py-1 text-sm font-black text-rose-700">Disagree</span>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Reasons</h3>
-                    <div className="space-y-4 text-slate-700">
+                  <div className="contents">
+<div className="contents">
                       <div>
                         <p className="font-black text-violet-700">1.</p>
                         <ul className="mt-1 list-disc space-y-1 pl-5">
@@ -976,24 +800,7 @@ export default function OpinionPage() {
                     </div>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Synonyms</h3>
-                    <dl className="space-y-2 text-slate-700">
-                      <div className="flex flex-wrap gap-x-2"><dt>health standard</dt><dd className="font-bold text-violet-700">→ health condition / level of health</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>in the future</dt><dd className="font-bold text-violet-700">→ in coming years / in the long term</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>lower</dt><dd className="font-bold text-violet-700">→ decline / deteriorate</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>people’s health</dt><dd className="font-bold text-violet-700">→ public health / human health</dd></div>
-                    </dl>
-                  </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Useful phrases</h3>
-                    <ul className="flex flex-wrap gap-2">
-                      {["medical advancement", "preventive healthcare", "healthy lifestyle", "early diagnosis", "improved life expectancy"].map((phrase) => (
-                        <li key={phrase} className="rounded-lg border border-violet-200 bg-white px-3 py-1.5 text-sm font-bold text-slate-700">{phrase}</li>
-                      ))}
-                    </ul>
-                  </div>
                 </div>
               </div>
             </details>
@@ -1008,15 +815,14 @@ export default function OpinionPage() {
               </summary>
 
               <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-6 md:grid-cols-3">
                   <div>
                     <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
                     <span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-sm font-black text-emerald-700">Agree</span>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Reasons</h3>
-                    <div className="space-y-4 text-slate-700">
+                  <div className="contents">
+<div className="contents">
                       <div>
                         <p className="font-black text-violet-700">1.</p>
                         <ul className="mt-1 list-disc space-y-1 pl-5">
@@ -1027,31 +833,14 @@ export default function OpinionPage() {
                       <div>
                         <p className="font-black text-violet-700">2.</p>
                         <ul className="mt-1 list-disc space-y-1 pl-5">
-                          <li>More <strong>affordable and accessible</strong> for the public</li>
-                          <li>Improves <strong>urban mobility and efficiency</strong></li>
+                          <li>Public transit is <strong>more affordable and accessible</strong></li>
+                          <li>Improves <strong>urban mobility</strong></li>
                         </ul>
                       </div>
                     </div>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Synonyms</h3>
-                    <dl className="space-y-2 text-slate-700">
-                      <div className="flex flex-wrap gap-x-2"><dt>invest more</dt><dd className="font-bold text-violet-700">→ allocate more funds / spend more</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>public transportation</dt><dd className="font-bold text-violet-700">→ public transit / mass transport</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>roads and highways</dt><dd className="font-bold text-violet-700">→ road infrastructure / motorways</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>traffic congestion</dt><dd className="font-bold text-violet-700">→ traffic jams / overcrowded roads</dd></div>
-                    </dl>
-                  </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Useful phrases</h3>
-                    <ul className="flex flex-wrap gap-2">
-                      {["reduce car dependency", "ease traffic congestion", "lower carbon emissions", "affordable transport", "sustainable urban development"].map((phrase) => (
-                        <li key={phrase} className="rounded-lg border border-violet-200 bg-white px-3 py-1.5 text-sm font-bold text-slate-700">{phrase}</li>
-                      ))}
-                    </ul>
-                  </div>
                 </div>
               </div>
             </details>
@@ -1066,15 +855,14 @@ export default function OpinionPage() {
               </summary>
 
               <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-6 md:grid-cols-3">
                   <div>
                     <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
                     <span className="inline-flex rounded-full bg-amber-100 px-3 py-1 text-sm font-black text-amber-700">Partly agree</span>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Reasons</h3>
-                    <div className="space-y-4 text-slate-700">
+                  <div className="contents">
+<div className="contents">
                       <div>
                         <p className="font-black text-emerald-700">1. Agree</p>
                         <ul className="mt-1 list-disc space-y-1 pl-5">
@@ -1092,24 +880,7 @@ export default function OpinionPage() {
                     </div>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Synonyms</h3>
-                    <dl className="space-y-2 text-slate-700">
-                      <div className="flex flex-wrap gap-x-2"><dt>printed newspapers</dt><dd className="font-bold text-violet-700">→ physical newspapers / print media</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>books</dt><dd className="font-bold text-violet-700">→ printed publications</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>online</dt><dd className="font-bold text-violet-700">→ digitally / on the internet</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>without paying</dt><dd className="font-bold text-violet-700">→ free of charge / at no cost</dd></div>
-                    </dl>
-                  </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Useful phrases</h3>
-                    <ul className="flex flex-wrap gap-2">
-                      {["digital reading", "easy online access", "declining print demand", "reading preference", "paid online content"].map((phrase) => (
-                        <li key={phrase} className="rounded-lg border border-violet-200 bg-white px-3 py-1.5 text-sm font-bold text-slate-700">{phrase}</li>
-                      ))}
-                    </ul>
-                  </div>
                 </div>
               </div>
             </details>
@@ -1124,15 +895,14 @@ export default function OpinionPage() {
               </summary>
 
               <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-6 md:grid-cols-3">
                   <div>
                     <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
                     <span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-sm font-black text-emerald-700">Agree</span>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Reasons</h3>
-                    <div className="space-y-4 text-slate-700">
+                  <div className="contents">
+<div className="contents">
                       <div>
                         <p className="font-black text-violet-700">1.</p>
                         <ul className="mt-1 list-disc space-y-1 pl-5">
@@ -1150,24 +920,7 @@ export default function OpinionPage() {
                     </div>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Synonyms</h3>
-                    <dl className="space-y-2 text-slate-700">
-                      <div className="flex flex-wrap gap-x-2"><dt>unpaid community service</dt><dd className="font-bold text-violet-700">→ voluntary work / community work</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>compulsory</dt><dd className="font-bold text-violet-700">→ mandatory / obligatory</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>high school programmes</dt><dd className="font-bold text-violet-700">→ secondary school curriculum</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>charity</dt><dd className="font-bold text-violet-700">→ non-profit organisation</dd></div>
-                    </dl>
-                  </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Useful phrases</h3>
-                    <ul className="flex flex-wrap gap-2">
-                      {["sense of responsibility", "community engagement", "practical experience", "social awareness", "valuable life skills"].map((phrase) => (
-                        <li key={phrase} className="rounded-lg border border-violet-200 bg-white px-3 py-1.5 text-sm font-bold text-slate-700">{phrase}</li>
-                      ))}
-                    </ul>
-                  </div>
                 </div>
               </div>
             </details>
@@ -1182,15 +935,14 @@ export default function OpinionPage() {
               </summary>
 
               <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-6 md:grid-cols-3">
                   <div>
                     <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
                     <span className="inline-flex rounded-full bg-amber-100 px-3 py-1 text-sm font-black text-amber-700">Partly agree</span>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Reasons</h3>
-                    <div className="space-y-4 text-slate-700">
+                  <div className="contents">
+<div className="contents">
                       <div>
                         <p className="font-black text-emerald-700">1. Easier</p>
                         <ul className="mt-1 list-disc space-y-1 pl-5">
@@ -1208,24 +960,7 @@ export default function OpinionPage() {
                     </div>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Synonyms</h3>
-                    <dl className="space-y-2 text-slate-700">
-                      <div className="flex flex-wrap gap-x-2"><dt>technology</dt><dd className="font-bold text-violet-700">→ digital technology / modern technology</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>complicated</dt><dd className="font-bold text-violet-700">→ complex / difficult</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>easier</dt><dd className="font-bold text-violet-700">→ more convenient / simpler</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>lives</dt><dd className="font-bold text-violet-700">→ daily life / everyday life</dd></div>
-                    </dl>
-                  </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Useful phrases</h3>
-                    <ul className="flex flex-wrap gap-2">
-                      {["save valuable time", "instant communication", "easy access to information", "digital dependency", "privacy concerns"].map((phrase) => (
-                        <li key={phrase} className="rounded-lg border border-violet-200 bg-white px-3 py-1.5 text-sm font-bold text-slate-700">{phrase}</li>
-                      ))}
-                    </ul>
-                  </div>
                 </div>
               </div>
             </details>
@@ -1240,15 +975,14 @@ export default function OpinionPage() {
               </summary>
 
               <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-6 md:grid-cols-3">
                   <div>
                     <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
                     <span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-sm font-black text-emerald-700">Agree</span>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Reasons</h3>
-                    <div className="space-y-4 text-slate-700">
+                  <div className="contents">
+<div className="contents">
                       <div>
                         <p className="font-black text-violet-700">1.</p>
                         <ul className="mt-1 list-disc space-y-1 pl-5">
@@ -1266,24 +1000,7 @@ export default function OpinionPage() {
                     </div>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Synonyms</h3>
-                    <dl className="space-y-2 text-slate-700">
-                      <div className="flex flex-wrap gap-x-2"><dt>sugary products</dt><dd className="font-bold text-violet-700">→ high-sugar foods / sweetened products</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>made more expensive</dt><dd className="font-bold text-violet-700">→ increase the price / impose higher taxes</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>consume less sugar</dt><dd className="font-bold text-violet-700">→ reduce sugar intake</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>health problems</dt><dd className="font-bold text-violet-700">→ health issues / illnesses</dd></div>
-                    </dl>
-                  </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Useful phrases</h3>
-                    <ul className="flex flex-wrap gap-2">
-                      {["sugar tax", "reduce excessive consumption", "public health", "healthier food choices", "prevent diet-related diseases"].map((phrase) => (
-                        <li key={phrase} className="rounded-lg border border-violet-200 bg-white px-3 py-1.5 text-sm font-bold text-slate-700">{phrase}</li>
-                      ))}
-                    </ul>
-                  </div>
                 </div>
               </div>
             </details>
@@ -1298,15 +1015,14 @@ export default function OpinionPage() {
               </summary>
 
               <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-6 md:grid-cols-3">
                   <div>
                     <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
                     <span className="inline-flex rounded-full bg-amber-100 px-3 py-1 text-sm font-black text-amber-700">Partly agree</span>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Reasons</h3>
-                    <div className="space-y-4 text-slate-700">
+                  <div className="contents">
+<div className="contents">
                       <div>
                         <p className="font-black text-emerald-700">1. Agree</p>
                         <ul className="mt-1 list-disc space-y-1 pl-5">
@@ -1324,24 +1040,7 @@ export default function OpinionPage() {
                     </div>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Synonyms</h3>
-                    <dl className="space-y-2 text-slate-700">
-                      <div className="flex flex-wrap gap-x-2"><dt>overweight people</dt><dd className="font-bold text-violet-700">→ obese individuals / people with excess weight</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>strain on healthcare</dt><dd className="font-bold text-violet-700">→ pressure on the healthcare system</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>physical education</dt><dd className="font-bold text-violet-700">→ PE / exercise classes</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>deal with</dt><dd className="font-bold text-violet-700">→ tackle / address</dd></div>
-                    </dl>
-                  </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Useful phrases</h3>
-                    <ul className="flex flex-wrap gap-2">
-                      {["regular physical activity", "childhood obesity", "healthy lifestyle", "balanced diet", "reduce healthcare burden"].map((phrase) => (
-                        <li key={phrase} className="rounded-lg border border-violet-200 bg-white px-3 py-1.5 text-sm font-bold text-slate-700">{phrase}</li>
-                      ))}
-                    </ul>
-                  </div>
                 </div>
               </div>
             </details>
@@ -1356,15 +1055,14 @@ export default function OpinionPage() {
               </summary>
 
               <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-6 md:grid-cols-3">
                   <div>
                     <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
                     <span className="inline-flex rounded-full bg-rose-100 px-3 py-1 text-sm font-black text-rose-700">Disagree</span>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Reasons</h3>
-                    <div className="space-y-4 text-slate-700">
+                  <div className="contents">
+<div className="contents">
                       <div>
                         <p className="font-black text-violet-700">1.</p>
                         <ul className="mt-1 list-disc space-y-1 pl-5">
@@ -1382,24 +1080,7 @@ export default function OpinionPage() {
                     </div>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Synonyms</h3>
-                    <dl className="space-y-2 text-slate-700">
-                      <div className="flex flex-wrap gap-x-2"><dt>individuals</dt><dd className="font-bold text-violet-700">→ ordinary people / citizens</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>improve the environment</dt><dd className="font-bold text-violet-700">→ protect the environment / reduce environmental damage</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>make a real difference</dt><dd className="font-bold text-violet-700">→ have a significant impact</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>large companies</dt><dd className="font-bold text-violet-700">→ major corporations / businesses</dd></div>
-                    </dl>
-                  </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Useful phrases</h3>
-                    <ul className="flex flex-wrap gap-2">
-                      {["individual responsibility", "collective action", "eco-friendly habits", "reduce carbon footprint", "sustainable lifestyle"].map((phrase) => (
-                        <li key={phrase} className="rounded-lg border border-violet-200 bg-white px-3 py-1.5 text-sm font-bold text-slate-700">{phrase}</li>
-                      ))}
-                    </ul>
-                  </div>
                 </div>
               </div>
             </details>
@@ -1414,15 +1095,14 @@ export default function OpinionPage() {
               </summary>
 
               <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-6 md:grid-cols-3">
                   <div>
                     <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
                     <span className="inline-flex rounded-full bg-rose-100 px-3 py-1 text-sm font-black text-rose-700">Disagree</span>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Reasons</h3>
-                    <div className="space-y-4 text-slate-700">
+                  <div className="contents">
+<div className="contents">
                       <div>
                         <p className="font-black text-violet-700">1.</p>
                         <ul className="mt-1 list-disc space-y-1 pl-5">
@@ -1440,24 +1120,7 @@ export default function OpinionPage() {
                     </div>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Synonyms</h3>
-                    <dl className="space-y-2 text-slate-700">
-                      <div className="flex flex-wrap gap-x-2"><dt>global demand</dt><dd className="font-bold text-violet-700">→ worldwide demand / rising demand</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>undiscovered areas</dt><dd className="font-bold text-violet-700">→ untapped regions / unexplored areas</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>access more resources</dt><dd className="font-bold text-violet-700">→ extract more resources</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>oil and gas</dt><dd className="font-bold text-violet-700">→ fossil fuels</dd></div>
-                    </dl>
-                  </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Useful phrases</h3>
-                    <ul className="flex flex-wrap gap-2">
-                      {["environmental destruction", "protect natural habitats", "renewable energy sources", "energy security", "reduce fossil-fuel dependence"].map((phrase) => (
-                        <li key={phrase} className="rounded-lg border border-violet-200 bg-white px-3 py-1.5 text-sm font-bold text-slate-700">{phrase}</li>
-                      ))}
-                    </ul>
-                  </div>
                 </div>
               </div>
             </details>
@@ -1472,15 +1135,14 @@ export default function OpinionPage() {
               </summary>
 
               <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-6 md:grid-cols-3">
                   <div>
                     <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
                     <span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-sm font-black text-emerald-700">Agree</span>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Reasons</h3>
-                    <div className="space-y-4 text-slate-700">
+                  <div className="contents">
+<div className="contents">
                       <div>
                         <p className="font-black text-violet-700">1.</p>
                         <ul className="mt-1 list-disc space-y-1 pl-5">
@@ -1498,24 +1160,7 @@ export default function OpinionPage() {
                     </div>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Synonyms</h3>
-                    <dl className="space-y-2 text-slate-700">
-                      <div className="flex flex-wrap gap-x-2"><dt>celebrities</dt><dd className="font-bold text-violet-700">→ famous people / public figures</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>glamour</dt><dd className="font-bold text-violet-700">→ luxurious lifestyle / attractiveness</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>achievements</dt><dd className="font-bold text-violet-700">→ accomplishments / success</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>bad example</dt><dd className="font-bold text-violet-700">→ negative influence / poor role model</dd></div>
-                    </dl>
-                  </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Useful phrases</h3>
-                    <ul className="flex flex-wrap gap-2">
-                      {["materialistic attitudes", "unrealistic lifestyle", "positive role models", "value genuine achievement", "influence young minds"].map((phrase) => (
-                        <li key={phrase} className="rounded-lg border border-violet-200 bg-white px-3 py-1.5 text-sm font-bold text-slate-700">{phrase}</li>
-                      ))}
-                    </ul>
-                  </div>
                 </div>
               </div>
             </details>
@@ -1530,15 +1175,14 @@ export default function OpinionPage() {
               </summary>
 
               <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-6 md:grid-cols-3">
                   <div>
                     <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
                     <span className="inline-flex rounded-full bg-amber-100 px-3 py-1 text-sm font-black text-amber-700">Partly agree</span>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Reasons</h3>
-                    <div className="space-y-4 text-slate-700">
+                  <div className="contents">
+<div className="contents">
                       <div>
                         <p className="font-black text-emerald-700">1. Agree</p>
                         <ul className="mt-1 list-disc space-y-1 pl-5">
@@ -1556,24 +1200,7 @@ export default function OpinionPage() {
                     </div>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Synonyms</h3>
-                    <dl className="space-y-2 text-slate-700">
-                      <div className="flex flex-wrap gap-x-2"><dt>seriously overweight</dt><dd className="font-bold text-violet-700">→ obese / excessively overweight</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>fattening foods</dt><dd className="font-bold text-violet-700">→ unhealthy foods / high-calorie foods</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>increase the price</dt><dd className="font-bold text-violet-700">→ raise the cost / impose higher taxes</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>solution</dt><dd className="font-bold text-violet-700">→ remedy / effective measure</dd></div>
-                    </dl>
-                  </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Useful phrases</h3>
-                    <ul className="flex flex-wrap gap-2">
-                      {["reduce calorie intake", "unhealthy eating habits", "balanced diet", "regular physical activity", "tackle obesity"].map((phrase) => (
-                        <li key={phrase} className="rounded-lg border border-violet-200 bg-white px-3 py-1.5 text-sm font-bold text-slate-700">{phrase}</li>
-                      ))}
-                    </ul>
-                  </div>
                 </div>
               </div>
             </details>
@@ -1588,15 +1215,14 @@ export default function OpinionPage() {
               </summary>
 
               <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-6 md:grid-cols-3">
                   <div>
                     <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
                     <span className="inline-flex rounded-full bg-rose-100 px-3 py-1 text-sm font-black text-rose-700">Disagree</span>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Reasons</h3>
-                    <div className="space-y-4 text-slate-700">
+                  <div className="contents">
+<div className="contents">
                       <div>
                         <p className="font-black text-violet-700">1.</p>
                         <ul className="mt-1 list-disc space-y-1 pl-5">
@@ -1614,23 +1240,7 @@ export default function OpinionPage() {
                     </div>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Synonyms</h3>
-                    <dl className="space-y-2 text-slate-700">
-                      <div className="flex flex-wrap gap-x-2"><dt>big salary</dt><dd className="font-bold text-violet-700">→ high income / attractive salary</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>job satisfaction</dt><dd className="font-bold text-violet-700">→ career fulfilment / workplace satisfaction</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>important</dt><dd className="font-bold text-violet-700">→ essential / significant</dd></div>
-                    </dl>
-                  </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Useful phrases</h3>
-                    <ul className="flex flex-wrap gap-2">
-                      {["career fulfilment", "work-life balance", "employee motivation", "mental well-being", "long-term job satisfaction"].map((phrase) => (
-                        <li key={phrase} className="rounded-lg border border-violet-200 bg-white px-3 py-1.5 text-sm font-bold text-slate-700">{phrase}</li>
-                      ))}
-                    </ul>
-                  </div>
                 </div>
               </div>
             </details>
@@ -1645,15 +1255,14 @@ export default function OpinionPage() {
               </summary>
 
               <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-6 md:grid-cols-3">
                   <div>
                     <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
                     <span className="inline-flex rounded-full bg-amber-100 px-3 py-1 text-sm font-black text-amber-700">Partly agree</span>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Reasons</h3>
-                    <div className="space-y-4 text-slate-700">
+                  <div className="contents">
+<div className="contents">
                       <div>
                         <p className="font-black text-emerald-700">1. Agree</p>
                         <ul className="mt-1 list-disc space-y-1 pl-5">
@@ -1671,24 +1280,7 @@ export default function OpinionPage() {
                     </div>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Synonyms</h3>
-                    <dl className="space-y-2 text-slate-700">
-                      <div className="flex flex-wrap gap-x-2"><dt>world peace</dt><dd className="font-bold text-violet-700">→ global stability / international peace</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>nuclear power</dt><dd className="font-bold text-violet-700">→ atomic energy / nuclear energy</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>benefits</dt><dd className="font-bold text-violet-700">→ advantages / positive impacts</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>disadvantages</dt><dd className="font-bold text-violet-700">→ drawbacks / risks</dd></div>
-                    </dl>
-                  </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Useful phrases</h3>
-                    <ul className="flex flex-wrap gap-2">
-                      {["nuclear deterrence", "low-carbon energy", "radioactive waste", "nuclear accident", "global security risk"].map((phrase) => (
-                        <li key={phrase} className="rounded-lg border border-violet-200 bg-white px-3 py-1.5 text-sm font-bold text-slate-700">{phrase}</li>
-                      ))}
-                    </ul>
-                  </div>
                 </div>
               </div>
             </details>
@@ -1703,15 +1295,14 @@ export default function OpinionPage() {
               </summary>
 
               <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-6 md:grid-cols-3">
                   <div>
                     <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
                     <span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-sm font-black text-emerald-700">Agree</span>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Reasons</h3>
-                    <div className="space-y-4 text-slate-700">
+                  <div className="contents">
+<div className="contents">
                       <div>
                         <p className="font-black text-violet-700">1.</p>
                         <ul className="mt-1 list-disc space-y-1 pl-5">
@@ -1729,23 +1320,7 @@ export default function OpinionPage() {
                     </div>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Synonyms</h3>
-                    <dl className="space-y-2 text-slate-700">
-                      <div className="flex flex-wrap gap-x-2"><dt>making money</dt><dd className="font-bold text-violet-700">→ earning profits / generating revenue</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>businesses</dt><dd className="font-bold text-violet-700">→ companies / corporations</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>social responsibilities</dt><dd className="font-bold text-violet-700">→ social obligations / corporate duties</dd></div>
-                    </dl>
-                  </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Useful phrases</h3>
-                    <ul className="flex flex-wrap gap-2">
-                      {["corporate social responsibility", "ethical business practices", "employee welfare", "environmental protection", "community development"].map((phrase) => (
-                        <li key={phrase} className="rounded-lg border border-violet-200 bg-white px-3 py-1.5 text-sm font-bold text-slate-700">{phrase}</li>
-                      ))}
-                    </ul>
-                  </div>
                 </div>
               </div>
             </details>
@@ -1760,15 +1335,14 @@ export default function OpinionPage() {
               </summary>
 
               <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-6 md:grid-cols-3">
                   <div>
                     <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
                     <span className="inline-flex rounded-full bg-rose-100 px-3 py-1 text-sm font-black text-rose-700">Disagree</span>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Reasons</h3>
-                    <div className="space-y-4 text-slate-700">
+                  <div className="contents">
+<div className="contents">
                       <div>
                         <p className="font-black text-violet-700">1.</p>
                         <ul className="mt-1 list-disc space-y-1 pl-5">
@@ -1786,23 +1360,7 @@ export default function OpinionPage() {
                     </div>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Synonyms</h3>
-                    <dl className="space-y-2 text-slate-700">
-                      <div className="flex flex-wrap gap-x-2"><dt>achieve aims</dt><dd className="font-bold text-violet-700">→ reach goals / accomplish objectives</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>luck</dt><dd className="font-bold text-violet-700">→ chance / good fortune</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>mostly</dt><dd className="font-bold text-violet-700">→ mainly / largely</dd></div>
-                    </dl>
-                  </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Useful phrases</h3>
-                    <ul className="flex flex-wrap gap-2">
-                      {["hard work and determination", "personal effort", "careful preparation", "long-term success", "create opportunities"].map((phrase) => (
-                        <li key={phrase} className="rounded-lg border border-violet-200 bg-white px-3 py-1.5 text-sm font-bold text-slate-700">{phrase}</li>
-                      ))}
-                    </ul>
-                  </div>
                 </div>
               </div>
             </details>
@@ -1817,15 +1375,14 @@ export default function OpinionPage() {
               </summary>
 
               <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-6 md:grid-cols-3">
                   <div>
                     <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
                     <span className="inline-flex rounded-full bg-amber-100 px-3 py-1 text-sm font-black text-amber-700">Partly agree</span>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Reasons</h3>
-                    <div className="space-y-4 text-slate-700">
+                  <div className="contents">
+<div className="contents">
                       <div>
                         <p className="font-black text-emerald-700">1. Agree</p>
                         <ul className="mt-1 list-disc space-y-1 pl-5">
@@ -1843,23 +1400,7 @@ export default function OpinionPage() {
                     </div>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Synonyms</h3>
-                    <dl className="space-y-2 text-slate-700">
-                      <div className="flex flex-wrap gap-x-2"><dt>increase the cost of fuel</dt><dd className="font-bold text-violet-700">→ raise fuel prices / impose higher fuel taxes</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>global environmental problems</dt><dd className="font-bold text-violet-700">→ worldwide environmental issues</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>solve</dt><dd className="font-bold text-violet-700">→ tackle / address</dd></div>
-                    </dl>
-                  </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Useful phrases</h3>
-                    <ul className="flex flex-wrap gap-2">
-                      {["reduce fuel consumption", "cut carbon emissions", "renewable energy", "public transportation", "environmental protection"].map((phrase) => (
-                        <li key={phrase} className="rounded-lg border border-violet-200 bg-white px-3 py-1.5 text-sm font-bold text-slate-700">{phrase}</li>
-                      ))}
-                    </ul>
-                  </div>
                 </div>
               </div>
             </details>
@@ -1874,15 +1415,14 @@ export default function OpinionPage() {
               </summary>
 
               <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-6 md:grid-cols-3">
                   <div>
                     <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
                     <span className="inline-flex rounded-full bg-amber-100 px-3 py-1 text-sm font-black text-amber-700">Partly agree</span>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Reasons</h3>
-                    <div className="space-y-4 text-slate-700">
+                  <div className="contents">
+<div className="contents">
                       <div>
                         <p className="font-black text-emerald-700">1. Agree</p>
                         <ul className="mt-1 list-disc space-y-1 pl-5">
@@ -1900,24 +1440,7 @@ export default function OpinionPage() {
                     </div>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Synonyms</h3>
-                    <dl className="space-y-2 text-slate-700">
-                      <div className="flex flex-wrap gap-x-2"><dt>waste from homes</dt><dd className="font-bold text-violet-700">→ household waste / domestic waste</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>legal requirement</dt><dd className="font-bold text-violet-700">→ mandatory law / legal obligation</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>recycle</dt><dd className="font-bold text-violet-700">→ reuse / process waste</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>increase recycling</dt><dd className="font-bold text-violet-700">→ boost recycling rates</dd></div>
-                    </dl>
-                  </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Useful phrases</h3>
-                    <ul className="flex flex-wrap gap-2">
-                      {["mandatory recycling", "public awareness", "recycling facilities", "household responsibility", "reduce landfill waste"].map((phrase) => (
-                        <li key={phrase} className="rounded-lg border border-violet-200 bg-white px-3 py-1.5 text-sm font-bold text-slate-700">{phrase}</li>
-                      ))}
-                    </ul>
-                  </div>
                 </div>
               </div>
             </details>
@@ -1932,15 +1455,14 @@ export default function OpinionPage() {
               </summary>
 
               <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
-                <div className="grid gap-6 md:grid-cols-2">
+                <div className="grid gap-6 md:grid-cols-3">
                   <div>
                     <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
                     <span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-sm font-black text-emerald-700">Agree</span>
                   </div>
 
-                  <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Reasons</h3>
-                    <div className="space-y-4 text-slate-700">
+                  <div className="contents">
+<div className="contents">
                       <div>
                         <p className="font-black text-violet-700">1.</p>
                         <ul className="mt-1 list-disc space-y-1 pl-5">
@@ -1958,22 +1480,480 @@ export default function OpinionPage() {
                     </div>
                   </div>
 
+
+                </div>
+              </div>
+            </details>
+
+            <details open={showAllAnswers || undefined} name="opinion-questions" className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-colors open:border-violet-300 open:ring-2 open:ring-violet-100">
+              <summary className="flex cursor-pointer list-none items-start gap-4 p-6 marker:content-none md:p-8">
+                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-sm font-black text-violet-700">33.</span>
+                <span className="flex-1 font-bold leading-7 text-slate-900">
+                  Many people believe that countries should produce food for all population eats and import food as little as possible. To what extent do you agree or disagree?
+                </span>
+                <span aria-hidden="true" className="mt-1 text-2xl font-light leading-none text-violet-600 transition-transform group-open:rotate-45">+</span>
+              </summary>
+
+              <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
+                <div className="grid gap-6 md:grid-cols-3">
                   <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Synonyms</h3>
-                    <dl className="space-y-2 text-slate-700">
-                      <div className="flex flex-wrap gap-x-2"><dt>prevent illness</dt><dd className="font-bold text-violet-700">→ reduce disease / protect health</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>environmental pollution</dt><dd className="font-bold text-violet-700">→ air and water pollution</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>housing problems</dt><dd className="font-bold text-violet-700">→ poor living conditions / inadequate housing</dd></div>
-                      <div className="flex flex-wrap gap-x-2"><dt>governments should make efforts</dt><dd className="font-bold text-violet-700">→ authorities should take action</dd></div>
-                    </dl>
+                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
+                    <span className="inline-flex rounded-full bg-violet-100 px-3 py-1 text-sm font-black text-violet-700">Partly agree</span>
                   </div>
 
+                  <div className="contents">
+<div className="contents">
+                      <div>
+                        <p className="font-black text-emerald-700">1. Agree</p>
+                        <ul className="mt-1 list-disc space-y-1 pl-5">
+                          <li>Local production improves <strong>food security</strong></li>
+                          <li>Reduces <strong>dependence on foreign suppliers</strong></li>
+                        </ul>
+                      </div>
+                      <div>
+                        <p className="font-black text-rose-700">2. Disagree</p>
+                        <ul className="mt-1 list-disc space-y-1 pl-5">
+                          <li>Some foods cannot be produced <strong>efficiently in every climate</strong></li>
+                          <li>Imports provide <strong>greater variety and stable supply</strong></li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
+
+                </div>
+              </div>
+            </details>
+
+            <details open={showAllAnswers || undefined} name="opinion-questions" className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-colors open:border-violet-300 open:ring-2 open:ring-violet-100">
+              <summary className="flex cursor-pointer list-none items-start gap-4 p-6 marker:content-none md:p-8">
+                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-sm font-black text-violet-700">34.</span>
+                <span className="flex-1 font-bold leading-7 text-slate-900">Governments should spend money on railways rather than roads. To what extent do you agree or disagree with this statement?</span>
+                <span aria-hidden="true" className="mt-1 text-2xl font-light leading-none text-violet-600 transition-transform group-open:rotate-45">+</span>
+              </summary>
+
+              <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
+                <div className="grid gap-6 md:grid-cols-3">
+                  <div><h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3><span className="inline-flex rounded-full bg-violet-100 px-3 py-1 text-sm font-black text-violet-700">Partly agree</span></div>
+                  <div className="contents">
+<div className="contents">
+                      <div><p className="font-black text-emerald-700">1. Agree</p><ul className="mt-1 list-disc space-y-1 pl-5"><li>Railways can <strong>reduce traffic congestion</strong></li><li>Trains are often <strong>more environmentally friendly</strong></li></ul></div>
+                      <div><p className="font-black text-rose-700">2. Disagree</p><ul className="mt-1 list-disc space-y-1 pl-5"><li>Roads are essential for <strong>local and rural transport</strong></li><li>Road networks provide <strong>greater accessibility and flexibility</strong></li></ul></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </details>
+
+            <details open={showAllAnswers || undefined} name="opinion-questions" className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-colors open:border-violet-300 open:ring-2 open:ring-violet-100">
+              <summary className="flex cursor-pointer list-none items-start gap-4 p-6 marker:content-none md:p-8">
+                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-sm font-black text-violet-700">35.</span>
+                <span className="flex-1 font-bold leading-7 text-slate-900">Many feel that the common educational system of teachers and students in a classroom will be replaced by the year 2050. Do you agree with this view? Give your opinion.</span>
+                <span aria-hidden="true" className="mt-1 text-2xl font-light leading-none text-violet-600 transition-transform group-open:rotate-45">+</span>
+              </summary>
+
+              <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
+                <div className="grid gap-6 md:grid-cols-3">
+                  <div><h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3><span className="inline-flex rounded-full bg-violet-100 px-3 py-1 text-sm font-black text-violet-700">Partly agree</span></div>
+                  <div className="contents">
+<div className="contents">
+                      <div><p className="font-black text-emerald-700">1. Agree</p><ul className="mt-1 list-disc space-y-1 pl-5"><li>Online learning and AI can make education <strong>more flexible</strong></li><li>Technology enables <strong>personalised learning</strong></li></ul></div>
+                      <div><p className="font-black text-rose-700">2. Disagree</p><ul className="mt-1 list-disc space-y-1 pl-5"><li>Teachers provide <strong>human guidance and motivation</strong></li><li>Classrooms develop <strong>social and communication skills</strong></li></ul></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </details>
+
+            <details open={showAllAnswers || undefined} name="opinion-questions" className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-colors open:border-violet-300 open:ring-2 open:ring-violet-100">
+              <summary className="flex cursor-pointer list-none items-start gap-4 p-6 marker:content-none md:p-8">
+                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-sm font-black text-violet-700">36.</span>
+                <span className="flex-1 font-bold leading-7 text-slate-900">Some people think that the government is wasting money on the arts and this money could be better spent elsewhere. To what extent do you agree or disagree?</span>
+                <span aria-hidden="true" className="mt-1 text-2xl font-light leading-none text-violet-600 transition-transform group-open:rotate-45">+</span>
+              </summary>
+
+              <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
+                <div className="grid gap-6 md:grid-cols-3">
+                  <div><h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3><span className="inline-flex rounded-full bg-violet-100 px-3 py-1 text-sm font-black text-violet-700">Partly agree</span></div>
+                  <div className="contents">
+<div className="contents">
+                      <div><p className="font-black text-emerald-700">1. Agree</p><ul className="mt-1 list-disc space-y-1 pl-5"><li>Money may be more urgently needed for <strong>healthcare and education</strong></li><li>Public funds should address <strong>essential services first</strong></li></ul></div>
+                      <div><p className="font-black text-rose-700">2. Disagree</p><ul className="mt-1 list-disc space-y-1 pl-5"><li>Arts preserve <strong>culture and national identity</strong></li><li>Arts can support <strong>tourism and creative industries</strong></li></ul></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </details>
+
+            <details open={showAllAnswers || undefined} name="opinion-questions" className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-colors open:border-violet-300 open:ring-2 open:ring-violet-100">
+              <summary className="flex cursor-pointer list-none items-start gap-4 p-6 marker:content-none md:p-8">
+                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-sm font-black text-violet-700">37.</span>
+                <span className="flex-1 font-bold leading-7 text-slate-900">Some people think the main purpose of schools is to turn children into good citizens and workers, rather than to benefit them as individuals. To what extent do you agree or disagree?</span>
+                <span aria-hidden="true" className="mt-1 text-2xl font-light leading-none text-violet-600 transition-transform group-open:rotate-45">+</span>
+              </summary>
+
+              <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
+                <div className="grid gap-6 md:grid-cols-3">
+                  <div><h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3><span className="inline-flex rounded-full bg-violet-100 px-3 py-1 text-sm font-black text-violet-700">Partly agree</span></div>
+                  <div className="contents">
+<div className="contents">
+                      <div><p className="font-black text-emerald-700">1. Agree</p><ul className="mt-1 list-disc space-y-1 pl-5"><li>Schools prepare children for <strong>employment and social responsibility</strong></li><li>Teach <strong>discipline, teamwork and civic values</strong></li></ul></div>
+                      <div><p className="font-black text-rose-700">2. Disagree</p><ul className="mt-1 list-disc space-y-1 pl-5"><li>Education should also support <strong>personal growth</strong></li><li>Helps students develop <strong>interests, creativity and confidence</strong></li></ul></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </details>
+
+            <details open={showAllAnswers || undefined} name="opinion-questions" className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-colors open:border-violet-300 open:ring-2 open:ring-violet-100">
+              <summary className="flex cursor-pointer list-none items-start gap-4 p-6 marker:content-none md:p-8">
+                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-sm font-black text-violet-700">38.</span>
+                <span className="flex-1 font-bold leading-7 text-slate-900">The advantages of the spread of English as a global language will continue to outweigh its disadvantages. To what extent do you agree or disagree?</span>
+                <span aria-hidden="true" className="mt-1 text-2xl font-light leading-none text-violet-600 transition-transform group-open:rotate-45">+</span>
+              </summary>
+
+              <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
+                <div className="grid gap-6 md:grid-cols-3">
+                  <div><h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3><span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-sm font-black text-emerald-700">Agree</span></div>
+                  <div className="contents">
+<div className="contents">
+                      <div><p className="font-black text-violet-700">1.</p><ul className="mt-1 list-disc space-y-1 pl-5"><li>Improves <strong>international communication</strong></li><li>Creates more <strong>education and job opportunities</strong></li></ul></div>
+                      <div><p className="font-black text-violet-700">2.</p><ul className="mt-1 list-disc space-y-1 pl-5"><li>Supports <strong>global business and information exchange</strong></li><li>Makes travel and cooperation <strong>easier</strong></li></ul></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </details>
+
+            <details open={showAllAnswers || undefined} name="opinion-questions" className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-colors open:border-violet-300 open:ring-2 open:ring-violet-100">
+              <summary className="flex cursor-pointer list-none items-start gap-4 p-6 marker:content-none md:p-8">
+                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-sm font-black text-violet-700">39.</span>
+                <span className="flex-1 font-bold leading-7 text-slate-900">Children who are brought up in families that do not have large amounts of money are better prepared to deal with the problems of adult life than children brought up by wealthy parents. To what extent do you agree or disagree with this opinion?</span>
+                <span aria-hidden="true" className="mt-1 text-2xl font-light leading-none text-violet-600 transition-transform group-open:rotate-45">+</span>
+              </summary>
+
+              <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
+                <div className="grid gap-6 md:grid-cols-3">
+                  <div><h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3><span className="inline-flex rounded-full bg-violet-100 px-3 py-1 text-sm font-black text-violet-700">Partly agree</span></div>
+                  <div className="contents">
+<div className="contents">
+                      <div><p className="font-black text-emerald-700">1. Agree</p><ul className="mt-1 list-disc space-y-1 pl-5"><li>Less wealthy children may learn <strong>responsibility and money management</strong></li><li>Often develop <strong>resilience and independence</strong></li></ul></div>
+                      <div><p className="font-black text-rose-700">2. Disagree</p><ul className="mt-1 list-disc space-y-1 pl-5"><li>Wealthy families can provide <strong>better education and opportunities</strong></li><li>Good parenting matters more than <strong>family income</strong></li></ul></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </details>
+
+            <details open={showAllAnswers || undefined} name="opinion-questions" className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-colors open:border-violet-300 open:ring-2 open:ring-violet-100">
+              <summary className="flex cursor-pointer list-none items-start gap-4 p-6 marker:content-none md:p-8">
+                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-sm font-black text-violet-700">40.</span>
+                <span className="flex-1 font-bold leading-7 text-slate-900">As the internet becomes more popular, newspapers are becoming a thing of the past. To what extent do you agree or disagree with this statement?</span>
+                <span aria-hidden="true" className="mt-1 text-2xl font-light leading-none text-violet-600 transition-transform group-open:rotate-45">+</span>
+              </summary>
+
+              <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
+                <div className="grid gap-6 md:grid-cols-3">
+                  <div><h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3><span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-sm font-black text-emerald-700">Agree</span></div>
+                  <div className="contents">
+<div className="contents">
+                      <div><p className="font-black text-violet-700">1.</p><ul className="mt-1 list-disc space-y-1 pl-5"><li>Online news is <strong>faster and more convenient</strong></li><li>People can access updates <strong>instantly</strong></li></ul></div>
+                      <div><p className="font-black text-violet-700">2.</p><ul className="mt-1 list-disc space-y-1 pl-5"><li>Digital news is often <strong>cheaper and easier to access</strong></li><li>Reduces demand for <strong>printed newspapers</strong></li></ul></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </details>
+
+            <details open={showAllAnswers || undefined} name="opinion-questions" className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-colors open:border-violet-300 open:ring-2 open:ring-violet-100">
+              <summary className="flex cursor-pointer list-none items-start gap-4 p-6 marker:content-none md:p-8">
+                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-sm font-black text-violet-700">41.</span>
+                <span className="flex-1 font-bold leading-7 text-slate-900">Crime rates are likely to decline due to the advancements in technology, which will help prevent and solve crimes in an easier way. Do you agree or disagree?</span>
+                <span aria-hidden="true" className="mt-1 text-2xl font-light leading-none text-violet-600 transition-transform group-open:rotate-45">+</span>
+              </summary>
+
+              <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
+                <div className="grid gap-6 md:grid-cols-3">
+                  <div><h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3><span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-sm font-black text-emerald-700">Agree</span></div>
+                  <div className="contents">
+<div className="contents">
+                      <div><p className="font-black text-violet-700">1.</p><ul className="mt-1 list-disc space-y-1 pl-5"><li>Surveillance technology can <strong>prevent and detect crimes</strong></li><li>CCTV and tracking systems can <strong>deter offenders</strong></li></ul></div>
+                      <div><p className="font-black text-violet-700">2.</p><ul className="mt-1 list-disc space-y-1 pl-5"><li>Digital tools help police <strong>identify criminals faster</strong></li><li>Forensic technology can <strong>solve cases more accurately</strong></li></ul></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </details>
+
+            <details open={showAllAnswers || undefined} name="opinion-questions" className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-colors open:border-violet-300 open:ring-2 open:ring-violet-100">
+              <summary className="flex cursor-pointer list-none items-start gap-4 p-6 marker:content-none md:p-8">
+                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-sm font-black text-violet-700">42.</span>
+                <span className="flex-1 font-bold leading-7 text-slate-900">Schools should focus on academic success and passing examinations. Skills such as cookery, dressmaking and woodwork should not be taught at school as it is better to learn these from family and friends. To what extent do you agree or disagree?</span>
+                <span aria-hidden="true" className="mt-1 text-2xl font-light leading-none text-violet-600 transition-transform group-open:rotate-45">+</span>
+              </summary>
+
+              <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
+                <div className="grid gap-6 md:grid-cols-3">
+                  <div><h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3><span className="inline-flex rounded-full bg-violet-100 px-3 py-1 text-sm font-black text-violet-700">Partly agree</span></div>
+                  <div className="contents">
+<div className="contents">
+                      <div><p className="font-black text-emerald-700">1. Agree</p><ul className="mt-1 list-disc space-y-1 pl-5"><li>Schools should prioritise <strong>academic achievement</strong></li><li>Exam subjects are important for <strong>higher education and careers</strong></li></ul></div>
+                      <div><p className="font-black text-rose-700">2. Disagree</p><ul className="mt-1 list-disc space-y-1 pl-5"><li>Practical subjects teach <strong>essential life skills</strong></li><li>Not every child can learn these skills <strong>at home</strong></li></ul></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </details>
+
+            <details open={showAllAnswers || undefined} name="opinion-questions" className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-colors open:border-violet-300 open:ring-2 open:ring-violet-100">
+              <summary className="flex cursor-pointer list-none items-start gap-4 p-6 marker:content-none md:p-8">
+                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-sm font-black text-violet-700">43.</span>
+                <span className="flex-1 font-bold leading-7 text-slate-900">It is a good idea for people to continue working in their old age, if it is possible for them to do so. Do you agree or disagree?</span>
+                <span aria-hidden="true" className="mt-1 text-2xl font-light leading-none text-violet-600 transition-transform group-open:rotate-45">+</span>
+              </summary>
+
+              <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
+                <div className="grid gap-6 md:grid-cols-3">
+                  <div><h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3><span className="inline-flex rounded-full bg-violet-100 px-3 py-1 text-sm font-black text-violet-700">Partly agree</span></div>
+                  <div className="contents">
+<div className="contents">
+                      <div><p className="font-black text-emerald-700">1. Agree</p><ul className="mt-1 list-disc space-y-1 pl-5"><li>Work keeps older people <strong>active and socially engaged</strong></li><li>Provides <strong>financial independence</strong></li></ul></div>
+                      <div><p className="font-black text-rose-700">2. Disagree</p><ul className="mt-1 list-disc space-y-1 pl-5"><li>Old age may bring <strong>health and physical limitations</strong></li><li>Retirement gives time for <strong>rest and family</strong></li></ul></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </details>
+
+            <details open={showAllAnswers || undefined} name="opinion-questions" className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-colors open:border-violet-300 open:ring-2 open:ring-violet-100">
+              <summary className="flex cursor-pointer list-none items-start gap-4 p-6 marker:content-none md:p-8">
+                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-sm font-black text-violet-700">44.</span>
+                <span className="flex-1 font-bold leading-7 text-slate-900">The best way to provide enough homes in large cities is to build tall apartment blocks. To what extent do you agree or disagree with this statement?</span>
+                <span aria-hidden="true" className="mt-1 text-2xl font-light leading-none text-violet-600 transition-transform group-open:rotate-45">+</span>
+              </summary>
+
+              <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
+                <div className="grid gap-6 md:grid-cols-3">
+                  <div><h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3><span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-sm font-black text-emerald-700">Agree</span></div>
+                  <div className="contents">
+<div className="contents">
+                      <div><p className="font-black text-violet-700">1.</p><ul className="mt-1 list-disc space-y-1 pl-5"><li>Tall buildings use <strong>limited urban land efficiently</strong></li><li>Provide homes for <strong>more people in less space</strong></li></ul></div>
+                      <div><p className="font-black text-violet-700">2.</p><ul className="mt-1 list-disc space-y-1 pl-5"><li>Can reduce <strong>urban sprawl</strong></li><li>Makes infrastructure and public services <strong>easier to provide</strong></li></ul></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </details>
+
+            <details open={showAllAnswers || undefined} name="opinion-questions" className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-colors open:border-violet-300 open:ring-2 open:ring-violet-100">
+              <summary className="flex cursor-pointer list-none items-start gap-4 p-6 marker:content-none md:p-8">
+                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-sm font-black text-violet-700">45.</span>
+                <span className="flex-1 font-bold leading-7 text-slate-900">Some people say that it is better to work for a large company than a small one. Do you agree or disagree?</span>
+                <span aria-hidden="true" className="mt-1 text-2xl font-light leading-none text-violet-600 transition-transform group-open:rotate-45">+</span>
+              </summary>
+
+              <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
+                <div className="grid gap-6 md:grid-cols-3">
+                  <div><h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3><span className="inline-flex rounded-full bg-violet-100 px-3 py-1 text-sm font-black text-violet-700">Partly agree</span></div>
+                  <div className="contents">
+<div className="contents">
+                      <div><p className="font-black text-emerald-700">1. Large company</p><ul className="mt-1 list-disc space-y-1 pl-5"><li>Offers <strong>better salary and job security</strong></li><li>Provides more <strong>career development opportunities</strong></li></ul></div>
+                      <div><p className="font-black text-rose-700">2. Small company</p><ul className="mt-1 list-disc space-y-1 pl-5"><li>Gives employees <strong>more responsibility and flexibility</strong></li><li>Often provides a <strong>closer working environment</strong></li></ul></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </details>
+
+            <details open={showAllAnswers || undefined} name="opinion-questions" className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-colors open:border-violet-300 open:ring-2 open:ring-violet-100">
+              <summary className="flex cursor-pointer list-none items-start gap-4 p-6 marker:content-none md:p-8">
+                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-sm font-black text-violet-700">46.</span>
+                <span className="flex-1 font-bold leading-7 text-slate-900">Some people think young people should be required to have full-time education until they are at least 18 years old. To what extent do you agree or disagree?</span>
+                <span aria-hidden="true" className="mt-1 text-2xl font-light leading-none text-violet-600 transition-transform group-open:rotate-45">+</span>
+              </summary>
+
+              <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
+                <div className="grid gap-6 md:grid-cols-3">
+                  <div><h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3><span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-sm font-black text-emerald-700">Agree</span></div>
+                  <div className="contents">
+<div className="contents">
+                      <div><p className="font-black text-violet-700">1.</p><ul className="mt-1 list-disc space-y-1 pl-5"><li>Ensures <strong>basic education and essential skills</strong></li><li>Improves <strong>future job opportunities</strong></li></ul></div>
+                      <div><p className="font-black text-violet-700">2.</p><ul className="mt-1 list-disc space-y-1 pl-5"><li>Keeps teenagers away from <strong>unemployment and harmful activities</strong></li><li>Prepares them for <strong>adult responsibilities</strong></li></ul></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </details>
+
+            <details open={showAllAnswers || undefined} name="opinion-questions" className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-colors open:border-violet-300 open:ring-2 open:ring-violet-100">
+              <summary className="flex cursor-pointer list-none items-start gap-4 p-6 marker:content-none md:p-8">
+                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-sm font-black text-violet-700">47.</span>
+                <span className="flex-1 font-bold leading-7 text-slate-900">Most high-level positions in companies are filled by men even though the workforce in many developed countries is more than 50 per cent female. Companies should be required to allocate a certain percentage of these positions to women. To what extent do you agree?</span>
+                <span aria-hidden="true" className="mt-1 text-2xl font-light leading-none text-violet-600 transition-transform group-open:rotate-45">+</span>
+              </summary>
+
+              <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
+                <div className="grid gap-6 md:grid-cols-3">
+                  <div><h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3><span className="inline-flex rounded-full bg-violet-100 px-3 py-1 text-sm font-black text-violet-700">Partly agree</span></div>
+                  <div className="contents">
+<div className="contents">
+                      <div><p className="font-black text-emerald-700">1. Agree</p><ul className="mt-1 list-disc space-y-1 pl-5"><li>Quotas can promote <strong>gender equality</strong></li><li>Create more <strong>leadership opportunities for women</strong></li></ul></div>
+                      <div><p className="font-black text-rose-700">2. Disagree</p><ul className="mt-1 list-disc space-y-1 pl-5"><li>Promotion should be based on <strong>skills and merit</strong></li><li>Fixed quotas may lead to <strong>unfair selection</strong></li></ul></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </details>
+
+            <details open={showAllAnswers || undefined} name="opinion-questions" className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-colors open:border-violet-300 open:ring-2 open:ring-violet-100">
+              <summary className="flex cursor-pointer list-none items-start gap-4 p-6 marker:content-none md:p-8">
+                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-sm font-black text-violet-700">48.</span>
+                <span className="flex-1 font-bold leading-7 text-slate-900">Some people believe that people who read books can develop more imagination and language skills than those who prefer to watch TV. To what extent do you agree or disagree?</span>
+                <span aria-hidden="true" className="mt-1 text-2xl font-light leading-none text-violet-600 transition-transform group-open:rotate-45">+</span>
+              </summary>
+
+              <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
+                <div className="grid gap-6 md:grid-cols-3">
                   <div>
-                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Useful phrases</h3>
-                    <ul className="flex flex-wrap gap-2">
-                      {["public health", "clean environment", "safe housing", "disease prevention", "healthy living conditions"].map((phrase) => (
-                        <li key={phrase} className="rounded-lg border border-violet-200 bg-white px-3 py-1.5 text-sm font-bold text-slate-700">{phrase}</li>
-                      ))}
+                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
+                    <span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-sm font-black text-emerald-700">Agree</span>
+                  </div>
+                  <div>
+                    <p className="font-black text-violet-700">Reason 1</p>
+                    <ul className="mt-1 list-disc space-y-1 pl-5 text-slate-700">
+                      <li>Reading stimulates <strong>imagination and creative thinking</strong></li>
+                      <li>Readers mentally create <strong>characters, settings, and scenes</strong></li>
+                    </ul>
+                  </div>
+                  <div>
+                    <p className="font-black text-violet-700">Reason 2</p>
+                    <ul className="mt-1 list-disc space-y-1 pl-5 text-slate-700">
+                      <li>Books expose people to <strong>richer vocabulary and sentence structures</strong></li>
+                      <li>Regular reading improves <strong>language and communication skills</strong></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </details>
+
+            <details open={showAllAnswers || undefined} name="opinion-questions" className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-colors open:border-violet-300 open:ring-2 open:ring-violet-100">
+              <summary className="flex cursor-pointer list-none items-start gap-4 p-6 marker:content-none md:p-8">
+                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-sm font-black text-violet-700">49.</span>
+                <span className="flex-1 font-bold leading-7 text-slate-900">Wealthy nations should assist poorer countries with humanitarian relief during natural disasters. Do you agree or disagree?</span>
+                <span aria-hidden="true" className="mt-1 text-2xl font-light leading-none text-violet-600 transition-transform group-open:rotate-45">+</span>
+              </summary>
+
+              <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
+                <div className="grid gap-6 md:grid-cols-3">
+                  <div>
+                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
+                    <span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-sm font-black text-emerald-700">Agree</span>
+                  </div>
+                  <div>
+                    <p className="font-black text-violet-700">Reason 1</p>
+                    <ul className="mt-1 list-disc space-y-1 pl-5 text-slate-700">
+                      <li>Wealthy nations have <strong>greater financial and technical resources</strong></li>
+                      <li>Aid can provide <strong>food, medicine, and emergency shelter</strong></li>
+                    </ul>
+                  </div>
+                  <div>
+                    <p className="font-black text-violet-700">Reason 2</p>
+                    <ul className="mt-1 list-disc space-y-1 pl-5 text-slate-700">
+                      <li>International support can <strong>save lives and speed up recovery</strong></li>
+                      <li>It strengthens <strong>global cooperation and humanitarian responsibility</strong></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </details>
+
+            <details open={showAllAnswers || undefined} name="opinion-questions" className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-colors open:border-violet-300 open:ring-2 open:ring-violet-100">
+              <summary className="flex cursor-pointer list-none items-start gap-4 p-6 marker:content-none md:p-8">
+                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-sm font-black text-violet-700">50.</span>
+                <span className="flex-1 font-bold leading-7 text-slate-900">Details of politicians&apos; private lives should not be published in newspapers. To what extent do you agree or disagree?</span>
+                <span aria-hidden="true" className="mt-1 text-2xl font-light leading-none text-violet-600 transition-transform group-open:rotate-45">+</span>
+              </summary>
+
+              <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
+                <div className="grid gap-6 md:grid-cols-3">
+                  <div>
+                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
+                    <span className="inline-flex rounded-full bg-violet-100 px-3 py-1 text-sm font-black text-violet-700">Partly agree</span>
+                  </div>
+                  <div>
+                    <p className="font-black text-emerald-700">Reason 1: Agree</p>
+                    <ul className="mt-1 list-disc space-y-1 pl-5 text-slate-700">
+                      <li>Politicians also deserve <strong>personal privacy</strong></li>
+                      <li>Irrelevant private details can cause <strong>unnecessary public intrusion</strong></li>
+                    </ul>
+                  </div>
+                  <div>
+                    <p className="font-black text-rose-700">Reason 2: Disagree</p>
+                    <ul className="mt-1 list-disc space-y-1 pl-5 text-slate-700">
+                      <li>Some private actions may reveal <strong>dishonesty or misconduct</strong></li>
+                      <li>Information affecting public duties should be <strong>reported transparently</strong></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </details>
+
+            <details open={showAllAnswers || undefined} name="opinion-questions" className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-colors open:border-violet-300 open:ring-2 open:ring-violet-100">
+              <summary className="flex cursor-pointer list-none items-start gap-4 p-6 marker:content-none md:p-8">
+                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-sm font-black text-violet-700">51.</span>
+                <span className="flex-1 font-bold leading-7 text-slate-900">Some experts believe that when a country is already rich, any additional increase in economic wealth does not make its citizens any more satisfied. To what extent do you agree or disagree?</span>
+                <span aria-hidden="true" className="mt-1 text-2xl font-light leading-none text-violet-600 transition-transform group-open:rotate-45">+</span>
+              </summary>
+
+              <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
+                <div className="grid gap-6 md:grid-cols-3">
+                  <div>
+                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
+                    <span className="inline-flex rounded-full bg-violet-100 px-3 py-1 text-sm font-black text-violet-700">Partly agree</span>
+                  </div>
+                  <div>
+                    <p className="font-black text-emerald-700">Reason 1: Agree</p>
+                    <ul className="mt-1 list-disc space-y-1 pl-5 text-slate-700">
+                      <li>Once basic needs are met, additional wealth may bring <strong>only limited increases in happiness</strong></li>
+                      <li>Satisfaction also depends on <strong>health, relationships, and work-life balance</strong></li>
+                    </ul>
+                  </div>
+                  <div>
+                    <p className="font-black text-rose-700">Reason 2: Disagree</p>
+                    <ul className="mt-1 list-disc space-y-1 pl-5 text-slate-700">
+                      <li>Economic growth can fund <strong>better healthcare, education, and public services</strong></li>
+                      <li>Higher wealth can improve <strong>financial security and living standards</strong></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </details>
+
+            <details open={showAllAnswers || undefined} name="opinion-questions" className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-colors open:border-violet-300 open:ring-2 open:ring-violet-100">
+              <summary className="flex cursor-pointer list-none items-start gap-4 p-6 marker:content-none md:p-8">
+                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-sm font-black text-violet-700">52.</span>
+                <span className="flex-1 font-bold leading-7 text-slate-900">Education should be free to all people and should be paid for and managed by the government. Do you agree or disagree with this statement?</span>
+                <span aria-hidden="true" className="mt-1 text-2xl font-light leading-none text-violet-600 transition-transform group-open:rotate-45">+</span>
+              </summary>
+
+              <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
+                <div className="grid gap-6 md:grid-cols-3">
+                  <div>
+                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
+                    <span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-sm font-black text-emerald-700">Agree</span>
+                  </div>
+                  <div>
+                    <p className="font-black text-violet-700">Reason 1</p>
+                    <ul className="mt-1 list-disc space-y-1 pl-5 text-slate-700">
+                      <li>Free education ensures <strong>equal access for all</strong></li>
+                      <li>It helps reduce <strong>poverty and social inequality</strong></li>
+                    </ul>
+                  </div>
+                  <div>
+                    <p className="font-black text-violet-700">Reason 2</p>
+                    <ul className="mt-1 list-disc space-y-1 pl-5 text-slate-700">
+                      <li>Government funding can maintain <strong>educational standards</strong></li>
+                      <li>An educated population supports <strong>economic and social development</strong></li>
                     </ul>
                   </div>
                 </div>
@@ -1981,11 +1961,7 @@ export default function OpinionPage() {
             </details>
           </div>
 
-          <nav aria-label="Question pages" className="mt-6 flex flex-wrap items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
-            <button type="button" disabled className="cursor-not-allowed rounded-md px-3 py-2 text-sm font-medium text-slate-300">« Previous</button>
-            <button type="button" aria-current="page" className="h-10 min-w-10 rounded-md bg-violet-600 px-3 text-sm font-medium text-white shadow-sm">1</button>
-            <button type="button" disabled className="cursor-not-allowed rounded-md px-3 py-2 text-sm font-medium text-slate-300">Next »</button>
-          </nav>
+          {renderPagination("Question pages below the list")}
         </section>
       </section>
     </main>
