@@ -16,7 +16,6 @@ const navItems = [
   },
   { label: "Word", href: "/word" },
   { label: "Sentence", href: "/sentence" },
-  { label: "Q&A", href: "/qa" },
   { label: "Writing task", href: "/writing-task", submenu: [
       { label: "Task 1", href: "/writing-task/task1" },
       { label: "Task 2", href: "/writing-task/task2" },
@@ -26,6 +25,7 @@ const navItems = [
       { label: "Quran", href: "/personal/quran" },
       { label: "Timer", href: "/personal/timer" },
       { label: "Professor", href: "/personal/professor" },
+      { label: "Gold", href: "/personal/gold" },
       { label: "Gmail", href: "/gmail" },
       { label: "Download", href: "/download" },
       { label: "4K JPG Finisher", href: "/personal/4k-finisher" },
