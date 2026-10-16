@@ -1,5 +1,7 @@
 import { neon } from "@neondatabase/serverless";
 import { buildRollingGoldForecast, type GoldPoint } from "@/lib/goldForecast";
+import { backfillNextCampusYear, campuses, fetchCurrentCampusAqi, prepareAqiDatabase, saveCampusAqi } from "@/lib/aqi";
+import { backfillNextDistrictMonth, fetchDistrictAqi, prepareDistrictAqiDatabase, saveDistrictAqi } from "@/lib/districtAqi";
 
 type GoldApiResponse = { price?: number; updatedAt?: string };
 type PriceRow = { observed_at: string; price_usd: string | number };
@@ -37,6 +39,7 @@ export async function GET(request: Request) {
     const state = await sql.query(`SELECT generated_at FROM gold_forecast_state WHERE id = 1`) as ForecastStateRow[];
     const shouldRefreshForecast = observedAtMs === fiveMinuteBucket && (!state[0] || Date.parse(state[0].generated_at) < fiveMinuteBucket);
     let forecastStatus = "unchanged";
+    let aqiStatus = "unchanged";
 
     if (shouldRefreshForecast) {
       const hourlyRows = await sql.query(`SELECT observed_at, price_usd FROM gold_price_samples WHERE instrument = 'GC=F' ORDER BY observed_at DESC LIMIT 48`) as PriceRow[];
@@ -62,7 +65,24 @@ export async function GET(request: Request) {
       }
     }
 
-    return Response.json({ success: true, observedAt, providerUpdatedAt: current.updatedAt ?? null, price: current.price, forecastStatus });
+    if (observedAtMs % (15 * 60_000) === 0) {
+      try {
+        await prepareAqiDatabase(sql);
+        const campusReadings = await fetchCurrentCampusAqi();
+        await saveCampusAqi(sql, campusReadings);
+        await prepareDistrictAqiDatabase(sql);
+        const districtReadings = await fetchDistrictAqi();
+        await saveDistrictAqi(sql, districtReadings);
+        const backfillCampus = campuses[Math.floor(observedAtMs / (15 * 60_000)) % campuses.length];
+        const backfill = await backfillNextCampusYear(sql, backfillCampus);
+        const districtBackfill = await backfillNextDistrictMonth(sql);
+        aqiStatus = `saved-${campusReadings.length}-campuses-${districtReadings.length}-districts; backfill-${backfillCampus.id}-${backfill.saved}; district-backfill-${districtBackfill.status}-${districtBackfill.saved}`;
+      } catch {
+        aqiStatus = "provider-unavailable";
+      }
+    }
+
+    return Response.json({ success: true, observedAt, providerUpdatedAt: current.updatedAt ?? null, price: current.price, forecastStatus, aqiStatus });
   } catch (error) {
     return Response.json({ error: error instanceof Error ? error.message : "Unable to collect the gold price." }, { status: 502 });
   }

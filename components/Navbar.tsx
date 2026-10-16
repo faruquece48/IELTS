@@ -26,6 +26,7 @@ const navItems = [
       { label: "Timer", href: "/personal/timer" },
       { label: "Professor", href: "/personal/professor" },
       { label: "Gold", href: "/personal/gold" },
+      { label: "Campus AQI", href: "/personal/aqi" },
       { label: "Gmail", href: "/gmail" },
       { label: "Download", href: "/download" },
       { label: "4K JPG Finisher", href: "/personal/4k-finisher" },
