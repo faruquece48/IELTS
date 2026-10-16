@@ -24,6 +24,7 @@ const navItems = [
   },
   { label: "Personal", href: "/personal", submenu: [
       { label: "Quran", href: "/personal/quran" },
+      { label: "Timer", href: "/personal/timer" },
       { label: "Professor", href: "/personal/professor" },
       { label: "Gmail", href: "/gmail" },
       { label: "Download", href: "/download" },

@@ -1,0 +1,48 @@
+@page { size: A4 landscape; margin: 5mm; }
+
+.place-print-sheet {
+  width: min(100%, 1400px);
+  aspect-ratio: 297 / 210;
+  font-family: "Times New Roman", Times, serif;
+}
+.place-print-columns { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+
+/* Explicit fills also keep the six memory lanes clear in exported PDFs. */
+.place-print-column:nth-child(1) { background-color: #fff4cf; }
+.place-print-column:nth-child(2) { background-color: #e3f3ff; }
+.place-print-column:nth-child(3) { background-color: #eee9ff; }
+.place-print-column:nth-child(4) { background-color: #dcf8fa; }
+.place-print-column:nth-child(5) { background-color: #e2f8e9; }
+.place-print-column:nth-child(6) { background-color: #ffe8ed; }
+
+@media print {
+  html,
+  body,
+  .place-print-sheet,
+  .place-print-sheet *,
+  .place-print-column,
+  .place-print-topic {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  body { background: white !important; }
+  .place-print-toolbar { display: none !important; }
+  .place-print-wrap { padding: 0 !important; margin: 0 !important; max-width: none !important; }
+  .place-print-sheet { width: 287mm !important; height: 200mm !important; aspect-ratio: auto !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; padding: 4mm !important; overflow: hidden !important; background: #fffef9 !important; font-family: "Times New Roman", Times, serif !important; }
+  .place-print-sheet * { font-family: "Times New Roman", Times, serif !important; }
+  .place-print-column:nth-child(1) { background: #fff4cf !important; box-shadow: inset 0 0 0 1000px #fff4cf !important; }
+  .place-print-column:nth-child(2) { background: #e3f3ff !important; box-shadow: inset 0 0 0 1000px #e3f3ff !important; }
+  .place-print-column:nth-child(3) { background: #eee9ff !important; box-shadow: inset 0 0 0 1000px #eee9ff !important; }
+  .place-print-column:nth-child(4) { background: #dcf8fa !important; box-shadow: inset 0 0 0 1000px #dcf8fa !important; }
+  .place-print-column:nth-child(5) { background: #e2f8e9 !important; box-shadow: inset 0 0 0 1000px #e2f8e9 !important; }
+  .place-print-column:nth-child(6) { background: #ffe8ed !important; box-shadow: inset 0 0 0 1000px #ffe8ed !important; }
+  .place-print-title { margin-bottom: 2.5mm !important; }
+  .place-print-title h1 { font-size: 12pt !important; line-height: 1 !important; }
+  .place-print-title p { font-size: 5.5pt !important; margin-top: 1mm !important; }
+  .place-print-columns { height: 180mm !important; gap: 2mm !important; }
+  .place-print-column { padding: 2mm !important; border-radius: 2mm !important; }
+  .place-print-column > h2 { font-size: 7pt !important; margin-bottom: 1.5mm !important; padding-bottom: 1mm !important; }
+  .place-print-topic { margin-top: 1.4mm !important; padding-top: 1.2mm !important; }
+  .place-print-topic h3 { font-size: 5.8pt !important; line-height: 1.1 !important; }
+  .place-print-topic li { font-size: 5.1pt !important; line-height: 1.25 !important; margin-top: .35mm !important; }
+}

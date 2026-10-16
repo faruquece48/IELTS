@@ -10,6 +10,12 @@ const tools = [
     icon: "☪",
   },
   {
+    title: "Speaking Timer",
+    description: "Practise IELTS speaking with a focused two-minute countdown and quick time presets.",
+    href: "/personal/timer",
+    icon: "⏱️",
+  },
+  {
     title: "Professor Tracker",
     description: "Shortlist structural engineering supervisors, assess funding fit, plan outreach, and monitor replies.",
     href: "/personal/professor",
