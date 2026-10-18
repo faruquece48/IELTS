@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { ReactNode } from "react";
 import Navbar from "@/components/Navbar";
 import Task2QuestionList from "./Task2QuestionList";
 
@@ -13,6 +14,7 @@ type EssayGuideProps = {
   formulas: readonly { title: string; text: string }[];
   exampleTheme: string;
   example: readonly string[];
+  questions?: ReactNode;
 };
 
 function TemplateText({ text }: { text: string }) {
@@ -41,7 +43,7 @@ export function StructureBlock({ structureTitle, formulas, exampleTheme, example
   );
 }
 
-export default function EssayGuide({ number, title, label, description, steps, structureTitle, formulas, exampleTheme, example }: EssayGuideProps) {
+export default function EssayGuide({ number, title, label, description, steps, structureTitle, formulas, exampleTheme, example, questions }: EssayGuideProps) {
   return (
     <main className="min-h-screen bg-slate-50 text-slate-800">
       <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/90 backdrop-blur-sm">
@@ -84,7 +86,7 @@ export default function EssayGuide({ number, title, label, description, steps, s
             <h2 id={`${title.toLowerCase().replaceAll(" ", "-")}-questions-title`} className="mt-2 text-3xl font-black tracking-tight text-slate-950">Questions and answers</h2>
             <p className="mt-2 text-slate-600">Select a question to reveal its planning notes.</p>
           </div>
-          <Task2QuestionList />
+          <Task2QuestionList>{questions}</Task2QuestionList>
         </section>
       </section>
     </main>

@@ -52,7 +52,7 @@ const structures = [
     </>,
   },] as const;
 
-const TOTAL_QUESTIONS = 52;
+const TOTAL_QUESTIONS = 63;
 const PAGE_SIZE_OPTIONS = [10, 20, 30, 50] as const;
 
 function Slot({ children }: { children: React.ReactNode }) {
@@ -609,7 +609,7 @@ export default function OpinionPage() {
               <summary className="flex cursor-pointer list-none items-start gap-4 p-6 marker:content-none md:p-8">
                 <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-sm font-black text-violet-700">11.</span>
                 <span className="flex-1 font-bold leading-7 text-slate-900">
-                  It is a natural process for animal species to become extinct (e.g. dinosaurs and dodos). There is no reason why people should try to prevent this from happening. Do you agree or disagree?
+                  It is a natural process for animal species to become extinct. There is no reason for people to prevent this from happening. To what extent do you agree or disagree?
                 </span>
                 <span aria-hidden="true" className="mt-1 text-2xl font-light leading-none text-violet-600 transition-transform group-open:rotate-45">+</span>
               </summary>
@@ -624,17 +624,17 @@ export default function OpinionPage() {
                   <div className="contents">
 <div className="contents">
                       <div>
-                        <p className="font-black text-violet-700">1.</p>
+                        <p className="font-black text-violet-700">Reason 1</p>
                         <ul className="mt-1 list-disc space-y-1 pl-5">
-                          <li>Many extinctions are caused by <strong>human activities</strong></li>
-                          <li>Habitat destruction and hunting <strong>accelerate species loss</strong></li>
+                          <li>Human activities <strong>accelerate animal extinction</strong></li>
+                          <li>Habitat destruction and hunting <strong>threaten endangered species</strong></li>
                         </ul>
                       </div>
                       <div>
-                        <p className="font-black text-violet-700">2.</p>
+                        <p className="font-black text-violet-700">Reason 2</p>
                         <ul className="mt-1 list-disc space-y-1 pl-5">
-                          <li>Animals are vital for <strong>ecosystem balance</strong></li>
-                          <li>Extinction can disrupt <strong>food chains and biodiversity</strong></li>
+                          <li>Wildlife plays a vital role in maintaining <strong>ecological balance</strong></li>
+                          <li>Protecting animals helps preserve <strong>biodiversity and food chains</strong></li>
                         </ul>
                       </div>
                     </div>
@@ -1954,6 +1954,347 @@ export default function OpinionPage() {
                     <ul className="mt-1 list-disc space-y-1 pl-5 text-slate-700">
                       <li>Government funding can maintain <strong>educational standards</strong></li>
                       <li>An educated population supports <strong>economic and social development</strong></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </details>
+
+            <details open={showAllAnswers || undefined} name="opinion-questions" className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-colors open:border-violet-300 open:ring-2 open:ring-violet-100">
+              <summary className="flex cursor-pointer list-none items-start gap-4 p-6 marker:content-none md:p-8">
+                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-sm font-black text-violet-700">53.</span>
+                <span className="flex-1 font-bold leading-7 text-slate-900">Some people believe that the best way to provide a happier society is to ensure that there are only small differences between the richest and poorest members. To what extent do you agree or disagree?</span>
+                <span aria-hidden="true" className="mt-1 text-2xl font-light leading-none text-violet-600 transition-transform group-open:rotate-45">+</span>
+              </summary>
+
+              <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
+                <div className="grid gap-6 md:grid-cols-3">
+                  <div>
+                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
+                    <span className="inline-flex rounded-full bg-violet-100 px-3 py-1 text-sm font-black text-violet-700">Partly agree</span>
+                  </div>
+                  <div>
+                    <p className="font-black text-emerald-700">Reason 1: Agree</p>
+                    <ul className="mt-1 list-disc space-y-1 pl-5 text-slate-700">
+                      <li>Smaller income gaps can reduce <strong>poverty and social inequality</strong></li>
+                      <li>They can promote <strong>social harmony and equal opportunities</strong></li>
+                    </ul>
+                  </div>
+                  <div>
+                    <p className="font-black text-rose-700">Reason 2: Disagree</p>
+                    <ul className="mt-1 list-disc space-y-1 pl-5 text-slate-700">
+                      <li>Happiness also depends on <strong>health, education, and personal freedom</strong></li>
+                      <li>Financial equality alone cannot guarantee <strong>life satisfaction and mental well-being</strong></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </details>
+
+            <details open={showAllAnswers || undefined} name="opinion-questions" className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-colors open:border-violet-300 open:ring-2 open:ring-violet-100">
+              <summary className="flex cursor-pointer list-none items-start gap-4 p-6 marker:content-none md:p-8">
+                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-sm font-black text-violet-700">54.</span>
+                <span className="flex-1 font-bold leading-7 text-slate-900">Wild animals have no place in the 21st century, so protecting them is a waste of resources. To what extent do you agree or disagree?</span>
+                <span aria-hidden="true" className="mt-1 text-2xl font-light leading-none text-violet-600 transition-transform group-open:rotate-45">+</span>
+              </summary>
+
+              <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
+                <div className="grid gap-6 md:grid-cols-3">
+                  <div>
+                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
+                    <span className="inline-flex rounded-full bg-rose-100 px-3 py-1 text-sm font-black text-rose-700">Disagree</span>
+                  </div>
+                  <div>
+                    <p className="font-black text-violet-700">Reason 1</p>
+                    <ul className="mt-1 list-disc space-y-1 pl-5 text-slate-700">
+                      <li>Wild animals help maintain <strong>ecological balance</strong></li>
+                      <li>Protecting wildlife preserves <strong>biodiversity and food chains</strong></li>
+                    </ul>
+                  </div>
+                  <div>
+                    <p className="font-black text-violet-700">Reason 2</p>
+                    <ul className="mt-1 list-disc space-y-1 pl-5 text-slate-700">
+                      <li>Wildlife conservation supports <strong>tourism and local economies</strong></li>
+                      <li>Protecting endangered species ensures <strong>environmental sustainability</strong></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </details>
+
+            <details open={showAllAnswers || undefined} name="opinion-questions" className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-colors open:border-violet-300 open:ring-2 open:ring-violet-100">
+              <summary className="flex cursor-pointer list-none items-start gap-4 p-6 marker:content-none md:p-8">
+                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-sm font-black text-violet-700">55.</span>
+                <span className="flex-1 font-bold leading-7 text-slate-900">Some people believe that nowadays we have too many choices. To what extent do you agree or disagree?</span>
+                <span aria-hidden="true" className="mt-1 text-2xl font-light leading-none text-violet-600 transition-transform group-open:rotate-45">+</span>
+              </summary>
+
+              <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
+                <div className="grid gap-6 md:grid-cols-3">
+                  <div>
+                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
+                    <span className="inline-flex rounded-full bg-violet-100 px-3 py-1 text-sm font-black text-violet-700">Partly agree</span>
+                  </div>
+                  <div>
+                    <p className="font-black text-emerald-700">Reason 1: Agree</p>
+                    <ul className="mt-1 list-disc space-y-1 pl-5 text-slate-700">
+                      <li>Too many options can cause <strong>confusion and decision fatigue</strong></li>
+                      <li>They can make decision-making <strong>stressful and time-consuming</strong></li>
+                    </ul>
+                  </div>
+                  <div>
+                    <p className="font-black text-rose-700">Reason 2: Disagree</p>
+                    <ul className="mt-1 list-disc space-y-1 pl-5 text-slate-700">
+                      <li>More choices provide <strong>greater freedom and flexibility</strong></li>
+                      <li>They allow people to select options based on <strong>personal needs and preferences</strong></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </details>
+
+            <details open={showAllAnswers || undefined} name="opinion-questions" className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-colors open:border-violet-300 open:ring-2 open:ring-violet-100">
+              <summary className="flex cursor-pointer list-none items-start gap-4 p-6 marker:content-none md:p-8">
+                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-sm font-black text-violet-700">56.</span>
+                <span className="flex-1 font-bold leading-7 text-slate-900">Some people believe that the government should spend more money putting in more works of art like paintings and statues in cities to make them better places to live in. To what extent do you agree or disagree?</span>
+                <span aria-hidden="true" className="mt-1 text-2xl font-light leading-none text-violet-600 transition-transform group-open:rotate-45">+</span>
+              </summary>
+
+              <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
+                <div className="grid gap-6 md:grid-cols-3">
+                  <div>
+                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
+                    <span className="inline-flex rounded-full bg-violet-100 px-3 py-1 text-sm font-black text-violet-700">Partly agree</span>
+                  </div>
+                  <div>
+                    <p className="font-black text-emerald-700">Reason 1: Agree</p>
+                    <ul className="mt-1 list-disc space-y-1 pl-5 text-slate-700">
+                      <li>Public art can improve the <strong>beauty of cities</strong></li>
+                      <li>It promotes <strong>cultural identity and tourism</strong></li>
+                    </ul>
+                  </div>
+                  <div>
+                    <p className="font-black text-rose-700">Reason 2: Disagree</p>
+                    <ul className="mt-1 list-disc space-y-1 pl-5 text-slate-700">
+                      <li>Governments should prioritise <strong>healthcare, housing, and education</strong></li>
+                      <li>Improving <strong>public transport and green spaces</strong> may benefit more people</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </details>
+
+            <details open={showAllAnswers || undefined} name="opinion-questions" className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-colors open:border-violet-300 open:ring-2 open:ring-violet-100">
+              <summary className="flex cursor-pointer list-none items-start gap-4 p-6 marker:content-none md:p-8">
+                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-sm font-black text-violet-700">57.</span>
+                <span className="flex-1 font-bold leading-7 text-slate-900">The government should allocate more funding to teaching sciences rather than other subjects in order for a country to develop and progress. To what extent do you agree?</span>
+                <span aria-hidden="true" className="mt-1 text-2xl font-light leading-none text-violet-600 transition-transform group-open:rotate-45">+</span>
+              </summary>
+
+              <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
+                <div className="grid gap-6 md:grid-cols-3">
+                  <div>
+                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
+                    <span className="inline-flex rounded-full bg-violet-100 px-3 py-1 text-sm font-black text-violet-700">Partly agree</span>
+                  </div>
+                  <div>
+                    <p className="font-black text-emerald-700">Reason 1: Agree</p>
+                    <ul className="mt-1 list-disc space-y-1 pl-5 text-slate-700">
+                      <li>Science education promotes <strong>technological innovation and economic growth</strong></li>
+                      <li>It develops skilled professionals in <strong>medicine and engineering</strong></li>
+                    </ul>
+                  </div>
+                  <div>
+                    <p className="font-black text-rose-700">Reason 2: Disagree</p>
+                    <ul className="mt-1 list-disc space-y-1 pl-5 text-slate-700">
+                      <li>Other subjects develop <strong>creativity, communication, and critical thinking</strong></li>
+                      <li>A balanced education is essential for <strong>overall national development</strong></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </details>
+
+            <details open={showAllAnswers || undefined} name="opinion-questions" className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-colors open:border-violet-300 open:ring-2 open:ring-violet-100">
+              <summary className="flex cursor-pointer list-none items-start gap-4 p-6 marker:content-none md:p-8">
+                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-sm font-black text-violet-700">58.</span>
+                <span className="flex-1 font-bold leading-7 text-slate-900">Some people believe that reading stories from a book is better than watching TV or playing computer games for children. To what extent do you agree or disagree?</span>
+                <span aria-hidden="true" className="mt-1 text-2xl font-light leading-none text-violet-600 transition-transform group-open:rotate-45">+</span>
+              </summary>
+
+              <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
+                <div className="grid gap-6 md:grid-cols-3">
+                  <div>
+                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
+                    <span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-sm font-black text-emerald-700">Agree</span>
+                  </div>
+                  <div>
+                    <p className="font-black text-violet-700">Reason 1</p>
+                    <ul className="mt-1 list-disc space-y-1 pl-5 text-slate-700">
+                      <li>Reading books develops <strong>imagination and creative thinking</strong></li>
+                      <li>It improves <strong>vocabulary and language skills</strong></li>
+                    </ul>
+                  </div>
+                  <div>
+                    <p className="font-black text-violet-700">Reason 2</p>
+                    <ul className="mt-1 list-disc space-y-1 pl-5 text-slate-700">
+                      <li>Reading strengthens <strong>concentration and critical thinking</strong></li>
+                      <li>It reduces <strong>excessive screen time and gaming addiction</strong></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </details>
+
+            <details open={showAllAnswers || undefined} name="opinion-questions" className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-colors open:border-violet-300 open:ring-2 open:ring-violet-100">
+              <summary className="flex cursor-pointer list-none items-start gap-4 p-6 marker:content-none md:p-8">
+                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-sm font-black text-violet-700">59.</span>
+                <span className="flex-1 font-bold leading-7 text-slate-900">Intelligence is the most important quality for a leader. Do you agree or disagree?</span>
+                <span aria-hidden="true" className="mt-1 text-2xl font-light leading-none text-violet-600 transition-transform group-open:rotate-45">+</span>
+              </summary>
+
+              <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
+                <div className="grid gap-6 md:grid-cols-3">
+                  <div>
+                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
+                    <span className="inline-flex rounded-full bg-violet-100 px-3 py-1 text-sm font-black text-violet-700">Partly agree</span>
+                  </div>
+                  <div>
+                    <p className="font-black text-emerald-700">Reason 1: Agree</p>
+                    <ul className="mt-1 list-disc space-y-1 pl-5 text-slate-700">
+                      <li>Intelligence helps leaders make <strong>effective decisions</strong></li>
+                      <li>It improves <strong>problem-solving and strategic planning</strong></li>
+                    </ul>
+                  </div>
+                  <div>
+                    <p className="font-black text-rose-700">Reason 2: Disagree</p>
+                    <ul className="mt-1 list-disc space-y-1 pl-5 text-slate-700">
+                      <li>Emotional intelligence builds <strong>trust and teamwork</strong></li>
+                      <li>Honesty and communication skills are essential for <strong>effective leadership</strong></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </details>
+
+            <details open={showAllAnswers || undefined} name="opinion-questions" className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-colors open:border-violet-300 open:ring-2 open:ring-violet-100">
+              <summary className="flex cursor-pointer list-none items-start gap-4 p-6 marker:content-none md:p-8">
+                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-sm font-black text-violet-700">60.</span>
+                <span className="flex-1 font-bold leading-7 text-slate-900">Some people believe they should keep all the money they have earned and should not pay tax to the state. Do you agree or disagree?</span>
+                <span aria-hidden="true" className="mt-1 text-2xl font-light leading-none text-violet-600 transition-transform group-open:rotate-45">+</span>
+              </summary>
+
+              <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
+                <div className="grid gap-6 md:grid-cols-3">
+                  <div>
+                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
+                    <span className="inline-flex rounded-full bg-rose-100 px-3 py-1 text-sm font-black text-rose-700">Disagree</span>
+                  </div>
+                  <div>
+                    <p className="font-black text-violet-700">Reason 1</p>
+                    <ul className="mt-1 list-disc space-y-1 pl-5 text-slate-700">
+                      <li>Taxes fund <strong>essential public services</strong></li>
+                      <li>They support <strong>healthcare, education, and infrastructure</strong></li>
+                    </ul>
+                  </div>
+                  <div>
+                    <p className="font-black text-violet-700">Reason 2</p>
+                    <ul className="mt-1 list-disc space-y-1 pl-5 text-slate-700">
+                      <li>Taxation helps reduce <strong>income inequality</strong></li>
+                      <li>It supports <strong>poverty reduction and social welfare</strong></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </details>
+
+            <details open={showAllAnswers || undefined} name="opinion-questions" className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-colors open:border-violet-300 open:ring-2 open:ring-violet-100">
+              <summary className="flex cursor-pointer list-none items-start gap-4 p-6 marker:content-none md:p-8">
+                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-sm font-black text-violet-700">61.</span>
+                <span className="flex-1 font-bold leading-7 text-slate-900">Some people think that all teenagers should be required to do unpaid work in their free time to help the local community. They believe this would benefit both the individual teenager and society as a whole. Do you agree or disagree?</span>
+                <span aria-hidden="true" className="mt-1 text-2xl font-light leading-none text-violet-600 transition-transform group-open:rotate-45">+</span>
+              </summary>
+
+              <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
+                <div className="grid gap-6 md:grid-cols-3">
+                  <div>
+                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
+                    <span className="inline-flex rounded-full bg-violet-100 px-3 py-1 text-sm font-black text-violet-700">Partly agree</span>
+                  </div>
+                  <div>
+                    <p className="font-black text-emerald-700">Reason 1: Agree</p>
+                    <ul className="mt-1 list-disc space-y-1 pl-5 text-slate-700">
+                      <li>Unpaid work develops <strong>social responsibility and practical skills</strong></li>
+                      <li>It helps improve <strong>community welfare and social cooperation</strong></li>
+                    </ul>
+                  </div>
+                  <div>
+                    <p className="font-black text-rose-700">Reason 2: Disagree</p>
+                    <ul className="mt-1 list-disc space-y-1 pl-5 text-slate-700">
+                      <li>Compulsory work may reduce <strong>study time and personal freedom</strong></li>
+                      <li>Teenagers should have time for <strong>rest, hobbies, and academic activities</strong></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </details>
+
+            <details open={showAllAnswers || undefined} name="opinion-questions" className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-colors open:border-violet-300 open:ring-2 open:ring-violet-100">
+              <summary className="flex cursor-pointer list-none items-start gap-4 p-6 marker:content-none md:p-8">
+                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-sm font-black text-violet-700">62.</span>
+                <span className="flex-1 font-bold leading-7 text-slate-900">Nowadays, children watch a lot of TV and play video games. However, some people think that these activities are not good for children&apos;s mental health. To what extent do you agree or disagree?</span>
+                <span aria-hidden="true" className="mt-1 text-2xl font-light leading-none text-violet-600 transition-transform group-open:rotate-45">+</span>
+              </summary>
+
+              <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
+                <div className="grid gap-6 md:grid-cols-3">
+                  <div>
+                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
+                    <span className="inline-flex rounded-full bg-violet-100 px-3 py-1 text-sm font-black text-violet-700">Partly agree</span>
+                  </div>
+                  <div>
+                    <p className="font-black text-emerald-700">Reason 1: Agree</p>
+                    <ul className="mt-1 list-disc space-y-1 pl-5 text-slate-700">
+                      <li>Excessive screen time may cause <strong>stress and anxiety</strong></li>
+                      <li>It can lead to <strong>social isolation and sleep problems</strong></li>
+                    </ul>
+                  </div>
+                  <div>
+                    <p className="font-black text-rose-700">Reason 2: Disagree</p>
+                    <ul className="mt-1 list-disc space-y-1 pl-5 text-slate-700">
+                      <li>Educational programmes improve <strong>creativity and cognitive skills</strong></li>
+                      <li>Moderate gaming can develop <strong>problem-solving and decision-making abilities</strong></li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </details>
+
+            <details open={showAllAnswers || undefined} name="opinion-questions" className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-colors open:border-violet-300 open:ring-2 open:ring-violet-100">
+              <summary className="flex cursor-pointer list-none items-start gap-4 p-6 marker:content-none md:p-8">
+                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-sm font-black text-violet-700">63.</span>
+                <span className="flex-1 font-bold leading-7 text-slate-900">Most people have forgotten the meaning behind traditional or religious festivals; during festival periods, people nowadays only want to enjoy themselves. To what extent do you agree or disagree with this opinion?</span>
+                <span aria-hidden="true" className="mt-1 text-2xl font-light leading-none text-violet-600 transition-transform group-open:rotate-45">+</span>
+              </summary>
+
+              <div className="border-t border-violet-100 bg-violet-50/60 p-6 md:p-8">
+                <div className="grid gap-6 md:grid-cols-3">
+                  <div>
+                    <h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3>
+                    <span className="inline-flex rounded-full bg-violet-100 px-3 py-1 text-sm font-black text-violet-700">Partly agree</span>
+                  </div>
+                  <div>
+                    <p className="font-black text-emerald-700">Reason 1: Agree</p>
+                    <ul className="mt-1 list-disc space-y-1 pl-5 text-slate-700">
+                      <li>Festivals are increasingly focused on <strong>entertainment and commercial activities</strong></li>
+                      <li>Younger generations may overlook <strong>traditional and religious significance</strong></li>
+                    </ul>
+                  </div>
+                  <div>
+                    <p className="font-black text-rose-700">Reason 2: Disagree</p>
+                    <ul className="mt-1 list-disc space-y-1 pl-5 text-slate-700">
+                      <li>Many people still celebrate festivals to preserve <strong>cultural and religious values</strong></li>
+                      <li>Festivals strengthen <strong>family bonds and cultural identity</strong></li>
                     </ul>
                   </div>
                 </div>

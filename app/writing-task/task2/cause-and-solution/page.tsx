@@ -21,6 +21,21 @@ const example = [
   "In conclusion, urban congestion primarily results from excessive car use and weak public transport. However, better mass-transit systems and financial measures that limit unnecessary driving can significantly reduce it.",
 ] as const;
 
+const questions = <details className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition-colors open:border-amber-300 open:ring-2 open:ring-amber-100">
+  <summary className="flex cursor-pointer list-none items-start gap-4 p-6 marker:content-none md:p-8">
+    <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-100 text-sm font-black text-amber-700">1.</span>
+    <span className="flex-1 font-bold leading-7 text-slate-900">More and more people are migrating to cities in search of a better life, but city life can be extremely difficult. Explain some of the difficulties of living in a city. How can governments make urban life better for everyone?</span>
+    <span aria-hidden="true" className="mt-1 text-2xl font-light leading-none text-amber-600 transition-transform group-open:rotate-45">+</span>
+  </summary>
+  <div className="border-t border-amber-100 bg-amber-50/60 p-6 md:p-8">
+    <p className="mb-6 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Question Type: <span className="text-amber-700">Problems and Solutions</span></p>
+    <div className="grid gap-6 md:grid-cols-2">
+      <div><p className="font-black text-rose-700">Reason 1 – Problems</p><ul className="mt-2 list-disc space-y-2 pl-5 text-slate-700"><li>traffic congestion and air pollution</li><li>high living costs and housing shortages</li><li>overcrowding and unemployment</li></ul></div>
+      <div><p className="font-black text-emerald-700">Reason 2 – Solutions</p><ul className="mt-2 list-disc space-y-2 pl-5 text-slate-700"><li>invest in public transport and affordable housing</li><li>create more job opportunities</li><li>improve healthcare and public services</li></ul></div>
+    </div>
+  </div>
+</details>;
+
 export default function Page() {
-  return <EssayGuide number="04" title="Cause and Solution" label="Problems and solutions" description="Identify the main causes and connect each one to a workable solution." steps={steps} structureTitle="Causes followed by solutions" formulas={formulas} exampleTheme="urban traffic congestion" example={example} />;
+  return <EssayGuide number="04" title="Cause and Solution" label="Problems and solutions" description="Identify the main causes and connect each one to a workable solution." steps={steps} structureTitle="Causes followed by solutions" formulas={formulas} exampleTheme="urban traffic congestion" example={example} questions={questions} />;
 }

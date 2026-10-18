@@ -5,47 +5,54 @@ import { placeCues } from "./placesData";
 import SegmentControls from "./SegmentControls";
 
 const segments = [
-  { id:"home-village", title:"Home & village", story:"My village home and rooftop routine", ids:[9,15,16,24], paragraphs:[
+  { id:"home-village", title:"Home & village", story:"A familiar place with personal meaning", ids:[9,15,16,24], paragraphs:[
     ["Opening","I’d like to talk about my village home in northern Bangladesh, an emotional anchor that has shaped my identity since my formative years."],
     ["Scene","Its rural simplicity creates a clear contrast with Dhaka. The slower pace of life, environmental calm and familiar people give me a deep sense of belonging and a fresh perspective."],
     ["Action","At home, I often study on the rooftop, where minimal distractions give me clear headspace, deep focus and sustained attention. I also visit the nearby mosque courtyard for prayer and quiet reflection."],
     ["Feeling","These places provide emotional grounding, mental discipline and a moment of stillness. They restore my inner balance and act as a quiet reset."],
     ["Ending","Together, my village home, rooftop and local courtyard carry deep personal meaning and remain important parts of my daily life and personal identity."],
   ]},
-  { id:"calm-city", title:"Calm city life", story:"My peaceful route through Dhaka", ids:[1,2,4,14,19,21], paragraphs:[
+  { id:"calm-city", title:"Calm city life", story:"A pleasant place I regularly visit", ids:[1,2,4,14,19,21], paragraphs:[
     ["Opening","I’d like to talk about my peaceful city route, which connects my university campus, Dhanmondi Lake, green parks and a familiar tea stall in Dhaka."],
     ["Scene","The lake and parks provide natural openness, calm surroundings and visual breathing room. Even in a busy city, they feel like a personal escape and a natural escape."],
     ["Action","I walk at an unhurried pace, sit beside the water, observe people and occasionally meet friends at the tea stall for free-flowing conversations."],
     ["Feeling","This routine gives me a mental pause, helps me switch off mentally and brings mental ease, quiet enjoyment and emotional balance."],
     ["Ending","Because the route is familiar and easy to visit, it has become my everyday anchor, social hub and dependable source of relief from pressure."],
   ]},
-  { id:"busy-city", title:"Busy city, work & learning", story:"A productive day across central Dhaka", ids:[6,8,10,23,25,26,27], paragraphs:[
+  { id:"busy-city", title:"Busy city, work & learning", story:"A reusable answer for one memorable place", ids:[6,8,10,23,25,26,27], paragraphs:[
     ["Opening","I’d like to describe a productive but intense day that took me from a professional office and training centre to several lively places in central Dhaka."],
     ["Scene","The office and British Council were structured, quiet and visibly well-maintained, whereas New Market and Kawran Bazar were packed with people, constant movement and noise."],
     ["Action","I completed focused work, received hands-on training in data analysis, met friends at a rooftop café and later photographed Ahsan Manzil in balanced natural light."],
     ["Feeling","The learning spaces built my confidence, responsibility and work discipline. The markets caused sensory overload, but the café and photography brought meaningful conversations and an emotional lift."],
     ["Ending","The day showed me the striking contrast of city life: skill-building spaces, respectful shared areas, collective energy, rich textures and real-world experience."],
   ]},
-  { id:"coast-islands", title:"Coast & islands", story:"My unforgettable journey along the coast", ids:[3,5,17,18,28,30], paragraphs:[
-    ["Opening","I’d like to talk about a coastal journey that included Cox’s Bazar, Saint Martin’s Island, Kuakata and the remote beauty of Nijhum Dwip."],
-    ["Scene","Each destination had natural charm and visual appeal, from the iconic beach to the island’s natural simplicity and Nijhum Dwip’s remote atmosphere."],
-    ["Action","I walked beside the sea, watched sunrise and sunset, tasted local food, chatted with close friends and explored quiet stretches of coastline."],
-    ["Feeling","The laid-back atmosphere gave me a sense of freedom, instant calm and carefree moments. At Nijhum Dwip, the deep isolation and rare calmness felt emotionally striking."],
-    ["Ending","The whole coastal experience made a strong first impression and a lasting mental image. These places are worth experiencing, and I would gladly return for longer."],
+  { id:"coast-islands", title:"Coast & islands", story:"A memorable place beside the sea", ids:[3,5,17,18,28,30], paragraphs:[
+    ["Opening","I’d like to describe a coastal place in Bangladesh that gave me a memorable experience. I visited it during a holiday and was excited because it was different from my usual surroundings."],
+    ["Scene","The open sea, wide sky and fresh breeze created a peaceful atmosphere. The natural scenery and the sound of the waves made the place visually impressive and relaxing."],
+    ["Action","I walked near the water, explored the surrounding area and took several photographs. I also tried some local food and spent time quietly enjoying the view."],
+    ["Feeling","At first, I was amazed by the beauty and openness of the place. As I spent more time there, I felt calmer, happier and free from the pressure of city life."],
+    ["Ending","The visit stayed in my memory because of both the scenery and the way it made me feel. It is a place I would be happy to experience again."],
   ]},
-  { id:"hills-nature", title:"Hills & natural places", story:"My family’s nature trail through Bangladesh", ids:[7,11,12,20], paragraphs:[
+  { id:"hills-nature", title:"Hills & natural places", story:"A peaceful place surrounded by nature", ids:[7,11,12,20], paragraphs:[
     ["Opening","I’d like to describe a family nature trail that introduced me to Sajek Valley, a quiet tea garden and the unique ecosystem of the Sundarbans."],
     ["Scene","Sajek’s hills, clouds and greenery formed a striking landscape, the tea garden offered natural stillness, and the Sundarbans felt like a visually striking natural wonder."],
     ["Action","We went sightseeing, walked slowly, took photographs and spent quiet moments observing trees, rivers, wildlife and the open landscape."],
     ["Feeling","The trip gave us quality family time, a break from routine and a sense of awe. The undisturbed surroundings cleared my head and created emotional grounding."],
     ["Ending","It was an emotionally meaningful shared experience. The visual harmony, sense of togetherness and unforgettable scenery left a deep and lasting impression."],
   ]},
-  { id:"future-heritage", title:"Future & heritage", story:"Three places connecting my past and future", ids:[13,22,29], paragraphs:[
+  { id:"future-plans", title:"Future places", story:"A place I hope to experience in the future", ids:[13,29], paragraphs:[
     ["Opening","I’d like to connect three meaningful places: historic Panam Nagar, the planned Purbachal area and Northern Norway, which I hope to visit in the future."],
     ["Scene","Panam Nagar has a historic atmosphere, Purbachal promises a less congested living environment, and Norway offers the extraordinary natural phenomenon of the midnight sun."],
     ["Action","I visited Panam Nagar for a family wedding photoshoot, I have explored Purbachal as a possible home, and I learned about Norway through travel videos and articles."],
     ["Feeling","The heritage visit was personally meaningful, the planned city suggests daily balance and long-term stability, and Norway fills me with a sense of wonder."],
     ["Ending","Together they represent a special milestone, a healthier future lifestyle and a once-in-a-lifetime experience that could help me disconnect from routine."],
+  ]},
+  { id:"heritage-occasion", title:"Heritage & occasion", story:"A memorable place for a special occasion", ids:[22], paragraphs:[
+    ["Opening","A historic place connected with an important family occasion."],
+    ["Scene","A distinctive setting with traditional architecture."],
+    ["Action","Exploring the area and taking family photographs."],
+    ["Feeling","A happy and personally meaningful shared experience."],
+    ["Ending","A special occasion that remains clear in my memory."],
   ]},
 ] as const;
 
@@ -60,56 +67,64 @@ const smoothPhrases: Record<number, string> = {
 
 const naturalStories: Record<string, Array<[string, string]>> = {
   "home-village": [
-    ["Opening", "I'd like to talk about my village home in northern Bangladesh. I have known this place since childhood, so it is very close to my heart. I normally return there during holidays or whenever I need a break from city life."],
-    ["Scene", "Life there is much quieter than life in Dhaka. The roads are less crowded, the air feels fresher, and almost everyone in the neighbourhood knows my family. From the rooftop, I can see green fields, small houses and a wide open sky."],
-    ["Action", "When I am there, I usually read on the rooftop in the evening because it is peaceful and breezy. I also spend some time in the nearby mosque courtyard after prayer. Sometimes I simply sit with my relatives and listen to their stories."],
-    ["Feeling", "These simple activities help me slow down and clear my mind. I feel comfortable there because I can forget my usual worries for a while. The familiar surroundings also remind me where I come from."],
-    ["Ending", "That is why my village home is more than just a house to me. It is a familiar place where I always feel welcome and relaxed, and I hope it will remain an important part of my life."],
+    ["Opening", "I'd like to describe a familiar place that has become an important part of my life. I have known it for a considerable time, so it carries many personal memories. I go there whenever I need to focus, reflect or take a short break from my normal routine."],
+    ["Scene", "It is quieter and simpler than most places I visit. The surroundings are familiar, there is enough open space, and the atmosphere is usually peaceful. Nothing about it is luxurious, but that simplicity makes me feel comfortable and allows me to pay attention to my own thoughts."],
+    ["Action", "I normally find a comfortable spot and spend some quiet time there. Depending on what I need to do, I may read, organise my thoughts or simply observe my surroundings. Because there are fewer distractions, I can concentrate properly and use my time in a meaningful way."],
+    ["Feeling", "This place helps me slow down and feel emotionally settled. Its peaceful environment clears my mind, while its familiarity gives me a strong sense of comfort and belonging. Even when I arrive feeling tired or worried, I usually become calmer after spending a little time there."],
+    ["Ending", "For me, its value comes from the role it plays in my everyday life rather than its appearance. It supports both my practical needs and my peace of mind. That is why it remains personally meaningful and why I never take it for granted."],
   ],
   "calm-city": [
-    ["Opening", "I'd like to describe a route in Dhaka that I often follow in my free time. It includes my university area, Dhanmondi Lake, a nearby park and a small tea stall. I usually go there in the late afternoon when the weather is cooler."],
-    ["Scene", "Although these places are in a busy city, they are surprisingly pleasant. The lake has open views, the park has plenty of trees, and the tea stall has a friendly atmosphere. The changing light over the water makes the area particularly attractive around sunset."],
-    ["Action", "I normally walk beside the lake, sit on a bench and watch people passing by. If my friends are available, we meet at the tea stall and talk over a cup of tea. We often discuss our classes, future plans and ordinary events from the week."],
-    ["Feeling", "I enjoy this routine because it is simple and does not require any planning. After spending some time there, I usually feel calmer and more refreshed. Even a short visit improves my mood after a demanding day."],
-    ["Ending", "For me, this route is one of the best parts of the city. It gives me quiet time alone and an easy way to stay connected with my friends, so I never get bored of returning to it."],
+    ["Opening", "I'd like to describe a place in Dhaka that I visit regularly whenever I have some free time. I first discovered it through my normal daily routine, and it gradually became one of my favourite local places. Since it is easy to reach, I can go there without making a detailed plan."],
+    ["Scene", "Although it is located inside a busy city, it has a surprisingly pleasant atmosphere. There is enough space to move around, sit comfortably and watch everyday life. It can become lively at certain times, but it still feels more relaxed than the crowded roads and commercial areas nearby."],
+    ["Action", "When I arrive, I normally walk around or find a comfortable place to sit. I enjoy observing the surroundings and letting my thoughts settle. Sometimes I meet people I know, and we have a casual conversation about our studies, work or recent experiences."],
+    ["Feeling", "This simple routine gives me a mental break and helps me release stress. I do not need any expensive activity to enjoy my time there. After even a short visit, I usually feel calmer, more refreshed and better prepared to continue the rest of my day."],
+    ["Ending", "Because the place is familiar, convenient and enjoyable, it has become an important part of my city life. It offers both quiet personal time and opportunities for social contact. That balance is the main reason I continue returning to it."],
   ],
   "busy-city": [
-    ["Opening", "I'd like to describe a busy day I once spent in central Dhaka. I visited an office, a training centre, two markets, a rooftop cafe and Ahsan Manzil. I had planned the journey carefully because I needed to finish several tasks in one day."],
-    ["Scene", "The office and the British Council were clean, organised and quiet. New Market and Kawran Bazar were completely different because they were crowded, noisy and full of activity. That sharp contrast made each place stand out in my memory."],
-    ["Action", "I finished some office work and attended a practical lesson on data analysis. Later, I met my friends at the cafe and took a few photographs near Ahsan Manzil. We chose the late afternoon because the natural light made the historic building look beautiful."],
-    ["Feeling", "I felt productive after the work and training, although the crowded markets made me tired. Meeting my friends and taking photographs helped me enjoy the rest of the day. I was exhausted by evening, but also satisfied with everything I had achieved."],
-    ["Ending", "I remember that day because it showed me several sides of Dhaka. It was tiring, but it was also useful, colourful and enjoyable, and it taught me how varied one city can be."],
+    ["Opening", "I'd like to describe a place in Dhaka that I remember clearly because I had a meaningful experience there. I visited it some time ago for a particular reason, and I stayed long enough to notice the place properly. Although it is part of a busy city, it had its own character and left a clear impression on me."],
+    ["Scene", "The first thing I noticed was its distinctive atmosphere and surroundings. I paid attention to the layout, the people, the sounds and the level of activity around me. Some parts felt comfortable and organised, while other aspects were more intense than I had expected. These small details made it different from the places I usually visit."],
+    ["Action", "While I was there, I focused on the main activity I had planned. I also observed what was happening around me and tried to understand how people used the place. I spent enough time there to experience it properly instead of leaving in a hurry. This gave me several clear details that I could remember afterwards."],
+    ["Feeling", "At first, I felt curious and slightly unsure because the environment was unfamiliar. After a while, I became more comfortable and involved in the experience. Some parts were enjoyable and useful, although other parts could be tiring or overwhelming. Overall, the visit taught me something and helped me see a different side of city life."],
+    ["Ending", "That is why this place still stands out in my mind. It was not simply the location itself, but also what I did, noticed and felt there that made it memorable. Whenever I think about it, I can clearly remember the atmosphere and the experience."],
   ],
   "coast-islands": [
-    ["Opening", "I'd like to talk about several coastal places in Bangladesh that I have enjoyed visiting, especially Cox's Bazar, Saint Martin's Island, Kuakata and Nijhum Dwip. I visited them on separate trips with friends and family."],
-    ["Scene", "Each place has its own character. Cox's Bazar has a long and lively beach, Saint Martin's has clear water, Kuakata is famous for its views, and Nijhum Dwip feels peaceful and remote. The sound of the waves is the one feature they all share."],
-    ["Action", "During these trips, I walked along the beach, watched the sun rise or set, tried local food and spent a lot of time talking with my friends. We also took photographs, collected small souvenirs and explored less crowded parts of the shore."],
-    ["Feeling", "Being close to the sea always makes me feel relaxed. Nijhum Dwip was especially memorable because the silence there was unlike anything I usually experience in the city. It felt as though daily pressure had disappeared for a while."],
-    ["Ending", "I would happily visit these places again, particularly during winter when the weather is comfortable. They are beautiful, enjoyable and perfect for taking a break from daily life."],
+    ["Opening", "I'd like to describe a coastal place in Bangladesh that gave me a memorable experience. I visited it during a holiday some time ago, after hearing many positive things about it. The journey took several hours, but I felt excited because the destination was completely different from my usual surroundings."],
+    ["Scene", "When I arrived, the first things I noticed were the open sea, the wide sky and the fresh breeze. The natural scenery was beautiful, and the sound of the waves created a peaceful atmosphere. Although there were other visitors nearby, I could still find quieter areas where I could appreciate the view without feeling disturbed."],
+    ["Action", "I walked slowly near the water and explored the surrounding area. I took several photographs because the changing light made the scenery look especially attractive. I also tried some local food and spent time watching the waves. Instead of following a strict schedule, I allowed myself to enjoy the place at a relaxed pace."],
+    ["Feeling", "At first, I was amazed by the beauty and openness of the area. After spending some time there, I felt calmer, happier and free from the pressure of city life. The peaceful environment helped me clear my mind, while the experience itself gave me a strong sense of freedom and enjoyment."],
+    ["Ending", "This place has remained in my memory because of both its natural beauty and the way it made me feel. It showed me how refreshing a simple change of environment can be. For that reason, it is a place I would gladly experience again and remember for a long time."],
   ],
   "hills-nature": [
-    ["Opening", "I'd like to describe a few natural places that I visited with my family, including Sajek Valley, a tea garden in Sylhet and the Sundarbans. We chose these destinations because we all enjoy peaceful scenery and outdoor activities."],
-    ["Scene", "Sajek was covered with green hills and low clouds, while the tea garden was quiet and neatly arranged. The Sundarbans was different again, with rivers, mangrove trees and wildlife. Every location showed us a different side of Bangladesh's natural beauty."],
-    ["Action", "We walked around, enjoyed the scenery and took many family photographs. In the Sundarbans, we travelled by boat and watched the forest carefully from a safe distance. Our guide also explained how the mangrove forest protects the coast and supports wildlife."],
-    ["Feeling", "I loved having enough time to talk and laugh with my family. The natural surroundings also helped all of us forget our busy routines for a while. I returned home feeling rested and more interested in protecting such places."],
-    ["Ending", "These trips gave me some of my favourite family memories. I still remember the scenery clearly, and I hope we can visit similar places together again in the near future."],
+    ["Opening", "I'd like to describe a natural place in Bangladesh that I visited during a holiday. I had heard several positive things about it before the trip, but seeing it in person was much more impressive. The journey also gave me a welcome opportunity to leave the city for a while."],
+    ["Scene", "The area was filled with greenery, fresh air and wide natural views. Its landscape had several unusual features that made it different from places I normally see. Most importantly, it felt peaceful because it was far from heavy traffic, crowded streets and constant city noise."],
+    ["Action", "I explored the area slowly, observed its natural features and took several photographs. I also found time to sit quietly and appreciate the surroundings. During the visit, I learned a little about the environment and how local people help preserve its natural character."],
+    ["Feeling", "The experience made me feel calm, curious and more connected to nature. I particularly enjoyed having enough time to notice small details instead of rushing from one activity to another. The peaceful environment helped me forget my usual responsibilities and clear my mind."],
+    ["Ending", "This place left a lasting impression because its atmosphere and natural beauty were difficult to forget. The visit was both relaxing and educational, which made it especially worthwhile. I would be happy to return and spend more time there in the future."],
   ],
-  "future-heritage": [
-    ["Opening", "I'd like to talk about three places connected with different stages of my life: Panam Nagar, Purbachal and northern Norway. They represent a happy memory, a possible future home and an ambitious travel dream."],
-    ["Scene", "Panam Nagar is known for its old buildings, while Purbachal is a modern area being developed near Dhaka. Northern Norway is much farther away and is famous for the midnight sun. Visually, they could hardly be more different from one another."],
-    ["Action", "I visited Panam Nagar during a family wedding and took photographs there. I have also explored Purbachal, and I often watch travel videos to learn more about Norway. If I reach Norway, I would like to hike, see the dramatic coastline and experience daylight at midnight."],
-    ["Feeling", "Panam Nagar reminds me of a happy family occasion, and Purbachal seems like a comfortable place to live. Norway excites me because its landscape and long summer days look extraordinary. Thinking about these places makes me appreciate both my past and my future goals."],
-    ["Ending", "These places interest me for different reasons: one holds a good memory, one may be part of my future, and one is a destination I dream of visiting at least once."],
+  "future-plans": [
+    ["Opening", "I'd like to describe a place where I hope to spend a significant amount of time in the future. I first became interested in it after seeing photographs and learning about its environment. Since then, I have occasionally searched for more information and imagined what being there might be like."],
+    ["Scene", "From what I have seen, it appears less crowded and more peaceful than the area where I currently live. It offers attractive surroundings, useful facilities and enough open space to enjoy daily life. This combination makes it seem both interesting and comfortable."],
+    ["Action", "If I get the opportunity to go there, I would explore the area carefully and experience its everyday atmosphere. I would spend time outdoors, visit its most interesting locations and learn about the local way of life. I would also take photographs so that I could remember the experience clearly."],
+    ["Feeling", "The idea of going there makes me feel hopeful and excited. I believe that living in or exploring a different environment would broaden my experience and help me become more independent. It could also give me a healthier balance between my responsibilities and personal life."],
+    ["Ending", "Although this plan may require time, preparation and money, it remains an important personal goal. I hope that one day I can turn it from an idea into a real experience. Achieving that goal would be both satisfying and memorable for me."],
+  ],
+  "heritage-occasion": [
+    ["Opening", "I'd like to describe a historic place that I visited for an important family occasion. I went there with several relatives, and we were all looking forward to spending the day together. The event was already meaningful, but choosing such an unusual location made it even more memorable."],
+    ["Scene", "The place had old buildings, distinctive architecture and a calm historical atmosphere. Its faded walls and traditional designs looked completely different from the modern areas I normally visit. Every part of it seemed to carry a story from the past, which made the surroundings visually interesting."],
+    ["Action", "We explored the area together, took many photographs and spent time enjoying the occasion. I tried to notice the architectural details while also helping my family with the day's arrangements. The historic background made our photographs and shared moments feel particularly special."],
+    ["Feeling", "I felt happy to be with my family and fascinated by the surroundings. The combination of history, celebration and time with people close to me gave the visit a unique emotional value. Even though the day was busy, I enjoyed almost every moment of it."],
+    ["Ending", "I still remember that occasion clearly because the place and the event complemented each other perfectly. It was more than an ordinary visit or family gathering. It became a meaningful shared memory that I expect to value for many years."],
   ],
 };
 
 const storyHighlights: Record<string, string[]> = {
-  "home-village": ["close to my heart", "much quieter", "peaceful and breezy", "clear my mind", "feel welcome and relaxed"],
-  "calm-city": ["in my free time", "surprisingly pleasant", "over a cup of tea", "calmer and more refreshed", "stay connected with my friends"],
-  "busy-city": ["a busy day", "completely different", "a practical lesson", "made me tired", "several sides of Dhaka"],
-  "coast-islands": ["enjoyed visiting", "its own character", "walked along the beach", "especially memorable", "taking a break from daily life"],
-  "hills-nature": ["with my family", "quiet and neatly arranged", "enjoyed the scenery", "forget our busy routines", "favourite family memories"],
-  "future-heritage": ["different stages of my life", "famous for the midnight sun", "learn more about Norway", "a comfortable place to live", "dream of visiting"],
+  "home-village": ["an important part of my life", "feel comfortable", "fewer distractions", "comfort and belonging", "personally meaningful"],
+  "calm-city": ["one of my favourite local places", "a surprisingly pleasant atmosphere", "a casual conversation", "a mental break", "an important part of my city life"],
+  "busy-city": ["a meaningful experience", "distinctive atmosphere", "the main activity I had planned", "a different side of city life", "stands out in my mind"],
+  "coast-islands": ["a memorable experience", "a peaceful atmosphere", "at a relaxed pace", "clear my mind", "remember for a long time"],
+  "hills-nature": ["seeing it in person", "wide natural views", "appreciate the surroundings", "clear my mind", "a lasting impression"],
+  "future-plans": ["a significant amount of time", "both interesting and comfortable", "the local way of life", "broaden my experience", "an important personal goal"],
+  "heritage-occasion": ["an important family occasion", "a calm historical atmosphere", "particularly special", "a unique emotional value", "a meaningful shared memory"],
 };
 
 function highlightedSentence(text: string, phrase: string) {
