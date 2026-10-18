@@ -35,3 +35,38 @@ a {
   background: rgba(14, 165, 233, 0.2);
   color: #0f172a;
 }
+
+/* Keep AQI chart axes and their labels high-contrast without recoloring data. */
+main:has(#daily-district-pollutant-trend) svg text[fill="#64748b"],
+main:has(#daily-district-pollutant-trend) svg text[fill="#475569"],
+main:has(#daily-district-pollutant-trend) svg text[fill="#334155"],
+main:has(#daily-district-pollutant-trend) svg text[fill="#1e293b"] {
+  fill: #000000;
+}
+
+main:has(#daily-district-pollutant-trend) svg line[stroke="#94a3b8"],
+main:has(#daily-district-pollutant-trend) svg line[stroke="#64748b"] {
+  stroke: #000000;
+}
+
+#daily-district-pollutant-trend {
+  display: block;
+  max-width: 920px;
+  margin-inline: auto;
+}
+
+#daily-district-pollutant-trend > text:last-child {
+  display: none;
+}
+
+#daily-district-pollutant-trend text[x="621"][y="613"],
+#daily-district-pollutant-trend text[transform="rotate(-90 22 345)"] {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+#daily-district-pollutant-trend text[font-size="13"],
+#daily-district-pollutant-trend text[font-size="14"] {
+  font-size: 17px;
+  font-weight: 600;
+}

@@ -49,6 +49,75 @@ const segments = [
   ]},
 ] as const;
 
+const smoothPhrases: Record<number, string> = {
+  1: "peaceful escape", 2: "calm atmosphere", 3: "lasting impression", 4: "familiar retreat", 5: "natural charm",
+  6: "professional setting", 7: "quality family time", 8: "relaxed setting", 9: "sense of belonging", 10: "lively atmosphere",
+  11: "natural stillness", 12: "natural wonder", 13: "balanced lifestyle", 14: "peaceful surroundings", 15: "slower pace of life",
+  16: "clear headspace", 17: "iconic destination", 18: "natural simplicity", 19: "unhurried pace", 20: "striking landscape",
+  21: "friendly meeting place", 22: "historic atmosphere", 23: "hands-on learning", 24: "quiet reflection", 25: "well-maintained space",
+  26: "constant noise", 27: "rich visual detail", 28: "carefree moments", 29: "sense of wonder", 30: "remote atmosphere",
+};
+
+const naturalStories: Record<string, Array<[string, string]>> = {
+  "home-village": [
+    ["Opening", "I'd like to talk about my village home in northern Bangladesh. I have known this place since childhood, so it is very close to my heart."],
+    ["Scene", "Life there is much quieter than life in Dhaka. The roads are less crowded, the air feels fresher, and almost everyone in the neighbourhood knows my family."],
+    ["Action", "When I am there, I usually read on the rooftop in the evening because it is peaceful and breezy. I also spend some time in the nearby mosque courtyard after prayer."],
+    ["Feeling", "These simple activities help me slow down and clear my mind. I feel comfortable there because I can forget my usual worries for a while."],
+    ["Ending", "That is why my village home is more than just a house to me. It is a familiar place where I always feel welcome and relaxed."],
+  ],
+  "calm-city": [
+    ["Opening", "I'd like to describe a route in Dhaka that I often follow in my free time. It includes my university area, Dhanmondi Lake, a nearby park and a small tea stall."],
+    ["Scene", "Although these places are in a busy city, they are surprisingly pleasant. The lake has open views, the park has plenty of trees, and the tea stall has a friendly atmosphere."],
+    ["Action", "I normally walk beside the lake, sit on a bench and watch people passing by. If my friends are available, we meet at the tea stall and talk over a cup of tea."],
+    ["Feeling", "I enjoy this routine because it is simple and does not require any planning. After spending some time there, I usually feel calmer and more refreshed."],
+    ["Ending", "For me, this route is one of the best parts of the city. It gives me quiet time alone and an easy way to stay connected with my friends."],
+  ],
+  "busy-city": [
+    ["Opening", "I'd like to describe a busy day I once spent in central Dhaka. I visited an office, a training centre, two markets, a rooftop cafe and Ahsan Manzil."],
+    ["Scene", "The office and the British Council were clean, organised and quiet. New Market and Kawran Bazar were completely different because they were crowded, noisy and full of activity."],
+    ["Action", "I finished some office work and attended a practical lesson on data analysis. Later, I met my friends at the cafe and took a few photographs near Ahsan Manzil."],
+    ["Feeling", "I felt productive after the work and training, although the crowded markets made me tired. Meeting my friends and taking photographs helped me enjoy the rest of the day."],
+    ["Ending", "I remember that day because it showed me several sides of Dhaka. It was tiring, but it was also useful, colourful and enjoyable."],
+  ],
+  "coast-islands": [
+    ["Opening", "I'd like to talk about several coastal places in Bangladesh that I have enjoyed visiting, especially Cox's Bazar, Saint Martin's Island, Kuakata and Nijhum Dwip."],
+    ["Scene", "Each place has its own character. Cox's Bazar has a long and lively beach, Saint Martin's has clear water, Kuakata is famous for its views, and Nijhum Dwip feels peaceful and remote."],
+    ["Action", "During these trips, I walked along the beach, watched the sun rise or set, tried local food and spent a lot of time talking with my friends."],
+    ["Feeling", "Being close to the sea always makes me feel relaxed. Nijhum Dwip was especially memorable because the silence there was unlike anything I usually experience in the city."],
+    ["Ending", "I would happily visit these places again, particularly during winter. They are beautiful, enjoyable and perfect for taking a break from daily life."],
+  ],
+  "hills-nature": [
+    ["Opening", "I'd like to describe a few natural places that I visited with my family, including Sajek Valley, a tea garden in Sylhet and the Sundarbans."],
+    ["Scene", "Sajek was covered with green hills and low clouds, while the tea garden was quiet and neatly arranged. The Sundarbans was different again, with rivers, mangrove trees and wildlife."],
+    ["Action", "We walked around, enjoyed the scenery and took many family photographs. In the Sundarbans, we travelled by boat and watched the forest carefully from a safe distance."],
+    ["Feeling", "I loved having enough time to talk and laugh with my family. The natural surroundings also helped all of us forget our busy routines for a while."],
+    ["Ending", "These trips gave me some of my favourite family memories. I still remember the scenery clearly, and I hope we can visit similar places together again."],
+  ],
+  "future-heritage": [
+    ["Opening", "I'd like to talk about three places connected with different stages of my life: Panam Nagar, Purbachal and northern Norway."],
+    ["Scene", "Panam Nagar is known for its old buildings, while Purbachal is a modern area being developed near Dhaka. Northern Norway is much farther away and is famous for the midnight sun."],
+    ["Action", "I visited Panam Nagar during a family wedding and took photographs there. I have also explored Purbachal, and I often watch travel videos to learn more about Norway."],
+    ["Feeling", "Panam Nagar reminds me of a happy family occasion, and Purbachal seems like a comfortable place to live. Norway excites me because its landscape and long summer days look extraordinary."],
+    ["Ending", "These places interest me for different reasons: one holds a good memory, one may be part of my future, and one is a destination I dream of visiting."],
+  ],
+};
+
+const storyHighlights: Record<string, string[]> = {
+  "home-village": ["close to my heart", "much quieter", "peaceful and breezy", "clear my mind", "feel welcome and relaxed"],
+  "calm-city": ["in my free time", "surprisingly pleasant", "over a cup of tea", "calmer and more refreshed", "stay connected with my friends"],
+  "busy-city": ["a busy day", "completely different", "a practical lesson", "made me tired", "several sides of Dhaka"],
+  "coast-islands": ["enjoyed visiting", "its own character", "walked along the beach", "especially memorable", "taking a break from daily life"],
+  "hills-nature": ["with my family", "quiet and neatly arranged", "enjoyed the scenery", "forget our busy routines", "favourite family memories"],
+  "future-heritage": ["different stages of my life", "famous for the midnight sun", "learn more about Norway", "a comfortable place to live", "dream of visiting"],
+};
+
+function highlightedSentence(text: string, phrase: string) {
+  const position = text.indexOf(phrase);
+  if (position < 0) return text;
+  return <>{text.slice(0, position)}<strong className="font-black text-amber-200">{phrase}</strong>{text.slice(position + phrase.length)}</>;
+}
+
 export default function PlacesPage() {
   return <main className="min-h-screen scroll-smooth bg-[#f5f7f2] text-slate-800">
     <header className="sticky top-0 z-40 border-b border-emerald-100 bg-white/95 backdrop-blur"><div className="mx-auto flex max-w-[1500px] items-center justify-between px-5 py-2 lg:px-8"><Link href="/" aria-label="Home"><Image src="/fa.png" alt="IELTS Logo" width={58} height={58} className="rounded-full" unoptimized /></Link><Navbar /></div></header>
@@ -63,7 +132,7 @@ export default function PlacesPage() {
         <div className="overflow-hidden rounded-[2rem] border border-emerald-200 bg-gradient-to-br from-[#12372a] via-[#185442] to-[#28745c] text-white shadow-xl shadow-emerald-950/10"><div className="grid gap-8 p-6 md:p-9 lg:grid-cols-[1fr_360px]">
           <div><div className="flex flex-wrap items-center gap-2"><span className="rounded-full bg-white/10 px-3 py-1 text-xs font-bold uppercase tracking-[.18em] text-emerald-100">Segment {segmentIndex+1} · one story</span><span className="rounded-full bg-amber-300 px-3 py-1 text-xs font-black text-amber-950">Covers {topics.length} cards</span></div>
             <p className="mt-5 text-sm font-black uppercase tracking-[.18em] text-emerald-200">{segment.title}</p><h1 className="mt-2 max-w-4xl text-3xl font-black leading-tight sm:text-4xl">{segment.story}</h1>
-            <div className="mt-6 space-y-4 text-[15px] leading-7 text-emerald-50 sm:text-base">{segment.paragraphs.map(([label,text]) => <p key={label}><b className="text-amber-200">{label}.</b> {text}</p>)}</div>
+            <div className="mt-6 space-y-4 text-[15px] leading-7 text-emerald-50 sm:text-base">{naturalStories[segment.id].map(([label,text], index) => <p key={label}><b className="text-amber-200">{label}.</b> {" "}{highlightedSentence(text, storyHighlights[segment.id][index])}</p>)}</div>
           </div>
           <aside className="self-start rounded-3xl border border-white/15 bg-black/15 p-5 backdrop-blur-sm lg:sticky lg:top-40"><p className="text-xs font-black uppercase tracking-[.2em] text-emerald-200">Cards covered by this story</p>
             <div className="mt-4 space-y-2">{topics.map((topic) => <a key={topic.id} href={`#topic-${topic.id}`} className="flex items-start gap-3 rounded-2xl bg-white/10 p-3 transition hover:bg-white/20"><span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-amber-300 text-xs font-black text-emerald-950">{topic.id}</span><span><b className="block text-sm text-amber-200">{topic.place}</b><span className="mt-0.5 line-clamp-2 block text-xs leading-5 text-emerald-50">{topic.question}</span></span></a>)}</div>
@@ -74,7 +143,7 @@ export default function PlacesPage() {
         <div className="mt-5 grid gap-4 lg:grid-cols-2">{topics.map((cue) => <details key={cue.id} id={`topic-${cue.id}`} data-segment={segment.id} className="group scroll-mt-40 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm open:border-emerald-300 open:shadow-md">
           <summary className="flex cursor-pointer list-none items-start gap-4 p-5 marker:content-none sm:p-6"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-emerald-100 font-black text-emerald-800">{cue.id}</span><span className="min-w-0 flex-1"><span className="block text-xs font-black uppercase tracking-wider text-amber-600">{cue.place}</span><span className="mt-1 block font-black leading-6 text-slate-950">{cue.question}</span></span><span className="text-2xl text-emerald-600 transition group-open:rotate-45">+</span></summary>
           <div className="border-t border-emerald-100 bg-emerald-50/40 p-5 sm:p-6"><div className="grid gap-5 sm:grid-cols-2"><div><h3 className="text-xs font-black uppercase tracking-[.16em] text-slate-400">Cue-card order</h3><ol className="mt-3 space-y-2">{cue.prompts.map((prompt,index) => <li key={prompt} className="flex gap-2 text-sm leading-6"><span className="font-black text-emerald-600">{index+1}.</span>{prompt}</li>)}</ol><div className="mt-4 rounded-2xl border border-slate-200 bg-white p-4">{cue.notes.map((note) => <p key={note} className="text-sm leading-6 text-slate-600">{note}</p>)}</div></div>
-            <div><h3 className="text-xs font-black uppercase tracking-[.16em] text-slate-400">Vocabulary sequence</h3><ol className="mt-3 space-y-2">{cue.vocabulary.map((word,index) => <li key={word} className="flex items-center gap-2 text-sm font-bold text-slate-700"><span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-amber-100 text-[11px] text-amber-800">{index+1}</span>{word}</li>)}</ol></div></div>
+            <div><h3 className="text-xs font-black uppercase tracking-[.16em] text-slate-400">Smooth phrase</h3><div className="mt-3 flex items-center gap-2 text-sm font-bold text-slate-700"><span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-amber-100 text-[11px] text-amber-800">1</span>{smoothPhrases[cue.id]}</div></div></div>
             <div className="mt-5 rounded-2xl bg-[#153f32] p-4 text-sm leading-7 text-emerald-50"><span className="mr-2 font-black uppercase tracking-wider text-amber-300">Speak it:</span>{cue.memory}</div></div>
         </details>)}</div>
       </section>;

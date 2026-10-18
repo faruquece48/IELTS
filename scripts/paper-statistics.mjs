@@ -1,0 +1,9 @@
+import { neon } from "@neondatabase/serverless";
+
+const sql = neon(process.env.DATABASE_URL);
+const coverage = await sql.query("SELECT COUNT(*)::int rows, COUNT(DISTINCT district_id)::int districts, MIN(day)::text first_day, MAX(day)::text last_day, ROUND(AVG(us_aqi_mean),2) aqi, ROUND(AVG(pm2_5_mean),2) pm25, ROUND(AVG(pm10_mean),2) pm10 FROM district_aqi_daily");
+const seasons = await sql.query("SELECT CASE WHEN EXTRACT(MONTH FROM day) IN (12,1,2) THEN 'DJF' WHEN EXTRACT(MONTH FROM day) IN (3,4,5) THEN 'MAM' WHEN EXTRACT(MONTH FROM day) IN (6,7,8) THEN 'JJA' ELSE 'SON' END season, ROUND(AVG(us_aqi_mean),2) aqi, ROUND(AVG(pm2_5_mean),2) pm25 FROM district_aqi_daily GROUP BY 1 ORDER BY 1");
+const annual = await sql.query("SELECT EXTRACT(YEAR FROM day)::int AS year_value, COUNT(*)::int AS row_count, ROUND(AVG(us_aqi_mean),2) AS aqi, ROUND(AVG(pm2_5_mean),2) AS pm25, ROUND(AVG(pm10_mean),2) AS pm10, ROUND(AVG(nitrogen_dioxide_mean),2) AS no2, ROUND(AVG(sulphur_dioxide_mean),2) AS so2, ROUND(AVG(carbon_monoxide_mean),2) AS co, ROUND(AVG(ozone_mean),2) AS o3 FROM district_aqi_daily GROUP BY 1 ORDER BY 1");
+const districts = await sql.query("SELECT district_id, ROUND(AVG(us_aqi_mean),2) aqi, ROUND(AVG(pm2_5_mean),2) pm25 FROM district_aqi_daily GROUP BY 1 ORDER BY AVG(us_aqi_mean) DESC");
+const correlations = await sql.query("SELECT ROUND(CORR(us_aqi_mean,pm2_5_mean)::numeric,3) aqi_pm25, ROUND(CORR(us_aqi_mean,pm10_mean)::numeric,3) aqi_pm10, ROUND(CORR(us_aqi_mean,nitrogen_dioxide_mean)::numeric,3) aqi_no2, ROUND(CORR(us_aqi_mean,sulphur_dioxide_mean)::numeric,3) aqi_so2, ROUND(CORR(us_aqi_mean,carbon_monoxide_mean)::numeric,3) aqi_co, ROUND(CORR(us_aqi_mean,ozone_mean)::numeric,3) aqi_o3 FROM district_aqi_daily");
+console.log(JSON.stringify({ coverage, seasons, annual, highest: districts.slice(0, 5), lowest: districts.slice(-5), correlations }, null, 2));

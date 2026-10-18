@@ -15,17 +15,21 @@ export async function GET(request: Request) {
     const now = new Date();
     const year = Math.max(2022, Math.min(now.getUTCFullYear(), Number(search.get("year")) || now.getUTCFullYear()));
     const month = Math.max(1, Math.min(12, Number(search.get("month")) || now.getUTCMonth() + 1));
+    const scope = search.get("scope") === "year" ? "year" : "month";
     let collectionWarning: string | null = null;
-    if (year === now.getUTCFullYear() && month === now.getUTCMonth() + 1) {
-      try {
-        const readings = await fetchDistrictAqi();
-        await saveDistrictAqi(sql, readings);
-      } catch (error) {
-        collectionWarning = error instanceof Error ? error.message : "Live AQI collection is temporarily unavailable.";
+    if (scope === "month" && search.get("collect") !== "0" && year === now.getUTCFullYear() && month === now.getUTCMonth() + 1) {
+      const [freshness] = await sql.query(`SELECT EXISTS (SELECT 1 FROM district_aqi_samples WHERE observed_at >= NOW() - INTERVAL '15 minutes') AS fresh`) as Array<{ fresh: boolean }>;
+      if (!freshness?.fresh) {
+        try {
+          const readings = await fetchDistrictAqi();
+          await saveDistrictAqi(sql, readings);
+        } catch (error) {
+          collectionWarning = error instanceof Error ? error.message : "Live AQI collection is temporarily unavailable.";
+        }
       }
     }
     let backfill = null;
-    if (search.get("backfill") === "1") {
+    if (scope === "month" && search.get("backfill") === "1") {
       try {
         const selectedMonth = year === now.getUTCFullYear() && month === now.getUTCMonth() + 1 ? undefined : `${year}-${String(month).padStart(2, "0")}-01`;
         backfill = await backfillNextDistrictMonth(sql, selectedMonth);
@@ -34,7 +38,10 @@ export async function GET(request: Request) {
         collectionWarning ??= message.includes("429") ? "Open-Meteo has temporarily rate-limited archive downloads. Please wait before trying this month again." : message;
       }
     }
-    const monthlyRows = await sql.query(`SELECT district_id, MAX(day)::text AS observed_at, MAX(us_aqi_max) AS us_aqi, MAX(pm2_5_max) AS pm2_5, MAX(pm10_max) AS pm10, MAX(carbon_monoxide_max) AS carbon_monoxide, MAX(carbon_dioxide_max) AS carbon_dioxide, MAX(nitrogen_dioxide_max) AS nitrogen_dioxide, MAX(sulphur_dioxide_max) AS sulphur_dioxide, MAX(ozone_max) AS ozone FROM district_aqi_daily WHERE day >= make_date($1::int,$2::int,1) AND day < make_date($1::int,$2::int,1) + INTERVAL '1 month' GROUP BY district_id`, [year, month]) as MonthlyRow[];
+    const monthlyRows = await sql.query(scope === "year"
+      ? `SELECT district_id, MAX(day)::text AS observed_at, MAX(us_aqi_max) AS us_aqi, MAX(pm2_5_max) AS pm2_5, MAX(pm10_max) AS pm10, MAX(carbon_monoxide_max) AS carbon_monoxide, MAX(carbon_dioxide_max) AS carbon_dioxide, MAX(nitrogen_dioxide_max) AS nitrogen_dioxide, MAX(sulphur_dioxide_max) AS sulphur_dioxide, MAX(ozone_max) AS ozone FROM district_aqi_daily WHERE day >= make_date($1::int,1,1) AND day < make_date($1::int,1,1) + INTERVAL '1 year' GROUP BY district_id`
+      : `SELECT district_id, MAX(day)::text AS observed_at, MAX(us_aqi_max) AS us_aqi, MAX(pm2_5_max) AS pm2_5, MAX(pm10_max) AS pm10, MAX(carbon_monoxide_max) AS carbon_monoxide, MAX(carbon_dioxide_max) AS carbon_dioxide, MAX(nitrogen_dioxide_max) AS nitrogen_dioxide, MAX(sulphur_dioxide_max) AS sulphur_dioxide, MAX(ozone_max) AS ozone FROM district_aqi_daily WHERE day >= make_date($1::int,$2::int,1) AND day < make_date($1::int,$2::int,1) + INTERVAL '1 month' GROUP BY district_id`, scope === "year" ? [year] : [year, month]) as MonthlyRow[];
+    if (monthlyRows.length && collectionWarning?.includes("429")) collectionWarning = null;
     const monthlyByDistrict = new Map(monthlyRows.map((row) => [row.district_id, row]));
     const monthlyReadings = districts.map((district) => {
       const row = monthlyByDistrict.get(district.id);
@@ -42,7 +49,7 @@ export async function GET(request: Request) {
     });
     const periods = await sql.query(`SELECT DISTINCT EXTRACT(YEAR FROM day)::int AS year, EXTRACT(MONTH FROM day)::int AS month FROM district_aqi_daily ORDER BY year DESC, month DESC`);
     const history = await sql.query(`SELECT date_trunc('hour', observed_at) AS time, ROUND(AVG(us_aqi), 1) AS average_aqi, MAX(us_aqi) AS maximum_aqi FROM district_aqi_samples WHERE observed_at >= NOW() - INTERVAL '7 days' GROUP BY 1 ORDER BY 1 ASC`);
-    return Response.json({ generatedAt: new Date().toISOString(), source: "Open-Meteo CAMS", period: { year, month }, periods, districts, readings: monthlyReadings, history, backfill, collectionWarning });
+    return Response.json({ generatedAt: new Date().toISOString(), source: "Open-Meteo CAMS", scope, period: { year, ...(scope === "month" ? { month } : {}) }, periods, districts, readings: monthlyReadings, history, backfill, collectionWarning });
   } catch (error) {
     return Response.json({ error: error instanceof Error ? error.message : "Unable to load district AQI." }, { status: 502 });
   }
