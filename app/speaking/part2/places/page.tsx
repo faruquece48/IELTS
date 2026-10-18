@@ -60,46 +60,46 @@ const smoothPhrases: Record<number, string> = {
 
 const naturalStories: Record<string, Array<[string, string]>> = {
   "home-village": [
-    ["Opening", "I'd like to talk about my village home in northern Bangladesh. I have known this place since childhood, so it is very close to my heart."],
-    ["Scene", "Life there is much quieter than life in Dhaka. The roads are less crowded, the air feels fresher, and almost everyone in the neighbourhood knows my family."],
-    ["Action", "When I am there, I usually read on the rooftop in the evening because it is peaceful and breezy. I also spend some time in the nearby mosque courtyard after prayer."],
-    ["Feeling", "These simple activities help me slow down and clear my mind. I feel comfortable there because I can forget my usual worries for a while."],
-    ["Ending", "That is why my village home is more than just a house to me. It is a familiar place where I always feel welcome and relaxed."],
+    ["Opening", "I'd like to talk about my village home in northern Bangladesh. I have known this place since childhood, so it is very close to my heart. I normally return there during holidays or whenever I need a break from city life."],
+    ["Scene", "Life there is much quieter than life in Dhaka. The roads are less crowded, the air feels fresher, and almost everyone in the neighbourhood knows my family. From the rooftop, I can see green fields, small houses and a wide open sky."],
+    ["Action", "When I am there, I usually read on the rooftop in the evening because it is peaceful and breezy. I also spend some time in the nearby mosque courtyard after prayer. Sometimes I simply sit with my relatives and listen to their stories."],
+    ["Feeling", "These simple activities help me slow down and clear my mind. I feel comfortable there because I can forget my usual worries for a while. The familiar surroundings also remind me where I come from."],
+    ["Ending", "That is why my village home is more than just a house to me. It is a familiar place where I always feel welcome and relaxed, and I hope it will remain an important part of my life."],
   ],
   "calm-city": [
-    ["Opening", "I'd like to describe a route in Dhaka that I often follow in my free time. It includes my university area, Dhanmondi Lake, a nearby park and a small tea stall."],
-    ["Scene", "Although these places are in a busy city, they are surprisingly pleasant. The lake has open views, the park has plenty of trees, and the tea stall has a friendly atmosphere."],
-    ["Action", "I normally walk beside the lake, sit on a bench and watch people passing by. If my friends are available, we meet at the tea stall and talk over a cup of tea."],
-    ["Feeling", "I enjoy this routine because it is simple and does not require any planning. After spending some time there, I usually feel calmer and more refreshed."],
-    ["Ending", "For me, this route is one of the best parts of the city. It gives me quiet time alone and an easy way to stay connected with my friends."],
+    ["Opening", "I'd like to describe a route in Dhaka that I often follow in my free time. It includes my university area, Dhanmondi Lake, a nearby park and a small tea stall. I usually go there in the late afternoon when the weather is cooler."],
+    ["Scene", "Although these places are in a busy city, they are surprisingly pleasant. The lake has open views, the park has plenty of trees, and the tea stall has a friendly atmosphere. The changing light over the water makes the area particularly attractive around sunset."],
+    ["Action", "I normally walk beside the lake, sit on a bench and watch people passing by. If my friends are available, we meet at the tea stall and talk over a cup of tea. We often discuss our classes, future plans and ordinary events from the week."],
+    ["Feeling", "I enjoy this routine because it is simple and does not require any planning. After spending some time there, I usually feel calmer and more refreshed. Even a short visit improves my mood after a demanding day."],
+    ["Ending", "For me, this route is one of the best parts of the city. It gives me quiet time alone and an easy way to stay connected with my friends, so I never get bored of returning to it."],
   ],
   "busy-city": [
-    ["Opening", "I'd like to describe a busy day I once spent in central Dhaka. I visited an office, a training centre, two markets, a rooftop cafe and Ahsan Manzil."],
-    ["Scene", "The office and the British Council were clean, organised and quiet. New Market and Kawran Bazar were completely different because they were crowded, noisy and full of activity."],
-    ["Action", "I finished some office work and attended a practical lesson on data analysis. Later, I met my friends at the cafe and took a few photographs near Ahsan Manzil."],
-    ["Feeling", "I felt productive after the work and training, although the crowded markets made me tired. Meeting my friends and taking photographs helped me enjoy the rest of the day."],
-    ["Ending", "I remember that day because it showed me several sides of Dhaka. It was tiring, but it was also useful, colourful and enjoyable."],
+    ["Opening", "I'd like to describe a busy day I once spent in central Dhaka. I visited an office, a training centre, two markets, a rooftop cafe and Ahsan Manzil. I had planned the journey carefully because I needed to finish several tasks in one day."],
+    ["Scene", "The office and the British Council were clean, organised and quiet. New Market and Kawran Bazar were completely different because they were crowded, noisy and full of activity. That sharp contrast made each place stand out in my memory."],
+    ["Action", "I finished some office work and attended a practical lesson on data analysis. Later, I met my friends at the cafe and took a few photographs near Ahsan Manzil. We chose the late afternoon because the natural light made the historic building look beautiful."],
+    ["Feeling", "I felt productive after the work and training, although the crowded markets made me tired. Meeting my friends and taking photographs helped me enjoy the rest of the day. I was exhausted by evening, but also satisfied with everything I had achieved."],
+    ["Ending", "I remember that day because it showed me several sides of Dhaka. It was tiring, but it was also useful, colourful and enjoyable, and it taught me how varied one city can be."],
   ],
   "coast-islands": [
-    ["Opening", "I'd like to talk about several coastal places in Bangladesh that I have enjoyed visiting, especially Cox's Bazar, Saint Martin's Island, Kuakata and Nijhum Dwip."],
-    ["Scene", "Each place has its own character. Cox's Bazar has a long and lively beach, Saint Martin's has clear water, Kuakata is famous for its views, and Nijhum Dwip feels peaceful and remote."],
-    ["Action", "During these trips, I walked along the beach, watched the sun rise or set, tried local food and spent a lot of time talking with my friends."],
-    ["Feeling", "Being close to the sea always makes me feel relaxed. Nijhum Dwip was especially memorable because the silence there was unlike anything I usually experience in the city."],
-    ["Ending", "I would happily visit these places again, particularly during winter. They are beautiful, enjoyable and perfect for taking a break from daily life."],
+    ["Opening", "I'd like to talk about several coastal places in Bangladesh that I have enjoyed visiting, especially Cox's Bazar, Saint Martin's Island, Kuakata and Nijhum Dwip. I visited them on separate trips with friends and family."],
+    ["Scene", "Each place has its own character. Cox's Bazar has a long and lively beach, Saint Martin's has clear water, Kuakata is famous for its views, and Nijhum Dwip feels peaceful and remote. The sound of the waves is the one feature they all share."],
+    ["Action", "During these trips, I walked along the beach, watched the sun rise or set, tried local food and spent a lot of time talking with my friends. We also took photographs, collected small souvenirs and explored less crowded parts of the shore."],
+    ["Feeling", "Being close to the sea always makes me feel relaxed. Nijhum Dwip was especially memorable because the silence there was unlike anything I usually experience in the city. It felt as though daily pressure had disappeared for a while."],
+    ["Ending", "I would happily visit these places again, particularly during winter when the weather is comfortable. They are beautiful, enjoyable and perfect for taking a break from daily life."],
   ],
   "hills-nature": [
-    ["Opening", "I'd like to describe a few natural places that I visited with my family, including Sajek Valley, a tea garden in Sylhet and the Sundarbans."],
-    ["Scene", "Sajek was covered with green hills and low clouds, while the tea garden was quiet and neatly arranged. The Sundarbans was different again, with rivers, mangrove trees and wildlife."],
-    ["Action", "We walked around, enjoyed the scenery and took many family photographs. In the Sundarbans, we travelled by boat and watched the forest carefully from a safe distance."],
-    ["Feeling", "I loved having enough time to talk and laugh with my family. The natural surroundings also helped all of us forget our busy routines for a while."],
-    ["Ending", "These trips gave me some of my favourite family memories. I still remember the scenery clearly, and I hope we can visit similar places together again."],
+    ["Opening", "I'd like to describe a few natural places that I visited with my family, including Sajek Valley, a tea garden in Sylhet and the Sundarbans. We chose these destinations because we all enjoy peaceful scenery and outdoor activities."],
+    ["Scene", "Sajek was covered with green hills and low clouds, while the tea garden was quiet and neatly arranged. The Sundarbans was different again, with rivers, mangrove trees and wildlife. Every location showed us a different side of Bangladesh's natural beauty."],
+    ["Action", "We walked around, enjoyed the scenery and took many family photographs. In the Sundarbans, we travelled by boat and watched the forest carefully from a safe distance. Our guide also explained how the mangrove forest protects the coast and supports wildlife."],
+    ["Feeling", "I loved having enough time to talk and laugh with my family. The natural surroundings also helped all of us forget our busy routines for a while. I returned home feeling rested and more interested in protecting such places."],
+    ["Ending", "These trips gave me some of my favourite family memories. I still remember the scenery clearly, and I hope we can visit similar places together again in the near future."],
   ],
   "future-heritage": [
-    ["Opening", "I'd like to talk about three places connected with different stages of my life: Panam Nagar, Purbachal and northern Norway."],
-    ["Scene", "Panam Nagar is known for its old buildings, while Purbachal is a modern area being developed near Dhaka. Northern Norway is much farther away and is famous for the midnight sun."],
-    ["Action", "I visited Panam Nagar during a family wedding and took photographs there. I have also explored Purbachal, and I often watch travel videos to learn more about Norway."],
-    ["Feeling", "Panam Nagar reminds me of a happy family occasion, and Purbachal seems like a comfortable place to live. Norway excites me because its landscape and long summer days look extraordinary."],
-    ["Ending", "These places interest me for different reasons: one holds a good memory, one may be part of my future, and one is a destination I dream of visiting."],
+    ["Opening", "I'd like to talk about three places connected with different stages of my life: Panam Nagar, Purbachal and northern Norway. They represent a happy memory, a possible future home and an ambitious travel dream."],
+    ["Scene", "Panam Nagar is known for its old buildings, while Purbachal is a modern area being developed near Dhaka. Northern Norway is much farther away and is famous for the midnight sun. Visually, they could hardly be more different from one another."],
+    ["Action", "I visited Panam Nagar during a family wedding and took photographs there. I have also explored Purbachal, and I often watch travel videos to learn more about Norway. If I reach Norway, I would like to hike, see the dramatic coastline and experience daylight at midnight."],
+    ["Feeling", "Panam Nagar reminds me of a happy family occasion, and Purbachal seems like a comfortable place to live. Norway excites me because its landscape and long summer days look extraordinary. Thinking about these places makes me appreciate both my past and my future goals."],
+    ["Ending", "These places interest me for different reasons: one holds a good memory, one may be part of my future, and one is a destination I dream of visiting at least once."],
   ],
 };
 
@@ -132,7 +132,7 @@ export default function PlacesPage() {
         <div className="overflow-hidden rounded-[2rem] border border-emerald-200 bg-gradient-to-br from-[#12372a] via-[#185442] to-[#28745c] text-white shadow-xl shadow-emerald-950/10"><div className="grid gap-8 p-6 md:p-9 lg:grid-cols-[1fr_360px]">
           <div><div className="flex flex-wrap items-center gap-2"><span className="rounded-full bg-white/10 px-3 py-1 text-xs font-bold uppercase tracking-[.18em] text-emerald-100">Segment {segmentIndex+1} · one story</span><span className="rounded-full bg-amber-300 px-3 py-1 text-xs font-black text-amber-950">Covers {topics.length} cards</span></div>
             <p className="mt-5 text-sm font-black uppercase tracking-[.18em] text-emerald-200">{segment.title}</p><h1 className="mt-2 max-w-4xl text-3xl font-black leading-tight sm:text-4xl">{segment.story}</h1>
-            <div className="mt-6 space-y-4 text-[15px] leading-7 text-emerald-50 sm:text-base">{naturalStories[segment.id].map(([label,text], index) => <p key={label}><b className="text-amber-200">{label}.</b> {" "}{highlightedSentence(text, storyHighlights[segment.id][index])}</p>)}</div>
+            <div className="mt-6 space-y-4 text-[15px] leading-7 text-emerald-50 sm:text-base">{naturalStories[segment.id].map(([label,text], index) => <p key={label}><b className="text-amber-200">{label}:</b> {" "}{highlightedSentence(text, storyHighlights[segment.id][index])}</p>)}</div>
           </div>
           <aside className="self-start rounded-3xl border border-white/15 bg-black/15 p-5 backdrop-blur-sm lg:sticky lg:top-40"><p className="text-xs font-black uppercase tracking-[.2em] text-emerald-200">Cards covered by this story</p>
             <div className="mt-4 space-y-2">{topics.map((topic) => <a key={topic.id} href={`#topic-${topic.id}`} className="flex items-start gap-3 rounded-2xl bg-white/10 p-3 transition hover:bg-white/20"><span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-amber-300 text-xs font-black text-emerald-950">{topic.id}</span><span><b className="block text-sm text-amber-200">{topic.place}</b><span className="mt-0.5 line-clamp-2 block text-xs leading-5 text-emerald-50">{topic.question}</span></span></a>)}</div>

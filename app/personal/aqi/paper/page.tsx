@@ -15,7 +15,7 @@ export default function AqiPaperPage() {
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3 px-2">
           <div>
             <h1 className="text-lg font-black">AQI research manuscript</h1>
-            <p className="text-xs text-slate-500">Abstract, extended journal-style introduction, and references</p>
+            <p className="text-xs text-slate-500">Abstract, introduction, reproducible methods, limitations, and references</p>
           </div>
           <div className="flex flex-wrap gap-2">
             <Link href="/personal/aqi" className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-bold text-slate-700 hover:bg-slate-50">Back to AQI</Link>

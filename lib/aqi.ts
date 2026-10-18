@@ -57,39 +57,19 @@ export const pollutantDefinitions = [
 ] as const;
 
 export const campuses: Campus[] = [
-  { id: "du", name: "University of Dhaka", shortName: "DU", district: "Dhaka", division: "Dhaka", latitude: 23.7338, longitude: 90.3929 },
   { id: "buet", name: "Bangladesh University of Engineering and Technology", shortName: "BUET", district: "Dhaka", division: "Dhaka", latitude: 23.7267, longitude: 90.3925 },
-  { id: "nsu", name: "North South University", shortName: "NSU", district: "Dhaka", division: "Dhaka", latitude: 23.8151, longitude: 90.4255 },
-  { id: "bracu", name: "BRAC University", shortName: "BRACU", district: "Dhaka", division: "Dhaka", latitude: 23.7801, longitude: 90.4071 },
-  { id: "aiub", name: "American International University-Bangladesh", shortName: "AIUB", district: "Dhaka", division: "Dhaka", latitude: 23.8221, longitude: 90.4272 },
-  { id: "ju", name: "Jahangirnagar University", shortName: "JU", district: "Dhaka", division: "Dhaka", latitude: 23.8796, longitude: 90.2690 },
-  { id: "duet", name: "Dhaka University of Engineering and Technology", shortName: "DUET", district: "Gazipur", division: "Dhaka", latitude: 23.9956, longitude: 90.4203 },
-  { id: "iut", name: "Islamic University of Technology", shortName: "IUT", district: "Gazipur", division: "Dhaka", latitude: 24.1010, longitude: 90.4183 },
-  { id: "gau", name: "Gazipur Agricultural University", shortName: "GAU", district: "Gazipur", division: "Dhaka", latitude: 24.0381, longitude: 90.3976 },
-  { id: "mbstu", name: "Mawlana Bhashani Science and Technology University", shortName: "MBSTU", district: "Tangail", division: "Dhaka", latitude: 24.2340, longitude: 89.8910 },
-  { id: "bsmrstu", name: "Gopalganj Science and Technology University", shortName: "GSTU", district: "Gopalganj", division: "Dhaka", latitude: 22.9690, longitude: 89.8170 },
   { id: "bau", name: "Bangladesh Agricultural University", shortName: "BAU", district: "Mymensingh", division: "Mymensingh", latitude: 24.7249, longitude: 90.4362 },
-  { id: "jkkniu", name: "Jatiya Kabi Kazi Nazrul Islam University", shortName: "JKKNIU", district: "Mymensingh", division: "Mymensingh", latitude: 24.5772, longitude: 90.3944 },
-  { id: "cu", name: "University of Chittagong", shortName: "CU", district: "Chattogram", division: "Chattogram", latitude: 22.4707, longitude: 91.7890 },
   { id: "cuet", name: "Chittagong University of Engineering and Technology", shortName: "CUET", district: "Chattogram", division: "Chattogram", latitude: 22.4600, longitude: 91.9718 },
   { id: "nstu", name: "Noakhali Science and Technology University", shortName: "NSTU", district: "Noakhali", division: "Chattogram", latitude: 22.7923, longitude: 91.1017 },
-  { id: "cou", name: "Comilla University", shortName: "CoU", district: "Cumilla", division: "Chattogram", latitude: 23.4182, longitude: 91.1352 },
-  { id: "cbiu", name: "Cox's Bazar International University", shortName: "CBIU", district: "Cox's Bazar", division: "Chattogram", latitude: 21.4272, longitude: 92.0058 },
-  { id: "ru", name: "University of Rajshahi", shortName: "RU", district: "Rajshahi", division: "Rajshahi", latitude: 24.3636, longitude: 88.6377 },
   { id: "ruet", name: "Rajshahi University of Engineering and Technology", shortName: "RUET", district: "Rajshahi", division: "Rajshahi", latitude: 24.3635, longitude: 88.6279 },
-  { id: "pust", name: "Pabna University of Science and Technology", shortName: "PUST", district: "Pabna", division: "Rajshahi", latitude: 24.0127, longitude: 89.2310 },
-  { id: "bauet", name: "Bangladesh Army University of Engineering and Technology", shortName: "BAUET", district: "Natore", division: "Rajshahi", latitude: 24.2951, longitude: 89.0494 },
-  { id: "ku", name: "Khulna University", shortName: "KU", district: "Khulna", division: "Khulna", latitude: 22.8023, longitude: 89.5334 },
   { id: "kuet", name: "Khulna University of Engineering and Technology", shortName: "KUET", district: "Khulna", division: "Khulna", latitude: 22.9005, longitude: 89.5024 },
-  { id: "just", name: "Jashore University of Science and Technology", shortName: "JUST", district: "Jashore", division: "Khulna", latitude: 23.2340, longitude: 89.1254 },
-  { id: "iu", name: "Islamic University, Bangladesh", shortName: "IU", district: "Kushtia", division: "Khulna", latitude: 23.7219, longitude: 89.1530 },
   { id: "sust", name: "Shahjalal University of Science and Technology", shortName: "SUST", district: "Sylhet", division: "Sylhet", latitude: 24.9180, longitude: 91.8317 },
-  { id: "sau", name: "Sylhet Agricultural University", shortName: "SAU", district: "Sylhet", division: "Sylhet", latitude: 24.9071, longitude: 91.9024 },
   { id: "bu", name: "University of Barishal", shortName: "BU", district: "Barishal", division: "Barishal", latitude: 22.6590, longitude: 90.3620 },
-  { id: "pstu", name: "Patuakhali Science and Technology University", shortName: "PSTU", district: "Patuakhali", division: "Barishal", latitude: 22.4630, longitude: 90.3820 },
   { id: "brur", name: "Begum Rokeya University, Rangpur", shortName: "BRUR", district: "Rangpur", division: "Rangpur", latitude: 25.7171, longitude: 89.2588 },
   { id: "hstu", name: "Hajee Mohammad Danesh Science and Technology University", shortName: "HSTU", district: "Dinajpur", division: "Rangpur", latitude: 25.6973, longitude: 88.6514 },
 ];
+
+const activeCampusIds = new Set(campuses.map((campus) => campus.id));
 
 type OpenMeteoCurrent = {
   time?: string;
@@ -142,12 +122,15 @@ export async function prepareAqiDatabase(sql: NeonQueryFunction<false, false>) {
     PRIMARY KEY (campus_id, day)
   )`);
   await sql.query(`CREATE INDEX IF NOT EXISTS campus_aqi_daily_day_idx ON campus_aqi_daily (day DESC)`);
+  const campusIds = campuses.map((campus) => campus.id);
+  await sql.query(`DELETE FROM campus_aqi_samples WHERE NOT (campus_id = ANY($1::text[]))`, [campusIds]);
+  await sql.query(`DELETE FROM campus_aqi_daily WHERE NOT (campus_id = ANY($1::text[]))`, [campusIds]);
 }
 
-export async function fetchCurrentCampusAqi(): Promise<AqiReading[]> {
+export async function fetchCurrentCampusAqi(observedAt?: string): Promise<AqiReading[]> {
   const parameters = "us_aqi,pm2_5,pm10,carbon_monoxide,carbon_dioxide,nitrogen_dioxide,sulphur_dioxide,ozone";
-  const collectionInterval = 15 * 60_000;
-  const collectedAt = new Date(Math.floor(Date.now() / collectionInterval) * collectionInterval).toISOString();
+  const collectionInterval = 60 * 60_000;
+  const collectedAt = observedAt ?? new Date(Math.floor(Date.now() / collectionInterval) * collectionInterval).toISOString();
   const url = new URL("https://air-quality-api.open-meteo.com/v1/air-quality");
   url.searchParams.set("latitude", campuses.map((campus) => campus.latitude).join(","));
   url.searchParams.set("longitude", campuses.map((campus) => campus.longitude).join(","));
@@ -176,16 +159,17 @@ export async function fetchCurrentCampusAqi(): Promise<AqiReading[]> {
 }
 
 export async function saveCampusAqi(sql: NeonQueryFunction<false, false>, readings: AqiReading[]) {
-  if (!readings.length) return;
+  const activeReadings = readings.filter((reading) => activeCampusIds.has(reading.campusId));
+  if (!activeReadings.length) return;
   await sql.query(
     `INSERT INTO campus_aqi_samples (campus_id, observed_at, us_aqi, pm2_5, pm10, carbon_monoxide, carbon_dioxide, nitrogen_dioxide, sulphur_dioxide, ozone)
      SELECT * FROM UNNEST($1::text[], $2::timestamptz[], $3::numeric[], $4::numeric[], $5::numeric[], $6::numeric[], $7::numeric[], $8::numeric[], $9::numeric[], $10::numeric[])
      ON CONFLICT (campus_id, observed_at) DO UPDATE SET us_aqi = EXCLUDED.us_aqi, pm2_5 = EXCLUDED.pm2_5, pm10 = EXCLUDED.pm10, carbon_monoxide = EXCLUDED.carbon_monoxide, carbon_dioxide = EXCLUDED.carbon_dioxide, nitrogen_dioxide = EXCLUDED.nitrogen_dioxide, sulphur_dioxide = EXCLUDED.sulphur_dioxide, ozone = EXCLUDED.ozone`,
     [
-      readings.map((reading) => reading.campusId), readings.map((reading) => reading.observedAt),
-      readings.map((reading) => reading.usAqi), readings.map((reading) => reading.pm25), readings.map((reading) => reading.pm10),
-      readings.map((reading) => reading.carbonMonoxide), readings.map((reading) => reading.carbonDioxide), readings.map((reading) => reading.nitrogenDioxide),
-      readings.map((reading) => reading.sulphurDioxide), readings.map((reading) => reading.ozone),
+      activeReadings.map((reading) => reading.campusId), activeReadings.map((reading) => reading.observedAt),
+      activeReadings.map((reading) => reading.usAqi), activeReadings.map((reading) => reading.pm25), activeReadings.map((reading) => reading.pm10),
+      activeReadings.map((reading) => reading.carbonMonoxide), activeReadings.map((reading) => reading.carbonDioxide), activeReadings.map((reading) => reading.nitrogenDioxide),
+      activeReadings.map((reading) => reading.sulphurDioxide), activeReadings.map((reading) => reading.ozone),
     ],
   );
 }
@@ -198,19 +182,19 @@ const minMax = (values: Array<number | null>) => {
   return { min: valid.length ? Math.min(...valid) : null, max: valid.length ? Math.max(...valid) : null };
 };
 
-export async function fetchDailyCampusAqi(campus: Campus, startDate: string, endDate: string): Promise<DailyAqi[]> {
-  const variables = pollutantDefinitions.map((item) => item.id).join(",");
-  const url = new URL("https://air-quality-api.open-meteo.com/v1/air-quality");
-  url.searchParams.set("latitude", String(campus.latitude));
-  url.searchParams.set("longitude", String(campus.longitude));
-  url.searchParams.set("hourly", variables);
-  url.searchParams.set("start_date", startDate);
-  url.searchParams.set("end_date", endDate);
-  url.searchParams.set("domains", "cams_global");
-  url.searchParams.set("timezone", "Asia/Dhaka");
-  const response = await fetch(url, { cache: "no-store", headers: { Accept: "application/json" } });
-  if (!response.ok) throw new Error(`AQI archive returned ${response.status}.`);
-  const hourly = ((await response.json()) as HistoricPayload).hourly;
+function dhakaDate(value = new Date()) {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: "Asia/Dhaka", year: "numeric", month: "2-digit", day: "2-digit",
+  }).formatToParts(value);
+  const part = (type: Intl.DateTimeFormatPartTypes) => parts.find((item) => item.type === type)?.value;
+  const year = part("year");
+  const month = part("month");
+  const day = part("day");
+  if (!year || !month || !day) throw new Error("Unable to determine the current date in Asia/Dhaka.");
+  return `${year}-${month}-${day}`;
+}
+
+function dailyRowsFromHourly(campus: Campus, hourly?: HistoricHourly): DailyAqi[] {
   const times = hourly?.time ?? [];
   const indexesByDate = new Map<string, number[]>();
   times.forEach((time, index) => {
@@ -237,9 +221,25 @@ export async function fetchDailyCampusAqi(campus: Campus, startDate: string, end
   });
 }
 
+export async function fetchDailyCampusAqi(campus: Campus, startDate: string, endDate: string): Promise<DailyAqi[]> {
+  const variables = pollutantDefinitions.map((item) => item.id).join(",");
+  const url = new URL("https://air-quality-api.open-meteo.com/v1/air-quality");
+  url.searchParams.set("latitude", String(campus.latitude));
+  url.searchParams.set("longitude", String(campus.longitude));
+  url.searchParams.set("hourly", variables);
+  url.searchParams.set("start_date", startDate);
+  url.searchParams.set("end_date", endDate);
+  url.searchParams.set("domains", "cams_global");
+  url.searchParams.set("timezone", "Asia/Dhaka");
+  const response = await fetch(url, { cache: "no-store", headers: { Accept: "application/json" } });
+  if (!response.ok) throw new Error(`AQI archive returned ${response.status}.`);
+  return dailyRowsFromHourly(campus, ((await response.json()) as HistoricPayload).hourly);
+}
+
 export async function saveDailyCampusAqi(sql: NeonQueryFunction<false, false>, rows: DailyAqi[]) {
-  for (let start = 0; start < rows.length; start += 400) {
-    const chunk = rows.slice(start, start + 400);
+  const activeRows = rows.filter((row) => activeCampusIds.has(row.campusId));
+  for (let start = 0; start < activeRows.length; start += 400) {
+    const chunk = activeRows.slice(start, start + 400);
     await sql.query(`INSERT INTO campus_aqi_daily (campus_id, day, us_aqi_min, us_aqi_max, pm2_5_min, pm2_5_max, pm10_min, pm10_max, carbon_monoxide_min, carbon_monoxide_max, carbon_dioxide_min, carbon_dioxide_max, nitrogen_dioxide_min, nitrogen_dioxide_max, sulphur_dioxide_min, sulphur_dioxide_max, ozone_min, ozone_max)
       SELECT * FROM UNNEST($1::text[], $2::date[], $3::numeric[], $4::numeric[], $5::numeric[], $6::numeric[], $7::numeric[], $8::numeric[], $9::numeric[], $10::numeric[], $11::numeric[], $12::numeric[], $13::numeric[], $14::numeric[], $15::numeric[], $16::numeric[], $17::numeric[], $18::numeric[])
       ON CONFLICT (campus_id, day) DO UPDATE SET us_aqi_min=EXCLUDED.us_aqi_min, us_aqi_max=EXCLUDED.us_aqi_max, pm2_5_min=EXCLUDED.pm2_5_min, pm2_5_max=EXCLUDED.pm2_5_max, pm10_min=EXCLUDED.pm10_min, pm10_max=EXCLUDED.pm10_max, carbon_monoxide_min=EXCLUDED.carbon_monoxide_min, carbon_monoxide_max=EXCLUDED.carbon_monoxide_max, carbon_dioxide_min=EXCLUDED.carbon_dioxide_min, carbon_dioxide_max=EXCLUDED.carbon_dioxide_max, nitrogen_dioxide_min=EXCLUDED.nitrogen_dioxide_min, nitrogen_dioxide_max=EXCLUDED.nitrogen_dioxide_max, sulphur_dioxide_min=EXCLUDED.sulphur_dioxide_min, sulphur_dioxide_max=EXCLUDED.sulphur_dioxide_max, ozone_min=EXCLUDED.ozone_min, ozone_max=EXCLUDED.ozone_max, updated_at=NOW()`, [
@@ -251,13 +251,60 @@ export async function saveDailyCampusAqi(sql: NeonQueryFunction<false, false>, r
   }
 }
 
+export async function syncRecentCampusAqi(sql: NeonQueryFunction<false, false>, days = 30) {
+  const dhakaToday = new Date(`${dhakaDate()}T00:00:00Z`);
+  const end = new Date(dhakaToday);
+  end.setUTCDate(end.getUTCDate() - 1);
+  const start = new Date(end);
+  start.setUTCDate(start.getUTCDate() - (days - 1));
+  const date = (value: Date) => value.toISOString().slice(0, 10);
+  const startDate = date(start);
+  const endDate = date(end);
+
+  const [coverage] = await sql.query(
+    `SELECT COUNT(*)::int AS saved
+     FROM campus_aqi_daily
+     WHERE campus_id = ANY($1::text[]) AND day BETWEEN $2::date AND $3::date`,
+    [campuses.map((campus) => campus.id), startDate, endDate],
+  ) as Array<{ saved: number }>;
+  const expected = campuses.length * days;
+  if (Number(coverage?.saved ?? 0) >= expected) {
+    return { status: "complete", saved: 0, startDate, endDate };
+  }
+
+  const url = new URL("https://air-quality-api.open-meteo.com/v1/air-quality");
+  url.searchParams.set("latitude", campuses.map((campus) => campus.latitude).join(","));
+  url.searchParams.set("longitude", campuses.map((campus) => campus.longitude).join(","));
+  url.searchParams.set("hourly", pollutantDefinitions.map((item) => item.id).join(","));
+  url.searchParams.set("start_date", startDate);
+  url.searchParams.set("end_date", endDate);
+  url.searchParams.set("domains", "cams_global");
+  url.searchParams.set("timezone", "Asia/Dhaka");
+  const response = await fetch(url, { cache: "no-store", headers: { Accept: "application/json" } });
+  if (!response.ok) throw new Error(`Recent AQI archive returned ${response.status}.`);
+  const payload = await response.json() as HistoricPayload | HistoricPayload[];
+  const results = Array.isArray(payload) ? payload : [payload];
+  if (results.length !== campuses.length) throw new Error("Recent AQI archive did not return all campuses.");
+  const rows = results.flatMap((result, index) => dailyRowsFromHourly(campuses[index], result.hourly));
+  await saveDailyCampusAqi(sql, rows);
+  return { status: `${startDate}:${endDate}`, saved: rows.length, startDate, endDate };
+}
+
 export async function backfillNextCampusYear(sql: NeonQueryFunction<false, false>, campus: Campus) {
-  const [state] = await sql.query(`SELECT MAX(day)::text AS latest_day FROM campus_aqi_daily WHERE campus_id = $1`, [campus.id]) as Array<{ latest_day: string | null }>;
-  const start = state?.latest_day ? new Date(`${state.latest_day}T00:00:00Z`) : new Date(`${AQI_ARCHIVE_START}T00:00:00Z`);
-  if (state?.latest_day) start.setUTCDate(start.getUTCDate() + 1);
-  const yesterday = new Date();
+  const [state] = await sql.query(
+    `SELECT TO_CHAR(candidate.day, 'YYYY-MM-DD') AS next_day
+     FROM generate_series($2::date, (NOW() AT TIME ZONE 'Asia/Dhaka')::date - 1, INTERVAL '1 day') AS candidate(day)
+     WHERE NOT EXISTS (
+       SELECT 1 FROM campus_aqi_daily saved
+       WHERE saved.campus_id = $1 AND saved.day = candidate.day::date
+     )
+     ORDER BY candidate.day ASC LIMIT 1`,
+    [campus.id, AQI_ARCHIVE_START],
+  ) as Array<{ next_day: string | null }>;
+  if (!state?.next_day) return { status: "complete", saved: 0 };
+  const start = new Date(`${state.next_day}T00:00:00Z`);
+  const yesterday = new Date(`${dhakaDate()}T00:00:00Z`);
   yesterday.setUTCDate(yesterday.getUTCDate() - 1);
-  yesterday.setUTCHours(0, 0, 0, 0);
   if (start > yesterday) return { status: "complete", saved: 0 };
   const end = new Date(start);
   end.setUTCDate(end.getUTCDate() + 364);

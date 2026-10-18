@@ -1,5 +1,5 @@
 import { neon } from "@neondatabase/serverless";
-import { AQI_ARCHIVE_START, backfillNextCampusYear, campuses, fetchCurrentCampusAqi, prepareAqiDatabase, saveCampusAqi, type DailyAqi } from "@/lib/aqi";
+import { AQI_ARCHIVE_START, backfillNextCampusYear, campuses, fetchCurrentCampusAqi, prepareAqiDatabase, saveCampusAqi, syncRecentCampusAqi, type DailyAqi } from "@/lib/aqi";
 
 type HistoryRow = {
   observed_at: string;
@@ -37,7 +37,10 @@ export async function GET(request: Request) {
 
     const readings = await fetchCurrentCampusAqi();
     await saveCampusAqi(sql, readings);
-    const backfill = await backfillNextCampusYear(sql, selectedCampus);
+    const recentSync = await syncRecentCampusAqi(sql, 30);
+    const backfill = recentSync.saved > 0
+      ? { status: "complete", saved: 0 }
+      : await backfillNextCampusYear(sql, selectedCampus);
 
     const forecastUrl = new URL("https://air-quality-api.open-meteo.com/v1/air-quality");
     forecastUrl.searchParams.set("latitude", String(selectedCampus.latitude));
@@ -98,6 +101,7 @@ export async function GET(request: Request) {
       timeline,
       dailyHistory,
       archiveStart: AQI_ARCHIVE_START,
+      recentSync,
       backfill,
     });
   } catch (error) {

@@ -18,7 +18,7 @@ export async function GET(request: Request) {
     const scope = search.get("scope") === "year" ? "year" : "month";
     let collectionWarning: string | null = null;
     if (scope === "month" && search.get("collect") !== "0" && year === now.getUTCFullYear() && month === now.getUTCMonth() + 1) {
-      const [freshness] = await sql.query(`SELECT EXISTS (SELECT 1 FROM district_aqi_samples WHERE observed_at >= NOW() - INTERVAL '15 minutes') AS fresh`) as Array<{ fresh: boolean }>;
+      const [freshness] = await sql.query(`SELECT EXISTS (SELECT 1 FROM district_aqi_samples WHERE observed_at >= NOW() - INTERVAL '1 hour') AS fresh`) as Array<{ fresh: boolean }>;
       if (!freshness?.fresh) {
         try {
           const readings = await fetchDistrictAqi();

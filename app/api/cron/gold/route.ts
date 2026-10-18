@@ -65,7 +65,7 @@ export async function GET(request: Request) {
       }
     }
 
-    if (observedAtMs % (15 * 60_000) === 0) {
+    if (observedAtMs % (60 * 60_000) === 0) {
       try {
         await prepareAqiDatabase(sql);
         const campusReadings = await fetchCurrentCampusAqi();
@@ -73,7 +73,7 @@ export async function GET(request: Request) {
         await prepareDistrictAqiDatabase(sql);
         const districtReadings = await fetchDistrictAqi();
         await saveDistrictAqi(sql, districtReadings);
-        const backfillCampus = campuses[Math.floor(observedAtMs / (15 * 60_000)) % campuses.length];
+        const backfillCampus = campuses[Math.floor(observedAtMs / (60 * 60_000)) % campuses.length];
         const backfill = await backfillNextCampusYear(sql, backfillCampus);
         const districtBackfill = await backfillNextDistrictMonth(sql);
         aqiStatus = `saved-${campusReadings.length}-campuses-${districtReadings.length}-districts; backfill-${backfillCampus.id}-${backfill.saved}; district-backfill-${districtBackfill.status}-${districtBackfill.saved}`;

@@ -1,5 +1,14 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Background AQI collection
+
+The `.github/workflows/aqi-collector.yml` workflow collects AQI readings every hour even when nobody has the website open. Configure these GitHub repository secrets before enabling it:
+
+- `AQI_CRON_URL`: the production URL ending in `/api/cron/aqi`
+- `AQI_CRON_SECRET`: the same value as the production `CRON_SECRET`
+
+The collector retries temporary network and server failures. Database writes are idempotent, so a Vercel cron and the GitHub workflow can safely run during the same hourly interval.
+
 ## Getting Started
 
 First, run the development server:

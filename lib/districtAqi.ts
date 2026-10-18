@@ -35,10 +35,10 @@ export async function prepareDistrictAqiDatabase(sql: NeonQueryFunction<false, f
   await sql.query(`CREATE TABLE IF NOT EXISTS district_aqi_backfill_months (month DATE PRIMARY KEY, completed_at TIMESTAMPTZ NOT NULL DEFAULT NOW(), row_count INTEGER NOT NULL)`);
 }
 
-export async function fetchDistrictAqi(): Promise<DistrictAqi[]> {
+export async function fetchDistrictAqi(observedAt?: string): Promise<DistrictAqi[]> {
   const results: DistrictAqi[] = [];
-  const collectionInterval = 15 * 60_000;
-  const collectedAt = new Date(Math.floor(Date.now() / collectionInterval) * collectionInterval).toISOString();
+  const collectionInterval = 60 * 60_000;
+  const collectedAt = observedAt ?? new Date(Math.floor(Date.now() / collectionInterval) * collectionInterval).toISOString();
   for (let offset = 0; offset < districts.length; offset += 32) {
     const batch = districts.slice(offset, offset + 32);
     const url = new URL("https://air-quality-api.open-meteo.com/v1/air-quality");

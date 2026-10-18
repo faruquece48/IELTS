@@ -7,6 +7,9 @@ import Navbar from "@/components/Navbar";
 import { describeAqi, pollutantDefinitions, type AqiReading, type Campus, type DailyAqi } from "@/lib/aqi";
 
 type TimelinePoint = { time: string; usAqi: number | null; pm25: number | null; pm10: number | null; carbonMonoxide?: number | null; carbonDioxide?: number | null; nitrogenDioxide?: number | null; sulphurDioxide?: number | null; ozone?: number | null };
+type Position = [number, number];
+type BoundaryGeometry = { type: "Polygon"; coordinates: Position[][] } | { type: "MultiPolygon"; coordinates: Position[][][] };
+type Boundary = { features: Array<{ properties: { shapeName?: string }; geometry: BoundaryGeometry }> };
 type AqiData = {
   error?: string;
   source?: string;
@@ -22,6 +25,66 @@ type AqiData = {
 };
 
 const number = new Intl.NumberFormat("en-US", { maximumFractionDigits: 1 });
+
+const mapX = (longitude: number) => 45 + ((longitude - 88.0) / 4.7) * 470;
+const mapY = (latitude: number) => 570 - ((latitude - 20.7) / 5.8) * 530;
+
+function campusBoundaryPaths(boundary?: Boundary) {
+  if (!boundary?.features?.length) return [];
+  return boundary.features.flatMap((feature) => {
+    const polygons = feature.geometry.type === "Polygon" ? [feature.geometry.coordinates] : feature.geometry.coordinates;
+    return polygons.map((polygon) => polygon.map((ring) => ring.map(([longitude, latitude], index) =>
+      `${index ? "L" : "M"}${mapX(longitude).toFixed(2)},${mapY(latitude).toFixed(2)}`,
+    ).join(" ") + " Z").join(" "));
+  });
+}
+
+function CampusLocationMap({ campuses, selectedId, onSelect }: { campuses: Campus[]; selectedId: string; onSelect: (id: string) => void }) {
+  const [boundary, setBoundary] = useState<Boundary>();
+  useEffect(() => {
+    let cancelled = false;
+    async function loadBoundary() {
+      try {
+        const response = await fetch("/api/aqi/districts/boundary");
+        if (!response.ok) return;
+        const payload = await response.json() as Boundary;
+        if (!cancelled) setBoundary(payload);
+      } catch { /* Keep the loading state if the boundary service is unavailable. */ }
+    }
+    void loadBoundary();
+    return () => { cancelled = true; };
+  }, []);
+  const paths = campusBoundaryPaths(boundary);
+  return <section className="mt-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+    <div className="flex flex-wrap items-start justify-between gap-4"><div><p className="text-xs font-black uppercase tracking-wider text-cyan-700">Geographic coverage</p><h2 className="mt-1 text-2xl font-black">Study Area Location in Bangladesh</h2><p className="mt-2 text-xs leading-5 text-slate-500">Ten campuses from ten different districts. Select a marker or university name to open its AQI data.</p></div><button type="button" disabled={!paths.length} onClick={() => downloadChartPng("campus-location-map", "bangladesh-university-locations.png", { title: "Study Area Location in Bangladesh" })} className="rounded-lg border border-cyan-200 bg-cyan-50 px-3 py-2 text-[10px] font-black uppercase tracking-wide text-cyan-800 transition hover:bg-cyan-100 disabled:cursor-not-allowed disabled:opacity-40">PNG</button></div>
+    <div className="mt-6 grid items-start gap-5 lg:grid-cols-2">
+      <div className="min-h-[480px] overflow-hidden rounded-2xl border border-slate-200 bg-white p-2">
+        {paths.length ? <svg id="campus-location-map" viewBox="0 0 560 610" className="h-[480px] w-full" role="img" aria-label="Map of Bangladesh showing the ten monitored university locations">
+          {paths.map((path, index) => <path key={index} d={path} fill="#dcece7" fillRule="evenodd" stroke="#7b9c96" strokeWidth="1" />)}
+          {campuses.map((campus) => {
+            const x = mapX(campus.longitude), y = mapY(campus.latitude), selected = campus.id === selectedId;
+            return <g key={campus.id} role="button" tabIndex={0} aria-label={`Select ${campus.name}`} className="cursor-pointer outline-none" onClick={() => onSelect(campus.id)} onKeyDown={(event) => { if (event.key === "Enter" || event.key === " ") onSelect(campus.id); }}>
+              {selected ? <circle data-export-selection="true" cx={x} cy={y} r="13" fill="#f59e0b" opacity=".25" /> : null}
+              <circle data-export-campus-marker="true" cx={x} cy={y} r={selected ? 6.5 : 5} fill={selected ? "#d97706" : "#087f8c"} stroke="#ffffff" strokeWidth="2.5" />
+              <text x={x + 9} y={y + 4} fill="#0f172a" stroke="#ffffff" strokeWidth="3" paintOrder="stroke" fontSize="11" fontWeight="900">{campus.shortName}</text>
+            </g>;
+          })}
+          <g transform="translate(505 34)"><text x="8" y="0" textAnchor="middle" fontSize="13" fontWeight="900" fill="#0f172a">N</text><path d="M8 8 L0 34 L8 29 L16 34 Z" fill="#0f172a" /><path d="M8 12 L8 29 L3 31 Z" fill="#ffffff" /></g>
+          <g transform="translate(55 570)" aria-label="Map scale from zero to one hundred kilometres">
+            <text x="49" y="-9" textAnchor="middle" fontSize="10" fontWeight="800" fill="#334155">Scale · km</text>
+            <rect x="0" y="0" width="49" height="8" fill="#0f172a" />
+            <rect x="49" y="0" width="49" height="8" fill="#ffffff" stroke="#0f172a" strokeWidth="1" />
+            <line x1="0" x2="98" y1="8" y2="8" stroke="#0f172a" strokeWidth="1" />
+            <text x="0" y="23" textAnchor="middle" fontSize="9" fontWeight="700" fill="#334155">0</text>
+            <text x="49" y="23" textAnchor="middle" fontSize="9" fontWeight="700" fill="#334155">50</text>
+            <text x="98" y="23" textAnchor="middle" fontSize="9" fontWeight="700" fill="#334155">100</text>
+          </g>
+        </svg> : <div className="grid h-[480px] place-items-center text-sm font-bold text-slate-400">Loading Bangladesh map…</div>}
+      </div>
+      <div className="grid content-start gap-2 sm:grid-cols-2">{campuses.map((campus) => <button key={campus.id} type="button" onClick={() => onSelect(campus.id)} className={`flex min-h-[72px] items-center gap-2.5 rounded-xl border px-3 py-2.5 text-left transition ${campus.id === selectedId ? "border-amber-400 bg-amber-50 shadow-sm" : "border-slate-200 hover:border-cyan-300 hover:bg-cyan-50"}`}><span className={`grid h-9 w-12 shrink-0 place-items-center rounded-lg text-[11px] font-black ${campus.id === selectedId ? "bg-amber-500 text-white" : "bg-cyan-100 text-cyan-900"}`}>{campus.shortName}</span><span className="min-w-0"><strong className="block truncate text-xs text-slate-900">{campus.name}</strong><small className="mt-1 block truncate text-[11px] text-slate-500">{campus.district} · {campus.division}</small></span></button>)}</div>
+    </div>
+  </section>;
+}
 
 function niceAxisStep(value: number) {
   if (!Number.isFinite(value) || value <= 0) return 1;
@@ -49,6 +112,12 @@ function downloadChartPng(chartId: string, filename: string, options?: { title?:
     target.style.fontSize = style.fontSize;
     target.style.fontWeight = style.fontWeight;
     target.style.opacity = style.opacity;
+  });
+  clone.querySelectorAll("[data-export-selection]").forEach((element) => element.remove());
+  clone.querySelectorAll<SVGCircleElement>("[data-export-campus-marker]").forEach((marker) => {
+    marker.setAttribute("r", "5");
+    marker.setAttribute("fill", "#087f8c");
+    marker.style.fill = "#087f8c";
   });
   const viewBox = source.viewBox.baseVal;
   const width = viewBox.width || source.clientWidth;
@@ -224,14 +293,18 @@ function DailyRangeChart({ rows, pollutant }: { rows: DailyAqi[]; pollutant: (ty
     setHovered(usable.reduce((best, point) => Math.abs(Date.parse(`${point.row.date}T00:00:00+06:00`) - target) < Math.abs(Date.parse(`${best.row.date}T00:00:00+06:00`) - target) ? point : best));
   };
   const ticks = Array.from({ length: 4 }, (_, index) => minTime + ((maxTime - minTime) * index) / 3);
-  return <svg viewBox="0 0 690 230" className="h-52 w-full touch-none" onPointerMove={move} onPointerLeave={() => setHovered(null)} role="img" aria-label={`${pollutant.label} daily minimum and maximum chart`}><g transform="translate(48 14)">{[0, 1, 2, 3].map((index) => { const value = yMin + ((yMax - yMin) * index) / 3; return <g key={index}><line x1="0" x2="620" y1={165 - index * 48.3} y2={165 - index * 48.3} stroke="#e2e8f0" strokeDasharray="4 5" /><text x="-8" y={169 - index * 48.3} textAnchor="end" className="fill-slate-500 text-[9px] font-semibold">{number.format(value)}</text></g>; })}{ticks.map((tick) => { const x = ((tick - minTime) / (maxTime - minTime || 1)) * 620; return <text key={tick} x={x} y="190" textAnchor="middle" className="fill-slate-500 text-[9px] font-semibold">{new Date(tick).toLocaleDateString([], { month: "short", year: "2-digit" })}</text>; })}<path d={line("minimum")} fill="none" stroke="#f59e0b" strokeWidth="2" /><path d={line("maximum")} fill="none" stroke="#0891b2" strokeWidth="2.5" /><rect width="620" height="165" fill="transparent" />{hovered ? (() => { const time = Date.parse(`${hovered.row.date}T00:00:00+06:00`); const x = ((time - minTime) / (maxTime - minTime || 1)) * 620; return <g className="pointer-events-none"><line x1={x} x2={x} y1="0" y2="165" stroke="#64748b" strokeDasharray="3 3" /><g transform={`translate(${Math.max(0, Math.min(470, x - 75))} 4)`}><rect width="150" height="50" rx="8" fill="#0f172a" /><text x="75" y="15" textAnchor="middle" className="fill-white text-[9px] font-bold">{hovered.row.date}</text><text x="75" y="29" textAnchor="middle" className="fill-amber-300 text-[9px]">Min {number.format(hovered.minimum)} {pollutant.unit}</text><text x="75" y="42" textAnchor="middle" className="fill-cyan-300 text-[9px]">Max {number.format(hovered.maximum)} {pollutant.unit}</text></g></g>; })() : null}</g></svg>;
+  const rangeDays = (maxTime - minTime) / 86_400_000;
+  const formatTick = (tick: number) => new Date(tick).toLocaleDateString([], rangeDays <= 120
+    ? { day: "numeric", month: "short", timeZone: "Asia/Dhaka" }
+    : rangeDays <= 730
+      ? { month: "short", year: "numeric", timeZone: "Asia/Dhaka" }
+      : { year: "numeric", timeZone: "Asia/Dhaka" });
+  return <svg viewBox="0 0 690 230" className="h-52 w-full touch-none" onPointerMove={move} onPointerLeave={() => setHovered(null)} role="img" aria-label={`${pollutant.label} daily minimum and maximum chart`}><g transform="translate(48 14)">{[0, 1, 2, 3].map((index) => { const value = yMin + ((yMax - yMin) * index) / 3; return <g key={index}><line x1="0" x2="620" y1={165 - index * 48.3} y2={165 - index * 48.3} stroke="#e2e8f0" strokeDasharray="4 5" /><text x="-8" y={169 - index * 48.3} textAnchor="end" className="fill-slate-500 text-[9px] font-semibold">{number.format(value)}</text></g>; })}{ticks.map((tick) => { const x = ((tick - minTime) / (maxTime - minTime || 1)) * 620; return <text key={tick} x={x} y="190" textAnchor="middle" className="fill-slate-500 text-[9px] font-semibold">{formatTick(tick)}</text>; })}<path d={line("minimum")} fill="none" stroke="#f59e0b" strokeWidth="2" /><path d={line("maximum")} fill="none" stroke="#0891b2" strokeWidth="2.5" /><rect width="620" height="165" fill="transparent" />{hovered ? (() => { const time = Date.parse(`${hovered.row.date}T00:00:00+06:00`); const x = ((time - minTime) / (maxTime - minTime || 1)) * 620; return <g className="pointer-events-none"><line x1={x} x2={x} y1="0" y2="165" stroke="#64748b" strokeDasharray="3 3" /><g transform={`translate(${Math.max(0, Math.min(470, x - 75))} 4)`}><rect width="150" height="50" rx="8" fill="#0f172a" /><text x="75" y="15" textAnchor="middle" className="fill-white text-[9px] font-bold">{hovered.row.date}</text><text x="75" y="29" textAnchor="middle" className="fill-amber-300 text-[9px]">Min {number.format(hovered.minimum)} {pollutant.unit}</text><text x="75" y="42" textAnchor="middle" className="fill-cyan-300 text-[9px]">Max {number.format(hovered.maximum)} {pollutant.unit}</text></g></g>; })() : null}</g></svg>;
 }
 
 export default function AqiDashboard() {
   const [data, setData] = useState<AqiData | null>(null);
-  const [selectedId, setSelectedId] = useState("du");
-  const [district, setDistrict] = useState("All districts");
-  const [query, setQuery] = useState("");
+  const [selectedId, setSelectedId] = useState("buet");
   const [chartMode, setChartMode] = useState<"history" | "forecast">("forecast");
   const [researchDays, setResearchDays] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -254,7 +327,7 @@ export default function AqiDashboard() {
     async function loadInitialCampus() {
       setLoading(true);
       try {
-        const response = await fetch("/api/aqi?campus=du", { cache: "no-store" });
+        const response = await fetch("/api/aqi?campus=buet", { cache: "no-store" });
         const payload = await response.json() as AqiData;
         if (!cancelled) setData(payload);
       } catch {
@@ -267,7 +340,7 @@ export default function AqiDashboard() {
     return () => { cancelled = true; };
   }, []);
   useEffect(() => {
-    const timer = window.setInterval(() => { void load(selectedId, true); }, 15 * 60_000);
+    const timer = window.setInterval(() => { void load(selectedId, true); }, 60 * 60_000);
     return () => window.clearInterval(timer);
   }, [load, selectedId]);
 
@@ -275,12 +348,6 @@ export default function AqiDashboard() {
   const selected = data?.selectedCampus;
   const selectedReading = selected ? readingMap.get(selected.id) : undefined;
   const status = describeAqi(selectedReading?.usAqi ?? null);
-  const districts = useMemo(() => ["All districts", ...new Set((data?.campuses ?? []).map((campus) => campus.district).sort())], [data?.campuses]);
-  const visibleCampuses = useMemo(() => (data?.campuses ?? []).filter((campus) => {
-    const matchesDistrict = district === "All districts" || campus.district === district;
-    const text = `${campus.name} ${campus.shortName} ${campus.district}`.toLowerCase();
-    return matchesDistrict && text.includes(query.trim().toLowerCase());
-  }), [data?.campuses, district, query]);
   const referenceTime = data?.generatedAt ? Date.parse(data.generatedAt) : 0;
   const forecastPoints = (data?.timeline ?? []).filter((point) => Date.parse(point.time) >= referenceTime - 60 * 60_000);
   const chartPoints = chartMode === "history" ? data?.history ?? [] : forecastPoints;
@@ -301,22 +368,24 @@ export default function AqiDashboard() {
           <div className="absolute -right-16 -top-20 h-64 w-64 rounded-full bg-cyan-400/20 blur-3xl" />
           <div className="relative flex flex-col gap-7 lg:flex-row lg:items-center lg:justify-between">
             <div className="lg:max-w-[430px]"><p className="text-xs font-black uppercase tracking-[.24em] text-cyan-300">Bangladesh · Campus air</p><h1 className="mt-3 text-4xl font-black tracking-tight">University AQI Monitor</h1><p className="mt-3 text-sm leading-6 text-cyan-50/70">Live air-quality patterns across Bangladesh university campuses.</p></div>
-            <div className="flex w-full flex-nowrap items-stretch gap-2 overflow-x-auto pb-1 lg:w-auto lg:shrink-0"><div className="shrink-0 rounded-2xl border border-white/10 bg-white/10 px-4 py-3"><p className="text-[9px] font-bold uppercase tracking-wider text-cyan-100/60">Coverage</p><p className="mt-1 whitespace-nowrap text-lg font-black">{data?.campuses?.length ?? 32} campuses</p></div><Link href="/personal/aqi/districts" className="shrink-0 rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-sm font-black text-white transition hover:bg-white/15"><span className="block text-[9px] uppercase text-cyan-100/60">National atlas</span><span className="mt-1 block whitespace-nowrap text-lg">64 districts</span></Link><Link href="/personal/aqi/paper" className="shrink-0 rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-sm font-black text-white transition hover:bg-white/15"><span className="block text-[9px] uppercase text-cyan-100/60">Research</span><span className="mt-1 block text-lg">Paper</span></Link><button type="button" onClick={() => void load(selectedId)} disabled={loading} className="shrink-0 rounded-2xl border border-white/15 bg-white px-4 py-3 text-sm font-black text-[#062c30] transition hover:bg-cyan-50 disabled:opacity-60">{loading ? "Updating…" : "Refresh"}</button></div>
+            <div className="flex w-full flex-nowrap items-stretch gap-2 overflow-x-auto pb-1 lg:w-auto lg:shrink-0"><div className="shrink-0 rounded-2xl border border-white/10 bg-white/10 px-4 py-3"><p className="text-[9px] font-bold uppercase tracking-wider text-cyan-100/60">Coverage</p><p className="mt-1 whitespace-nowrap text-lg font-black">{data?.campuses?.length ?? 10} campuses</p></div><Link href="/personal/aqi/districts" className="shrink-0 rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-sm font-black text-white transition hover:bg-white/15"><span className="block text-[9px] uppercase text-cyan-100/60">National atlas</span><span className="mt-1 block whitespace-nowrap text-lg">64 districts</span></Link><Link href="/personal/aqi/paper" className="shrink-0 rounded-2xl border border-white/15 bg-white/10 px-4 py-3 text-sm font-black text-white transition hover:bg-white/15"><span className="block text-[9px] uppercase text-cyan-100/60">Research</span><span className="mt-1 block text-lg">Paper</span></Link><button type="button" onClick={() => void load(selectedId)} disabled={loading} className="shrink-0 rounded-2xl border border-white/15 bg-white px-4 py-3 text-sm font-black text-[#062c30] transition hover:bg-cyan-50 disabled:opacity-60">{loading ? "Updating…" : "Refresh"}</button></div>
           </div>
         </section>
 
         {data?.error ? <section className="mt-6 rounded-3xl border border-rose-200 bg-rose-50 p-7"><p className="text-sm font-black text-rose-700">AQI data unavailable</p><p className="mt-2 text-sm text-rose-600">{data.error}</p></section> : (
           <>
+            <CampusLocationMap campuses={data?.campuses ?? []} selectedId={selectedId} onSelect={(campusId) => { setSelectedId(campusId); void load(campusId); }} />
+
             <section className="mt-6 grid items-stretch gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(340px,1fr)]">
               <div className="h-full rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-                <div className="flex flex-wrap items-start justify-between gap-4"><div><p className="text-xs font-black uppercase tracking-wider text-cyan-700">Selected campus</p><h2 className="mt-1 text-2xl font-black">AQI timeline</h2></div><div className="flex flex-wrap items-center gap-2"><div className="flex rounded-xl bg-slate-100 p-1">{(["history", "forecast"] as const).map((mode) => <button key={mode} type="button" onClick={() => setChartMode(mode)} className={`rounded-lg px-3 py-2 text-xs font-black capitalize transition ${chartMode === mode ? "bg-white text-cyan-800 shadow-sm" : "text-slate-500"}`}>{mode === "forecast" ? "72h outlook" : "Saved history"}</button>)}</div><button type="button" onClick={() => downloadChartPng("aqi-timeline-chart", `${selected?.shortName ?? "campus"}-aqi-${chartMode}.png`.toLowerCase(), { title: `${selected?.shortName ?? "Campus"} AQI timeline`, unit: "US AQI", legend: [{ label: chartMode === "forecast" ? "72-hour outlook" : "Saved history", color: "#0891b2" }] })} className="rounded-lg border border-cyan-200 bg-cyan-50 px-3 py-2 text-[10px] font-black uppercase tracking-wide text-cyan-800 hover:bg-cyan-100">PNG</button></div></div>
+                <div className="flex flex-wrap items-start justify-between gap-4"><div><p className="text-xs font-black uppercase tracking-wider text-cyan-700">Selected campus</p><h2 className="mt-1 text-2xl font-black">AQI timeline</h2><p className="mt-1 text-xs font-bold text-slate-500">{selected?.name ?? "Choose a university"}</p></div><div className="flex flex-wrap items-center gap-2"><select aria-label="Select university for AQI timeline" value={selectedId} onChange={(event) => { const campusId = event.target.value; setSelectedId(campusId); void load(campusId); }} className="max-w-52 rounded-xl border border-slate-300 bg-white px-3 py-2.5 text-xs font-black text-slate-800 outline-none transition focus:border-cyan-600 focus:ring-2 focus:ring-cyan-600/15">{(data?.campuses ?? []).map((campus) => <option key={campus.id} value={campus.id}>{campus.shortName} · {campus.district}</option>)}</select><div className="flex rounded-xl bg-slate-100 p-1">{(["history", "forecast"] as const).map((mode) => <button key={mode} type="button" onClick={() => setChartMode(mode)} className={`rounded-lg px-3 py-2 text-xs font-black capitalize transition ${chartMode === mode ? "bg-white text-cyan-800 shadow-sm" : "text-slate-500"}`}>{mode === "forecast" ? "72h outlook" : "Saved history"}</button>)}</div><button type="button" onClick={() => downloadChartPng("aqi-timeline-chart", `${selected?.shortName ?? "campus"}-aqi-${chartMode}.png`.toLowerCase(), { title: `${selected?.shortName ?? "Campus"} AQI timeline`, unit: "US AQI", legend: [{ label: chartMode === "forecast" ? "72-hour outlook" : "Saved history", color: "#0891b2" }] })} className="rounded-lg border border-cyan-200 bg-cyan-50 px-3 py-2 text-[10px] font-black uppercase tracking-wide text-cyan-800 hover:bg-cyan-100">PNG</button></div></div>
                 <div className="mt-5"><AqiChart chartId="aqi-timeline-chart" points={chartPoints} forecast={chartMode === "forecast"} /></div>
               </div>
 
               <aside className="relative flex h-full flex-col overflow-hidden rounded-3xl border border-[#d4d9d7] bg-gradient-to-br from-[#f1f3f2] via-[#e7eae8] to-[#dce1df] p-5 text-slate-900 shadow-sm" style={{ borderTopColor: status.color, borderTopWidth: 4 }}>
                 <div className="absolute -right-16 -top-20 h-48 w-48 rounded-full bg-white/50 blur-3xl" />
                 <div className="flex items-start justify-between gap-4">
-                  <div className="relative"><p className="text-[11px] font-black uppercase tracking-wider text-slate-500">Health guidance</p><h2 className="mt-1 text-xl font-black" style={{ color: status.color }}>{status.label}</h2></div>
+                  <div className="relative"><p className="text-[11px] font-black uppercase tracking-wider text-slate-500">{selected?.shortName ?? "Campus"} · Health guidance</p><h2 className="mt-1 text-xl font-black" style={{ color: status.color }}>{status.label}</h2></div>
                   <div className="relative rounded-xl border border-white/70 bg-white/55 px-2.5 py-1.5 text-right shadow-sm"><p className="text-[8px] font-bold uppercase tracking-wider text-slate-500">Observed</p><p className="mt-0.5 text-[11px] font-black text-slate-800">{selectedReading?.observedAt ? new Date(selectedReading.observedAt).toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "—"}</p></div>
                 </div>
                 <p className="relative mt-3 text-xs leading-5 text-slate-600">{status.advice}</p>
@@ -340,16 +409,7 @@ export default function AqiDashboard() {
               <div className="mt-6 grid gap-5 xl:grid-cols-2">{pollutantDefinitions.map((pollutant) => <article id={`pollutant-chart-${pollutant.id}`} key={pollutant.id} className="rounded-2xl border border-slate-200 p-4"><div className="flex items-start justify-between gap-3"><div><h3 className="text-base font-black">{pollutant.label}</h3><p className="mt-1 text-[11px] text-slate-400"><span className="font-bold text-amber-600">Minimum</span> · <span className="font-bold text-cyan-700">Maximum</span> · {pollutant.unit}</p></div><div className="flex shrink-0 gap-2"><button type="button" onClick={() => downloadChartPng(`pollutant-chart-${pollutant.id}`, `${selected?.shortName ?? "campus"}-${pollutant.id}-daily-min-max.png`.toLowerCase(), { title: pollutant.label, unit: pollutant.unit, legend: [{ label: "Minimum", color: "#f59e0b" }, { label: "Maximum", color: "#0891b2" }] })} className="rounded-lg border border-cyan-200 bg-cyan-50 px-3 py-2 text-[10px] font-black uppercase tracking-wide text-cyan-800 hover:bg-cyan-100">PNG</button><a href={`/api/aqi/export?campus=${selectedId}&pollutant=${pollutant.id}&days=${researchDays}`} className="rounded-lg border border-cyan-200 bg-cyan-50 px-3 py-2 text-[10px] font-black uppercase tracking-wide text-cyan-800 hover:bg-cyan-100">Excel</a></div></div><div className="mt-3"><DailyRangeChart rows={dailyHistory} pollutant={pollutant} /></div></article>)}</div>
             </section>
 
-            <section className="mt-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-              <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between"><div><p className="text-xs font-black uppercase tracking-wider text-cyan-700">National comparison</p><h2 className="mt-1 text-2xl font-black">Major university campuses</h2></div><div className="grid gap-3 sm:grid-cols-2"><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search university or district" className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm outline-none focus:border-cyan-600 focus:ring-2 focus:ring-cyan-600/15" /><select value={district} onChange={(event) => setDistrict(event.target.value)} className="rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-bold outline-none focus:border-cyan-600">{districts.map((item) => <option key={item}>{item}</option>)}</select></div></div>
-              <div className="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">{visibleCampuses.map((campus) => {
-                const reading = readingMap.get(campus.id);
-                const campusStatus = describeAqi(reading?.usAqi ?? null);
-                return <button key={campus.id} type="button" onClick={() => { setSelectedId(campus.id); void load(campus.id); window.scrollTo({ top: 0, behavior: "smooth" }); }} className={`flex items-center justify-between gap-4 rounded-2xl border p-4 text-left transition hover:-translate-y-0.5 hover:shadow-md ${selectedId === campus.id ? "border-cyan-600 ring-2 ring-cyan-600/15" : "border-slate-200"}`}><div className="min-w-0"><p className="truncate text-sm font-black">{campus.shortName} <span className="font-medium text-slate-400">· {campus.district}</span></p><p className="mt-1 truncate text-xs text-slate-500">{campus.name}</p><span className="mt-2 inline-flex rounded-full px-2 py-0.5 text-[10px] font-black" style={{ color: campusStatus.color, background: campusStatus.background }}>{campusStatus.label}</span></div><p className="shrink-0 text-2xl font-black" style={{ color: campusStatus.color }}>{reading?.usAqi === null || reading?.usAqi === undefined ? "—" : Math.round(reading.usAqi)}</p></button>;
-              })}</div>
-            </section>
-
-            <p className="mt-6 text-center text-[11px] leading-5 text-slate-500">Source: {data?.source ?? "Open-Meteo CAMS Global"}. Automatically refreshed every 15 minutes while open; scheduled collection persists observations in Neon.</p>
+            <p className="mt-6 text-center text-[11px] leading-5 text-slate-500">Source: {data?.source ?? "Open-Meteo CAMS Global"}. Automatically refreshed every hour while open; scheduled collection persists observations in Neon.</p>
           </>
         )}
       </div>
