@@ -4,11 +4,5 @@
     "app/api/cron/aqi/route.ts": {
       "maxDuration": 60
     }
-  },
-  "crons": [
-    {
-      "path": "/api/cron/aqi",
-      "schedule": "0 * * * *"
-    }
-  ]
+  }
 }
