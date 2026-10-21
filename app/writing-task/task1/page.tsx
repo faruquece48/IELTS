@@ -4,6 +4,12 @@ import Navbar from "@/components/Navbar";
 
 const topics = [
   {
+    title: "Task 1 Guideline",
+    icon: "🧭",
+    description: "a complete guide to all seven Academic Task 1 question types, with analysis, structure, language, examples, and model answers",
+    href: "/writing-task/task1/guideline",
+  },
+  {
     title: "Line Graph",
     icon: "📈",
     description: "sample answers describing crime statistics and book sales line charts",

@@ -12,16 +12,16 @@ const steps = [
 ] as const;
 
 const formulas = [
-  { title: "Introduction", text: "[Paraphrase the topic]. This essay will explain that [brief answer to Question 1] and that [brief answer to Question 2]." },
+  { title: "Introduction", text: "[Paraphrase the topic]. [Brief answer to Question 1], while [brief answer to Question 2]." },
   { title: "Body 1 — Answer Question 1", text: "The main [value / reason / cause] is [Answer 1]. This is because [explanation]. For example, [specific example]. As a result, [result that directly answers Question 1]." },
   { title: "Body 2 — Answer Question 2", text: "Regarding the second question, [Answer 2]. In other words, [explanation]. For instance, [specific example]. Therefore, [result that directly answers Question 2]." },
   { title: "Conclusion", text: "In conclusion, [summarise the answer to Question 1], while [summarise the answer to Question 2]." },
 ] as const;
 
 const example = [
-  "Many primary and secondary schools close for an extended summer break. These long holidays allow pupils to recover from academic pressure and spend meaningful time with their families, while shorter breaks can prevent learning loss and preserve a consistent study routine.",
-  "The main value of a long summer holiday is that it gives children sufficient time to rest physically and mentally after an intensive school year. It also allows families to travel or spend time together without conflicting with lessons. For example, parents can arrange longer visits to relatives or educational trips during this period. As a result, students may return to school refreshed and more motivated.",
-  "Regarding the argument for shorter holidays, lengthy breaks can weaken students’ knowledge and study habits. When children spend several months away from structured learning, they may forget important material and require weeks of revision after returning. A more balanced calendar with shorter, more frequent breaks would maintain continuity while still giving pupils regular opportunities to rest.",
+  "Many primary and secondary schools close for an extended summer break. Long holidays give pupils time to recover and be with their families, while shorter holidays prevent learning loss and preserve a consistent study routine.",
+  "The main value of a long summer holiday is the opportunity it gives children to rest physically and mentally after an intensive school year. This is because a lengthy break provides enough time to recover and allows families to travel together without conflicting with lessons. For example, parents can arrange longer visits to relatives or educational trips during this period. As a result, students can return to school refreshed and more motivated.",
+  "Regarding the second question, shorter school holidays can protect students’ knowledge and study habits. In other words, spending less time away from structured learning makes pupils less likely to forget important material or require weeks of revision after returning. For instance, a balanced calendar could replace one lengthy summer holiday with shorter, more frequent breaks. Therefore, pupils can maintain continuity in their studies while still having regular opportunities to rest.",
   "In conclusion, long holidays provide valuable recovery and family time, while shorter school breaks can reduce learning loss and help students maintain discipline throughout the year.",
 ] as const;
 

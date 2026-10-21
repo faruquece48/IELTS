@@ -4,10 +4,10 @@ import Navbar from "@/components/Navbar";
 
 const topics = [
   {
-    title: "People",
+    title: "Person",
     icon: "👨‍👩‍👧",
-    description: "family members, friends, teachers, famous people, helpful people",
-    href: "/speaking/part2/people",
+    description: "family members, friends, teachers, famous persons, helpful persons",
+    href: "/speaking/part2/person",
   },
   {
     title: "Places",

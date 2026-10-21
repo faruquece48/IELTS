@@ -3,6 +3,7 @@ import Link from "next/link";
 import Navbar from "@/components/Navbar";
 import { placeCues } from "./placesData";
 import SegmentControls from "./SegmentControls";
+import { simpleFutureStory } from "./futureStory";
 
 const segments = [
   { id:"home-village", title:"Home & village", story:"A familiar place with personal meaning", ids:[9,15,16,24], paragraphs:[
@@ -40,19 +41,12 @@ const segments = [
     ["Feeling","The trip gave us quality family time, a break from routine and a sense of awe. The undisturbed surroundings cleared my head and created emotional grounding."],
     ["Ending","It was an emotionally meaningful shared experience. The visual harmony, sense of togetherness and unforgettable scenery left a deep and lasting impression."],
   ]},
-  { id:"future-plans", title:"Future places", story:"A place I hope to experience in the future", ids:[13,29], paragraphs:[
-    ["Opening","I’d like to connect three meaningful places: historic Panam Nagar, the planned Purbachal area and Northern Norway, which I hope to visit in the future."],
-    ["Scene","Panam Nagar has a historic atmosphere, Purbachal promises a less congested living environment, and Norway offers the extraordinary natural phenomenon of the midnight sun."],
-    ["Action","I visited Panam Nagar for a family wedding photoshoot, I have explored Purbachal as a possible home, and I learned about Norway through travel videos and articles."],
-    ["Feeling","The heritage visit was personally meaningful, the planned city suggests daily balance and long-term stability, and Norway fills me with a sense of wonder."],
-    ["Ending","Together they represent a special milestone, a healthier future lifestyle and a once-in-a-lifetime experience that could help me disconnect from routine."],
-  ]},
-  { id:"heritage-occasion", title:"Heritage & occasion", story:"A memorable place for a special occasion", ids:[22], paragraphs:[
-    ["Opening","A historic place connected with an important family occasion."],
-    ["Scene","A distinctive setting with traditional architecture."],
-    ["Action","Exploring the area and taking family photographs."],
-    ["Feeling","A happy and personally meaningful shared experience."],
-    ["Ending","A special occasion that remains clear in my memory."],
+  { id:"future-plans", title:"Future & heritage", story:"Places connected to memories and future plans", ids:[13,22,29], paragraphs:[
+    ["Opening","I’d like to connect three meaningful places: historic Panam Nagar, the planned Purbachal area and Northern Norway, which I hope to visit in the future. Although they are very different, each one represents an important stage of my life."],
+    ["Scene","Panam Nagar has a historic atmosphere, with old buildings and traditional architecture that reflect the past. Purbachal promises a less congested living environment with open space and modern facilities, while Norway offers the extraordinary natural phenomenon of the midnight sun."],
+    ["Action","I visited Panam Nagar with my relatives for a family wedding photoshoot and spent time exploring its narrow streets. I have also explored Purbachal as a possible home. In contrast, I learned about Norway through travel videos and articles, and I would love to hike, photograph the landscape and experience its long summer daylight."],
+    ["Feeling","The heritage visit was personally meaningful because it combined family memories with history. The planned city suggests daily balance and long-term stability, while Norway fills me with a sense of wonder and excitement about discovering a completely unfamiliar environment."],
+    ["Ending","Together, these places represent a special milestone, a healthier future lifestyle and a once-in-a-lifetime experience that could help me disconnect from routine. For those reasons, they connect my past, present and future in a way that feels both practical and deeply personal."],
   ]},
 ] as const;
 
@@ -70,15 +64,15 @@ const naturalStories: Record<string, Array<[string, string]>> = {
     ["Opening", "I'd like to describe a familiar place that has become an important part of my life. I have known it for a considerable time, so it carries many personal memories. I go there whenever I need to focus, reflect or take a short break from my normal routine."],
     ["Scene", "It is quieter and simpler than most places I visit. The surroundings are familiar, there is enough open space, and the atmosphere is usually peaceful. Nothing about it is luxurious, but that simplicity makes me feel comfortable and allows me to pay attention to my own thoughts."],
     ["Action", "I normally find a comfortable spot and spend some quiet time there. Depending on what I need to do, I may read, organise my thoughts or simply observe my surroundings. Because there are fewer distractions, I can concentrate properly and use my time in a meaningful way."],
-    ["Feeling", "This place helps me slow down and feel emotionally settled. Its peaceful environment clears my mind, while its familiarity gives me a strong sense of comfort and belonging. Even when I arrive feeling tired or worried, I usually become calmer after spending a little time there."],
-    ["Ending", "For me, its value comes from the role it plays in my everyday life rather than its appearance. It supports both my practical needs and my peace of mind. That is why it remains personally meaningful and why I never take it for granted."],
+    ["Feeling", "These simple activities help me slow down and clear my mind. I feel comfortable there because I can forget my usual worries for a while. The familiar surroundings also remind me where I come from."],
+    ["Ending", "Overall, this place is special to me because I always feel calm and comfortable there. It reminds me of many happy memories and gives me a break from my busy life. That is why I always enjoy going back."],
   ],
   "calm-city": [
-    ["Opening", "I'd like to describe a place in Dhaka that I visit regularly whenever I have some free time. I first discovered it through my normal daily routine, and it gradually became one of my favourite local places. Since it is easy to reach, I can go there without making a detailed plan."],
-    ["Scene", "Although it is located inside a busy city, it has a surprisingly pleasant atmosphere. There is enough space to move around, sit comfortably and watch everyday life. It can become lively at certain times, but it still feels more relaxed than the crowded roads and commercial areas nearby."],
-    ["Action", "When I arrive, I normally walk around or find a comfortable place to sit. I enjoy observing the surroundings and letting my thoughts settle. Sometimes I meet people I know, and we have a casual conversation about our studies, work or recent experiences."],
-    ["Feeling", "This simple routine gives me a mental break and helps me release stress. I do not need any expensive activity to enjoy my time there. After even a short visit, I usually feel calmer, more refreshed and better prepared to continue the rest of my day."],
-    ["Ending", "Because the place is familiar, convenient and enjoyable, it has become an important part of my city life. It offers both quiet personal time and opportunities for social contact. That balance is the main reason I continue returning to it."],
+    ["Opening", "I'd like to describe Vodra Lake in Rajshahi. I work as an assistant professor at RUET, and the lake is about one kilometre from the university campus. I usually visit it in the late evening, when the weather is more comfortable, because Rajshahi has a hot climate for most of the year."],
+    ["Scene", "The lake has a peaceful atmosphere, with open water, trees and enough space for walking. There is also a small tea stall nearby. Local sellers often offer nuts, fresh fruit and fruit juice beside the lake."],
+    ["Action", "I mainly go there for regular exercise and walk around the lake for some time. I also sit beside the water and enjoy the natural beauty. Sometimes I meet my friends, junior colleagues or younger friends, and we eat nuts or drink fruit juice together."],
+    ["Feeling", "Spending time there helps me clear my mind after teaching and other university duties. When my friends are there, we sit at the tea stall and chat about our families, work and everyday activities. These simple moments make me feel relaxed and happy."],
+    ["Ending", "The lake has become part of my routine because it gives me exercise, fresh air and good company in one place. It is close to my campus, easy to visit and a pleasant place to spend my free time."],
   ],
   "busy-city": [
     ["Opening", "I'd like to describe a place in Dhaka that I remember clearly because I had a meaningful experience there. I visited it some time ago for a particular reason, and I stayed long enough to notice the place properly. Although it is part of a busy city, it had its own character and left a clear impression on me."],
@@ -102,29 +96,21 @@ const naturalStories: Record<string, Array<[string, string]>> = {
     ["Ending", "This place left a lasting impression because its atmosphere and natural beauty were difficult to forget. The visit was both relaxing and educational, which made it especially worthwhile. I would be happy to return and spend more time there in the future."],
   ],
   "future-plans": [
-    ["Opening", "I'd like to describe a place where I hope to spend a significant amount of time in the future. I first became interested in it after seeing photographs and learning about its environment. Since then, I have occasionally searched for more information and imagined what being there might be like."],
-    ["Scene", "From what I have seen, it appears less crowded and more peaceful than the area where I currently live. It offers attractive surroundings, useful facilities and enough open space to enjoy daily life. This combination makes it seem both interesting and comfortable."],
-    ["Action", "If I get the opportunity to go there, I would explore the area carefully and experience its everyday atmosphere. I would spend time outdoors, visit its most interesting locations and learn about the local way of life. I would also take photographs so that I could remember the experience clearly."],
-    ["Feeling", "The idea of going there makes me feel hopeful and excited. I believe that living in or exploring a different environment would broaden my experience and help me become more independent. It could also give me a healthier balance between my responsibilities and personal life."],
-    ["Ending", "Although this plan may require time, preparation and money, it remains an important personal goal. I hope that one day I can turn it from an idea into a real experience. Achieving that goal would be both satisfying and memorable for me."],
-  ],
-  "heritage-occasion": [
-    ["Opening", "I'd like to describe a historic place that I visited for an important family occasion. I went there with several relatives, and we were all looking forward to spending the day together. The event was already meaningful, but choosing such an unusual location made it even more memorable."],
-    ["Scene", "The place had old buildings, distinctive architecture and a calm historical atmosphere. Its faded walls and traditional designs looked completely different from the modern areas I normally visit. Every part of it seemed to carry a story from the past, which made the surroundings visually interesting."],
-    ["Action", "We explored the area together, took many photographs and spent time enjoying the occasion. I tried to notice the architectural details while also helping my family with the day's arrangements. The historic background made our photographs and shared moments feel particularly special."],
-    ["Feeling", "I felt happy to be with my family and fascinated by the surroundings. The combination of history, celebration and time with people close to me gave the visit a unique emotional value. Even though the day was busy, I enjoyed almost every moment of it."],
-    ["Ending", "I still remember that occasion clearly because the place and the event complemented each other perfectly. It was more than an ordinary visit or family gathering. It became a meaningful shared memory that I expect to value for many years."],
+    ["Opening", "I'd like to connect three meaningful places: historic Panam Nagar, the planned Purbachal area and Northern Norway, which I hope to visit in the future. Although they are very different, each one represents an important stage of my life."],
+    ["Scene", "Panam Nagar has a historic atmosphere, with old buildings and traditional architecture that reflect the past. Purbachal promises a less congested living environment with open space and modern facilities, while Norway offers the extraordinary natural phenomenon of the midnight sun."],
+    ["Action", "I visited Panam Nagar with my relatives for a family wedding photoshoot and spent time exploring its narrow streets. I have also explored Purbachal as a possible home. In contrast, I learned about Norway through travel videos and articles, and I would love to hike, photograph the landscape and experience its long summer daylight."],
+    ["Feeling", "The heritage visit was personally meaningful because it combined family memories with history. The planned city suggests daily balance and long-term stability, while Norway fills me with a sense of wonder and excitement about discovering a completely unfamiliar environment."],
+    ["Ending", "Together, these places represent a special milestone, a healthier future lifestyle and a once-in-a-lifetime experience that could help me disconnect from routine. For those reasons, they connect my past, present and future in a way that feels both practical and deeply personal."],
   ],
 };
 
 const storyHighlights: Record<string, string[]> = {
-  "home-village": ["an important part of my life", "feel comfortable", "fewer distractions", "comfort and belonging", "personally meaningful"],
-  "calm-city": ["one of my favourite local places", "a surprisingly pleasant atmosphere", "a casual conversation", "a mental break", "an important part of my city life"],
+  "home-village": ["an important part of my life", "feel comfortable", "fewer distractions", "clear my mind", "special to me"],
+  "calm-city": ["one kilometre", "peaceful atmosphere", "regular exercise", "clear my mind", "part of my routine"],
   "busy-city": ["a meaningful experience", "distinctive atmosphere", "the main activity I had planned", "a different side of city life", "stands out in my mind"],
   "coast-islands": ["a memorable experience", "a peaceful atmosphere", "at a relaxed pace", "clear my mind", "remember for a long time"],
   "hills-nature": ["seeing it in person", "wide natural views", "appreciate the surroundings", "clear my mind", "a lasting impression"],
-  "future-plans": ["a significant amount of time", "both interesting and comfortable", "the local way of life", "broaden my experience", "an important personal goal"],
-  "heritage-occasion": ["an important family occasion", "a calm historical atmosphere", "particularly special", "a unique emotional value", "a meaningful shared memory"],
+  "future-plans": ["three meaningful places", "historic atmosphere", "family wedding photoshoot", "long-term stability", "once-in-a-lifetime experience"],
 };
 
 function highlightedSentence(text: string, phrase: string) {
@@ -147,7 +133,7 @@ export default function PlacesPage() {
         <div className="overflow-hidden rounded-[2rem] border border-emerald-200 bg-gradient-to-br from-[#12372a] via-[#185442] to-[#28745c] text-white shadow-xl shadow-emerald-950/10"><div className="grid gap-8 p-6 md:p-9 lg:grid-cols-[1fr_360px]">
           <div><div className="flex flex-wrap items-center gap-2"><span className="rounded-full bg-white/10 px-3 py-1 text-xs font-bold uppercase tracking-[.18em] text-emerald-100">Segment {segmentIndex+1} · one story</span><span className="rounded-full bg-amber-300 px-3 py-1 text-xs font-black text-amber-950">Covers {topics.length} cards</span></div>
             <p className="mt-5 text-sm font-black uppercase tracking-[.18em] text-emerald-200">{segment.title}</p><h1 className="mt-2 max-w-4xl text-3xl font-black leading-tight sm:text-4xl">{segment.story}</h1>
-            <div className="mt-6 space-y-4 text-[15px] leading-7 text-emerald-50 sm:text-base">{naturalStories[segment.id].map(([label,text], index) => <p key={label}><b className="text-amber-200">{label}:</b> {" "}{highlightedSentence(text, storyHighlights[segment.id][index])}</p>)}</div>
+            <div className="mt-6 space-y-4 text-[15px] leading-7 text-emerald-50 sm:text-base">{(segment.id === "future-plans" ? simpleFutureStory : naturalStories[segment.id]).map(([label,text], index) => <p key={label}><b className="text-amber-200">{label}:</b> {" "}{highlightedSentence(text, storyHighlights[segment.id][index])}</p>)}</div>
           </div>
           <aside className="self-start rounded-3xl border border-white/15 bg-black/15 p-5 backdrop-blur-sm lg:sticky lg:top-40"><p className="text-xs font-black uppercase tracking-[.2em] text-emerald-200">Cards covered by this story</p>
             <div className="mt-4 space-y-2">{topics.map((topic) => <a key={topic.id} href={`#topic-${topic.id}`} className="flex items-start gap-3 rounded-2xl bg-white/10 p-3 transition hover:bg-white/20"><span className="grid h-7 w-7 shrink-0 place-items-center rounded-lg bg-amber-300 text-xs font-black text-emerald-950">{topic.id}</span><span><b className="block text-sm text-amber-200">{topic.place}</b><span className="mt-0.5 line-clamp-2 block text-xs leading-5 text-emerald-50">{topic.question}</span></span></a>)}</div>

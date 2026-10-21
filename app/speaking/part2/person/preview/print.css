@@ -1,0 +1,13 @@
+@page { size: A4 landscape; margin: 5mm; }
+.person-sheet,.person-story-sheet{width:min(100%,1400px);aspect-ratio:297/210;font-family:"Times New Roman",Times,serif}
+.person-columns{grid-template-columns:repeat(5,minmax(0,1fr))}
+.person-print-amber{background:#fff4cf;border-color:#f4d27a}.person-print-sky{background:#e3f3ff;border-color:#9fd2ee}.person-print-rose{background:#ffe8ed;border-color:#f3b8c5}.person-print-violet{background:#eee9ff;border-color:#c8baf2}.person-print-emerald{background:#e2f8e9;border-color:#a7dfba}
+.person-story-grid{grid-template-columns:repeat(6,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr))}.person-story:nth-child(-n+3){grid-column:span 2}.person-story:nth-child(n+4){grid-column:span 3}
+@media print{
+html,body,.person-sheet,.person-sheet *,.person-story-sheet,.person-story-sheet *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+body{background:white!important}.person-toolbar{display:none!important}.person-print-wrap{display:block!important;padding:0!important;margin:0!important;max-width:none!important}
+.person-sheet,.person-story-sheet{box-sizing:border-box!important;display:block!important;width:287mm!important;height:199mm!important;margin:0!important;aspect-ratio:auto!important;border:0!important;border-radius:0!important;box-shadow:none!important;padding:4mm!important;overflow:hidden!important;background:#fffef9!important}
+.person-sheet{break-after:page!important;page-break-after:always!important}.person-story-sheet{break-after:auto!important;page-break-after:auto!important}
+.person-columns{height:181mm!important;gap:1.6mm!important}.person-column{padding:1.6mm!important;border-radius:1.5mm!important}.person-column>h2{font-size:6.5pt!important;padding-bottom:.8mm!important}.person-topic{margin-top:.8mm!important;padding-top:.7mm!important}.person-topic h3{font-size:4.8pt!important;line-height:1.05!important}.person-topic li{font-size:4.35pt!important;line-height:1.1!important;margin-top:.2mm!important}
+.person-story-grid{height:191mm!important;grid-template-columns:repeat(6,minmax(0,1fr))!important;grid-template-rows:repeat(2,minmax(0,1fr))!important;gap:2.5mm!important}.person-story{padding:3mm!important;overflow:hidden!important}.person-story h2{font-size:9pt!important}.person-story>div:first-child p{font-size:7pt!important}.person-story>div:last-child{font-size:7.5pt!important;line-height:1.3!important;margin-top:2mm!important}.person-story>div:last-child p{margin-top:1.2mm!important}
+}
