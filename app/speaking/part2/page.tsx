@@ -16,16 +16,16 @@ const topics = [
     href: "/speaking/part2/places",
   },
   {
-    title: "Objects / Things",
-    icon: "🎁",
-    description: "gifts, clothes, technology, books, photographs, possessions",
-    href: "/speaking/part2/objects-things",
-  },
-  {
     title: "Events & Experiences",
     icon: "🎉",
     description: "celebrations, journeys, competitions, memorable experiences",
     href: "/speaking/part2/events-experiences",
+  },
+  {
+    title: "Objects / Things",
+    icon: "🎁",
+    description: "gifts, clothes, technology, books, photographs, possessions",
+    href: "/speaking/part2/objects-things",
   },
   {
     title: "Activities & Hobbies",

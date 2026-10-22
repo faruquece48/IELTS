@@ -1,10 +1,11 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import Navbar from "@/components/Navbar";
 
-const qaList = [
+export const qaList = [
   { question: "Can physical workers have higher salaries in the future?", answer: "Actually, I think it's hard to see this happening as the average education level keeps rising, while the demand for physical work declines. Instead, there is an increasing need for high-tech jobs, which may result in unemployment for physical workers. So, rather than seeing higher salaries, they might face job insecurity. But you know, there's always a chance if there's a shortage of labor in certain manual jobs, maybe wages could go up, but that's not the general trend." },
   { question: "What kinds of people are likely to be the role models for teenagers?", answer: "Well, nowadays, I'd say that it's often celebrities—like singers, actors, and football players—who really capture the imagination of teenagers. They're everywhere on social media and TV, so it's natural for kids to look up to them. Also, models are a big deal for teens these days because everyone seems obsessed with looks and wanting to be more attractive. So, yeah, those are the kinds of people that typically become role models for the younger crowd." },
   { question: "In what ways does globalization affect the preservation of local traditions and customs?", answer: "Well, you know, globalization is spreading like wildfire these days, and it's having a real impact on how we hold onto our local traditions. It's like we're all seeing the same stuff on social media and trying to imitate it, which isn't always great for keeping our unique cultures alive. We might start to forget where we come from, our language, our customs, because everyone thinks we should fit into this modern, globalized mold. So, yeah, it's getting pretty tough to preserve our local heritage when we're all trying to be the same." },
@@ -278,7 +279,8 @@ export default function QAPage() {
                 Think deeper. Speak clearly.
               </p>
             </div>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <Link href="/speaking/part3/preview" className="rounded-xl bg-amber-300 px-4 py-3 text-sm font-black text-slate-950 shadow-sm transition hover:bg-amber-200">A4 preview & PDF</Link>
               <div className="min-w-20 rounded-xl bg-white/10 px-4 py-2.5 text-center ring-1 ring-white/20 backdrop-blur-sm">
                 <div className="text-xl font-black text-white">50+</div>
                 <div className="text-[9px] font-bold uppercase tracking-wider text-sky-200">Topics</div>

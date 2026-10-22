@@ -22,6 +22,7 @@ export default function Task2Page() {
       </header>
 
       <section className="mx-auto max-w-6xl px-6 py-12 lg:px-8 lg:py-16">
+        <div className="mb-8 flex justify-end"><Link href="/writing-task/task2/preview" className="rounded-xl bg-violet-600 px-5 py-3 text-sm font-black text-white shadow-sm transition hover:bg-violet-700">Common A4 preview & PDF</Link></div>
         <nav aria-label="Essay types" className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {essayTypes.map((type, index) => (
             <Link key={type.title} href={type.href} className="group flex min-h-52 flex-col rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-violet-200 hover:shadow-xl">

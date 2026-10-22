@@ -5,6 +5,7 @@ import { placeCues } from "../placesData";
 import PrintButton from "./PrintButton";
 import { simpleFutureStory } from "../futureStory";
 import "./print.css";
+import { placeCardStory } from "../../cardStories";
 
 const columns = [
   { title: "Home & village", ids: [9,15,16,24], tone: "bg-amber-50 border-amber-200" },
@@ -108,6 +109,7 @@ export default function PlacesPreviewPage() {
           </article>)}
         </div>
       </section>)}
+      {Array.from({ length: 5 }, (_, page) => <section key={`cards-${page}`} className="place-card-sheet mx-auto mt-8 overflow-hidden rounded-2xl border border-slate-300 bg-[#fffef9] p-5 shadow-xl"><h1 className="text-center text-xl font-black text-emerald-950">Place card-specific stories · {page * 6 + 1}–{page * 6 + 6}</h1><div className="place-card-grid mt-4 grid grid-cols-2 gap-3">{placeCues.slice(page * 6, page * 6 + 6).map((cue) => <article key={cue.id} className="place-card-story rounded-xl border border-emerald-200 bg-emerald-50/50 p-3"><h2 className="text-xs font-black text-emerald-950">#{cue.id} · {cue.question}</h2><div className="mt-2 space-y-1.5 text-[10px] leading-relaxed text-slate-700">{placeCardStory(cue).map(([label, text]) => <p key={label}><strong className="text-emerald-900">{label}:</strong> {text}</p>)}</div></article>)}</div></section>)}
     </div>
   </main>;
 }

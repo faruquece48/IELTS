@@ -12,17 +12,17 @@ const steps = [
 ] as const;
 
 const formulas = [
-  { title: "Introduction", text: "[Paraphrase the topic]. [Brief answer to Question 1], while [brief answer to Question 2]." },
+  { title: "Introduction", text: "[Paraphrase the topic]. [Direct answer to Question 1], while [direct answer to Question 2]." },
   { title: "Body 1 — Answer Question 1", text: "The main [value / reason / cause] is [Answer 1]. This is because [explanation]. For example, [specific example]. As a result, [result that directly answers Question 1]." },
   { title: "Body 2 — Answer Question 2", text: "Regarding the second question, [Answer 2]. In other words, [explanation]. For instance, [specific example]. Therefore, [result that directly answers Question 2]." },
   { title: "Conclusion", text: "In conclusion, [summarise the answer to Question 1], while [summarise the answer to Question 2]." },
 ] as const;
 
 const example = [
-  "Many primary and secondary schools close for an extended summer break. Long holidays give pupils time to recover and be with their families, while shorter holidays prevent learning loss and preserve a consistent study routine.",
-  "The main value of a long summer holiday is the opportunity it gives children to rest physically and mentally after an intensive school year. This is because a lengthy break provides enough time to recover and allows families to travel together without conflicting with lessons. For example, parents can arrange longer visits to relatives or educational trips during this period. As a result, students can return to school refreshed and more motivated.",
-  "Regarding the second question, shorter school holidays can protect students’ knowledge and study habits. In other words, spending less time away from structured learning makes pupils less likely to forget important material or require weeks of revision after returning. For instance, a balanced calendar could replace one lengthy summer holiday with shorter, more frequent breaks. Therefore, pupils can maintain continuity in their studies while still having regular opportunities to rest.",
-  "In conclusion, long holidays provide valuable recovery and family time, while shorter school breaks can reduce learning loss and help students maintain discipline throughout the year.",
+  "Many primary and secondary schools close for an extended summer break. Long holidays are valuable because they give pupils time to recover and be with their families, while shorter holidays are beneficial because they prevent learning loss and preserve a consistent study routine.",
+  "The main value of long school holidays is that they give children enough time to rest physically and mentally after an intensive school year. This is because a lengthy break provides time to recover and allows families to travel together without conflicting with lessons. For example, parents can arrange longer visits to relatives or educational trips during this period. As a result, students can return to school refreshed and more motivated.",
+  "Regarding the second question, the main argument for shorter school holidays is that they protect students’ knowledge and study habits. In other words, spending less time away from structured learning makes pupils less likely to forget important material or require weeks of revision after returning. For instance, a balanced calendar could replace one lengthy summer holiday with shorter, more frequent breaks. Therefore, pupils can maintain continuity in their studies while still having regular opportunities to rest.",
+  "In conclusion, long holidays provide valuable recovery and family time, while shorter holidays reduce learning loss and help students maintain discipline throughout the year.",
 ] as const;
 
 export default function MultiPartPage() {
@@ -43,7 +43,7 @@ export default function MultiPartPage() {
           <p className="mt-3 max-w-2xl text-lg leading-8 text-slate-600">Answer every part of the prompt clearly and give both questions equal attention.</p>
         </div>
 
-        <StructureBlock structureTitle="Answer each question in its own body paragraph" formulas={formulas} exampleTheme="long and short school holidays" example={example} />
+        <StructureBlock structureTitle="Answer each question separately in its own body paragraph" formulas={formulas} exampleTheme="long and short school holidays" example={example} />
 
         <div className="mt-8 rounded-3xl bg-slate-950 p-6 text-white shadow-xl md:p-9">
           <p className="text-sm font-bold uppercase tracking-[0.18em] text-emerald-300">Essay map</p>
@@ -68,13 +68,9 @@ export default function MultiPartPage() {
 
             <div className="border-t border-emerald-100 bg-emerald-50/60 p-6 md:p-8">
               <div className="grid gap-6 md:grid-cols-3">
-                <div><h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Position</h3><span className="inline-flex rounded-full bg-sky-100 px-3 py-1 text-sm font-black text-sky-700">Discuss both sides</span></div>
-                <div className="contents">
-<div className="contents">
-                    <div><p className="font-black text-emerald-700">Value of long holidays</p><ul className="mt-1 list-disc space-y-1 pl-5"><li>Give students <strong>time to rest and recover</strong></li><li>Allow more <strong>family time and travel</strong></li></ul></div>
-                    <div><p className="font-black text-violet-700">Arguments for shorter holidays</p><ul className="mt-1 list-disc space-y-1 pl-5"><li>Prevent <strong>learning loss</strong></li><li>Maintain <strong>study routine and discipline</strong></li></ul></div>
-                  </div>
-                </div>
+                <div><h3 className="mb-3 text-xs font-black uppercase tracking-[0.16em] text-slate-400">Approach</h3><span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-sm font-black text-emerald-700">Answer both questions directly</span></div>
+                <div><p className="font-black text-emerald-700">Question 1: Value of long holidays</p><ul className="mt-1 list-disc space-y-1 pl-5"><li>Give students <strong>time to rest and recover</strong></li><li>Allow more <strong>family time and travel</strong></li></ul></div>
+                <div><p className="font-black text-violet-700">Question 2: Case for shorter holidays</p><ul className="mt-1 list-disc space-y-1 pl-5"><li>Prevent <strong>learning loss</strong></li><li>Maintain <strong>study routine and discipline</strong></li></ul></div>
               </div>
             </div>
           </details>

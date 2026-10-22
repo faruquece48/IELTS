@@ -10,6 +10,7 @@
   aspect-ratio: 297 / 210;
   font-family: "Times New Roman", Times, serif;
 }
+.place-card-sheet { width: min(100%, 1400px); aspect-ratio: 297 / 210; font-family: "Times New Roman", Times, serif; }
 .place-story-highlight {
   background: transparent;
   color: #3730a3;
@@ -25,6 +26,18 @@
 .place-print-column:nth-child(5) { background-color: #e2f8e9; }
 .place-print-column:nth-child(6) { background-color: #ffe8ed; }
 
+@media screen {
+  .place-card-sheet { aspect-ratio: auto; padding: 2rem; }
+  .place-card-grid { grid-template-columns: 1fr; gap: 1rem; }
+  .place-card-story { padding: 1.25rem; }
+  .place-card-story h2 { font-size: 1rem; line-height: 1.5; }
+  .place-card-story > div { font-size: .95rem; line-height: 1.75; }
+  .place-card-story p + p { margin-top: .65rem; }
+}
+@media screen and (min-width: 1024px) {
+  .place-card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
 @media print {
   html,
   body,
@@ -32,6 +45,8 @@
   .place-print-sheet *,
   .place-story-sheet,
   .place-story-sheet *,
+  .place-card-sheet,
+  .place-card-sheet *,
   .place-print-column,
   .place-print-topic {
     -webkit-print-color-adjust: exact !important;
@@ -43,7 +58,8 @@
   .place-print-sheet { box-sizing: border-box !important; display: block !important; width: 287mm !important; height: 199mm !important; aspect-ratio: auto !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; padding: 4mm !important; overflow: hidden !important; background: #fffef9 !important; font-family: "Times New Roman", Times, serif !important; break-after: page !important; page-break-after: always !important; }
   .place-print-sheet * { font-family: "Times New Roman", Times, serif !important; }
   .place-story-sheet { box-sizing: border-box !important; display: block !important; width: 287mm !important; height: 199mm !important; margin: 0 !important; aspect-ratio: auto !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; padding: 4mm !important; overflow: hidden !important; background: #fffef9 !important; font-family: "Times New Roman", Times, serif !important; break-after: page !important; page-break-after: always !important; }
-  .place-story-sheet:last-child { break-after: auto !important; page-break-after: auto !important; }
+  .place-card-sheet { box-sizing: border-box !important; display: block !important; width: 287mm !important; height: 198mm !important; margin: 0 !important; aspect-ratio: auto !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; padding: 4mm !important; overflow: hidden !important; background: #fffef9 !important; font-family: "Times New Roman", Times, serif !important; break-before: page !important; page-break-before: always !important; break-after: page !important; page-break-after: always !important; break-inside: avoid-page !important; page-break-inside: avoid !important; }
+  .place-card-sheet:last-child { break-after: auto !important; page-break-after: auto !important; }
   .place-story-sheet * { font-family: "Times New Roman", Times, serif !important; }
   .place-story-highlight { background: transparent !important; color: #3730a3 !important; box-shadow: none !important; }
   .place-story-grid { height: 191mm !important; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 3mm !important; }
@@ -59,6 +75,12 @@
   .place-story-sheet-two .place-story-card > div:first-child p { font-size: 9pt !important; }
   .place-story-sheet-two .place-story-card > div:last-child { columns: auto; margin-top: 2.5mm !important; font-size: 10pt !important; line-height: 1.35 !important; }
   .place-story-sheet-two .place-story-card > div:last-child p { break-inside: avoid; margin-top: 1.8mm !important; }
+  .place-card-sheet h1 { font-size: 13pt !important; }
+  .place-card-grid { height: 176mm !important; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; grid-template-rows: repeat(3, minmax(0, 1fr)) !important; gap: 2.5mm !important; margin-top: 3mm !important; }
+  .place-card-story { padding: 3.5mm !important; overflow: hidden !important; break-inside: avoid !important; }
+  .place-card-story h2 { font-size: 9.5pt !important; line-height: 1.2 !important; }
+  .place-card-story > div { font-size: 8.5pt !important; line-height: 1.35 !important; margin-top: 2mm !important; }
+  .place-card-story p { margin-top: 1mm !important; }
   .place-print-column:nth-child(1) { background: #fff4cf !important; box-shadow: inset 0 0 0 1000px #fff4cf !important; }
   .place-print-column:nth-child(2) { background: #e3f3ff !important; box-shadow: inset 0 0 0 1000px #e3f3ff !important; }
   .place-print-column:nth-child(3) { background: #eee9ff !important; box-shadow: inset 0 0 0 1000px #eee9ff !important; }

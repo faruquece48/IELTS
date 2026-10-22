@@ -1,0 +1,44 @@
+@page { size: A4 landscape; margin: 8mm; }
+
+@media screen {
+  .task2-document { margin-bottom: 2rem; border-radius: 1.5rem; }
+  .task2-question-copy details { overflow: hidden; }
+}
+
+@media print {
+  html, body, .task2-document, .task2-document * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  body { background: white !important; }
+  .task2-toolbar { display: none !important; }
+  .task2-document { width: auto !important; max-width: none !important; margin: 0 !important; padding: 0 !important; box-shadow: none !important; }
+  .task2-print-heading { margin-bottom: 3mm !important; padding-bottom: 2mm !important; }
+  .task2-print-heading h1 { font-size: 16pt !important; }
+  .task2-guide { margin: 0 !important; padding-top: 3mm !important; break-before: page !important; page-break-before: always !important; }
+  .task2-guide:first-child { break-before: auto !important; page-break-before: auto !important; }
+  .task2-guide-heading { margin-bottom: 3mm !important; padding-bottom: 2mm !important; break-after: avoid !important; page-break-after: avoid !important; }
+  .task2-guide-heading h2 { font-size: 14pt !important; }
+  .task2-guide-heading span { width: 7mm !important; height: 7mm !important; }
+
+  .task2-structure-copy { break-inside: avoid-page !important; page-break-inside: avoid !important; }
+  .task2-structure-copy article { margin-top: 0 !important; border-radius: 2mm !important; box-shadow: none !important; }
+  .task2-structure-copy article > div { display: grid !important; grid-template-columns: .95fr 1.05fr !important; }
+  .task2-structure-copy article > div > div { padding: 3.5mm !important; }
+  .task2-structure-copy article h2 { font-size: 11pt !important; }
+  .task2-structure-copy article p { font-size: 8pt !important; line-height: 1.4 !important; }
+  .task2-structure-copy article div[class*="space-y"] { margin-top: 2mm !important; }
+
+  .task2-question-section { margin-top: 5mm !important; }
+  .task2-question-section > h3 { margin-bottom: 3mm !important; font-size: 12pt !important; break-after: avoid !important; page-break-after: avoid !important; }
+  .task2-question-copy { break-inside: avoid-page !important; page-break-inside: avoid !important; }
+  .task2-question-copy details { margin: 0 0 3mm !important; border-radius: 2mm !important; box-shadow: none !important; }
+  .task2-question-copy summary { padding: 3mm !important; }
+  .task2-question-copy summary > span:first-child { width: 7mm !important; height: 7mm !important; }
+  .task2-question-copy summary > span:nth-child(2) { font-size: 8.5pt !important; line-height: 1.35 !important; }
+  .task2-question-copy summary > span:last-child { display: none !important; }
+  .task2-question-copy details > div { padding: 3mm !important; }
+  .task2-question-copy details > div > div.grid { display: grid !important; grid-template-columns: .7fr 1fr 1fr !important; gap: 3mm !important; }
+  .task2-question-copy h3, .task2-question-copy p { font-size: 8pt !important; line-height: 1.35 !important; }
+  .task2-question-copy li, .task2-question-copy span { font-size: 7.5pt !important; line-height: 1.35 !important; }
+}

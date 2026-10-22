@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar";
 import { placeCues } from "./placesData";
 import SegmentControls from "./SegmentControls";
 import { simpleFutureStory } from "./futureStory";
+import { placeCardStory } from "../cardStories";
 
 const segments = [
   { id:"home-village", title:"Home & village", story:"A familiar place with personal meaning", ids:[9,15,16,24], paragraphs:[
@@ -145,7 +146,7 @@ export default function PlacesPage() {
           <summary className="flex cursor-pointer list-none items-start gap-4 p-5 marker:content-none sm:p-6"><span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-emerald-100 font-black text-emerald-800">{cue.id}</span><span className="min-w-0 flex-1"><span className="block text-xs font-black uppercase tracking-wider text-amber-600">{cue.place}</span><span className="mt-1 block font-black leading-6 text-slate-950">{cue.question}</span></span><span className="text-2xl text-emerald-600 transition group-open:rotate-45">+</span></summary>
           <div className="border-t border-emerald-100 bg-emerald-50/40 p-5 sm:p-6"><div className="grid gap-5 sm:grid-cols-2"><div><h3 className="text-xs font-black uppercase tracking-[.16em] text-slate-400">Cue-card order</h3><ol className="mt-3 space-y-2">{cue.prompts.map((prompt,index) => <li key={prompt} className="flex gap-2 text-sm leading-6"><span className="font-black text-emerald-600">{index+1}.</span>{prompt}</li>)}</ol><div className="mt-4 rounded-2xl border border-slate-200 bg-white p-4">{cue.notes.map((note) => <p key={note} className="text-sm leading-6 text-slate-600">{note}</p>)}</div></div>
             <div><h3 className="text-xs font-black uppercase tracking-[.16em] text-slate-400">Smooth phrase</h3><div className="mt-3 flex items-center gap-2 text-sm font-bold text-slate-700"><span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-amber-100 text-[11px] text-amber-800">1</span>{smoothPhrases[cue.id]}</div></div></div>
-            <div className="mt-5 rounded-2xl bg-[#153f32] p-4 text-sm leading-7 text-emerald-50"><span className="mr-2 font-black uppercase tracking-wider text-amber-300">Speak it:</span>{cue.memory}</div></div>
+            <div className="mt-5 rounded-2xl bg-[#153f32] p-4 text-sm leading-7 text-emerald-50"><span className="mr-2 font-black uppercase tracking-wider text-amber-300">Speak it:</span>{cue.memory}</div><div className="mt-4 rounded-2xl border border-emerald-200 bg-white p-4"><p className="text-xs font-black uppercase tracking-[.16em] text-emerald-800">Card-specific story</p><div className="mt-3 space-y-2 text-sm leading-6 text-slate-700">{placeCardStory(cue).map(([label,text])=><p key={label}><strong className="text-emerald-900">{label}:</strong> {text}</p>)}</div></div></div>
         </details>)}</div>
       </section>;
     })}</div>
