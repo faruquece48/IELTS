@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Trip Recorder</title><link rel="stylesheet" href="popup.css"><link rel="stylesheet" href="collection-control.css"></head>
+<body>
+  <header><div class="mark">↗</div><div><h1>Trip Recorder</h1><p>Google Maps travel log</p></div></header>
+  <div id="notice" class="notice">The shortest route and its distance are recorded automatically each minute.</div>
+  <section class="collection-control">
+    <div><strong>Automatic collection</strong><p id="collection-status">Checking status...</p></div>
+    <label class="switch" title="Turn automatic data collection on or off"><input id="collection-enabled" type="checkbox"><span></span></label>
+  </section>
+  <form id="trip-form">
+    <label>Starting point<input id="start" required placeholder="Starting point"></label>
+    <label>Destination<input id="destination" required placeholder="Destination"></label>
+    <div class="row"><label>Travel time<input id="duration" required placeholder="e.g. 35 min"></label><label>Distance<input id="distance" placeholder="e.g. 12 km"></label></div>
+    <label>Travel mode<input id="travelMode" placeholder="Driving, transit, walking..."></label>
+    <label>Notes<textarea id="notes" rows="2" placeholder="Traffic, purpose, route condition..."></textarea></label>
+    <div class="actions"><button type="button" id="refresh" class="secondary">Refresh</button><button type="submit">Save trip</button></div>
+  </form>
+  <section class="history"><div class="history-title"><h2>Monitored routes</h2><button id="export" class="link" type="button">Export CSV</button></div><div id="records"></div><button id="clear" class="danger" type="button">Clear all data</button></section>
+  <script src="popup.js"></script>
+</body>
+</html>

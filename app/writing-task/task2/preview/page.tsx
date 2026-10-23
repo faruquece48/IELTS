@@ -44,7 +44,8 @@ export default function Task2PreviewPage() {
     Promise.all(sources.map(async ([title, path]) => {
       const html = await fetch(path).then((response) => response.text());
       const document = new DOMParser().parseFromString(html, "text/html");
-      const practiceSection = [...document.querySelectorAll("section")].find((section) => section.querySelector("details"));
+      const practiceSection = [...document.querySelectorAll("section[aria-labelledby]")]
+        .find((section) => section.querySelector("details"));
       const structureHtml = [...document.querySelectorAll("main article")]
         .filter((article) => !practiceSection?.contains(article))
         .map(prepareCopy);

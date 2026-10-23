@@ -4,6 +4,12 @@ import Navbar from "@/components/Navbar";
 
 const tools = [
   {
+    title: "Traffic",
+    description: "Open a route in Google Maps and keep a searchable record of travel times, distances, modes, and notes.",
+    href: "/personal/traffic",
+    icon: "↗",
+  },
+  {
     title: "Quran Reader",
     description: "Read the scanned Mushaf, preview the complete PDF, or jump directly to any Surah.",
     href: "/personal/quran",

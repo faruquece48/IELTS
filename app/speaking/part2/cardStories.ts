@@ -40,3 +40,12 @@ export function eventCardStory(card: StorySource & { event: string }) {
     ["Reflection", `Looking back, the experience involved ${list(card.vocabulary.slice(0, 3).map(lowerFirst))}. That is why it stayed in my memory and fits this cue card well.`],
   ] as const;
 }
+
+export function objectCardStory(card: Pick<StorySource, "question" | "notes" | "vocabulary"> & { subject: string }) {
+  return [
+    ["Opening", `I'd like to describe my ${lowerFirst(card.subject)}, which is the object I immediately associate with this topic.`],
+    ["Background", `It became relevant to me because ${lowerFirst(card.notes[0] ?? "it plays a useful role in my everyday life")}.`],
+    ["Details", `The main points I would explain are ${list(card.notes.slice(1).map(lowerFirst))}. These details connect the object directly to the cue card.`],
+    ["Reflection", `Overall, I value it for its ${list(card.vocabulary.slice(0, 3).map(lowerFirst))}. That is why it is a natural and memorable example for me.`],
+  ] as const;
+}
