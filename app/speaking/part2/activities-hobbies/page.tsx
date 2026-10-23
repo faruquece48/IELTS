@@ -1,37 +1,15 @@
 import Image from "next/image";
+import Link from "next/link";
 import Navbar from "@/components/Navbar";
+import { skillActivityCardStory } from "../cardStories";
+import { activityCues } from "./activitiesData";
+import { activityStories } from "./activityStories";
 
-export default function ActivitiesHobbiesPage() {
-  return (
-    <main className="min-h-screen bg-white text-slate-800">
-      <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/90 backdrop-blur-sm">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-2 lg:px-8">
-          <div className="flex items-center gap-3">
-            <Image
-              src="/fa.png"
-              alt="IELTS Logo"
-              width={60}
-              height={60}
-              className="rounded-full"
-              unoptimized
-            />
-          </div>
-          <Navbar />
-        </div>
-      </header>
-
-      <section className="mx-auto max-w-5xl px-6 py-16 lg:px-8">
-        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-sky-600">Speaking / Part 2 / Activities & Hobbies</p>
-        <h1 className="mt-4 text-4xl font-black text-slate-900 md:text-5xl">Activities & Hobbies topic</h1>
-        <p className="mt-5 text-lg leading-8 text-slate-600">
-          Explain what it is, how often you do it, why you enjoy it, and how it benefits you.
-        </p>
-
-        <div className="mt-10 rounded-2xl border border-slate-200 bg-slate-50 p-5 shadow-sm">
-          <h2 className="mb-3 text-xl font-bold text-slate-900">Sample topic</h2>
-          <p className="text-slate-700">Describe a hobby you enjoy doing in your free time.</p>
-        </div>
-      </section>
-    </main>
-  );
-}
+export default function ActivitiesHobbiesPage(){return <main className="min-h-screen bg-slate-100 text-slate-900">
+  <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 backdrop-blur"><div className="mx-auto flex max-w-[1500px] items-center justify-between px-4 py-2 sm:px-6 lg:px-8"><Link href="/" aria-label="Home"><Image src="/fa.png" alt="IELTS Logo" width={58} height={58} className="rounded-full" unoptimized/></Link><Navbar/></div></header>
+  <section className="border-b border-slate-200 bg-white"><div className="mx-auto flex max-w-[1500px] flex-wrap items-center justify-between gap-4 px-4 py-8 sm:px-6 lg:px-8"><div><p className="text-xs font-black uppercase tracking-[.24em] text-sky-700">Speaking / Part 2 / Activities &amp; Hobbies</p><h1 className="mt-2 text-4xl font-black text-slate-950">30 Activity Cue Cards · 5 Common Stories</h1><p className="mt-3 max-w-3xl text-sm leading-6 text-slate-600">Learn five flexible activity stories, then adapt the individual story inside each cue card.</p></div><Link href="/speaking/part2/activities-hobbies/preview" className="shrink-0 rounded-xl bg-amber-300 px-4 py-2 text-sm font-black text-slate-950 transition hover:bg-amber-200">A4 preview</Link></div></section>
+  <nav aria-label="Common activity stories" className="sticky top-[75px] z-20 border-b border-slate-200 bg-white/95 backdrop-blur"><div className="mx-auto flex max-w-[1500px] gap-2 overflow-x-auto px-4 py-2 sm:px-6 lg:px-8">{activityStories.map((story,index)=><a key={story.id} href={`#${story.id}`} className="shrink-0 rounded-xl px-3 py-2 text-sm font-black text-slate-600 hover:bg-sky-50 hover:text-sky-800">{index+1}. {story.title}</a>)}</div></nav>
+  <div className="mx-auto max-w-[1500px] space-y-14 px-4 py-8 sm:px-6 lg:px-8">{activityStories.map((story,storyIndex)=><section key={story.id} id={story.id} className="scroll-mt-32"><div className="grid overflow-hidden rounded-3xl bg-cyan-950 text-white shadow-xl lg:grid-cols-[minmax(0,1fr)_290px]"><div className="p-6 sm:p-8"><div className="flex flex-wrap gap-2"><span className="rounded-full bg-white/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-cyan-100">Common story {storyIndex+1}</span><span className="rounded-full bg-amber-300 px-3 py-1 text-xs font-black text-amber-950">Covers {story.ids.length} cards</span></div><p className="mt-5 text-sm font-black uppercase tracking-[.18em] text-cyan-200">{story.title}</p><h2 className="mt-2 text-3xl font-black">{story.story}</h2><div className="mt-6 space-y-4 text-[15px] leading-7 text-cyan-50">{story.paragraphs.map(([label,text])=><p key={label}><b className="text-amber-200">{label}:</b> {text}</p>)}</div></div><aside className="bg-black/15 p-5 lg:m-5 lg:rounded-2xl"><p className="text-xs font-black uppercase tracking-wider text-cyan-200">Common cue cards</p><div className="mt-3 flex flex-wrap gap-2">{story.ids.map(id=>{const card=activityCues.find(item=>item.id===id)!;return <a key={id} href={`#activity-${id}`} className="rounded-lg bg-white/10 px-2.5 py-1.5 text-xs font-bold hover:bg-white/20">#{id} {card.example}</a>})}</div></aside></div>
+    <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">{story.ids.map(id=>{const card=activityCues.find(item=>item.id===id)!;return <details id={`activity-${id}`} key={card.id} className="group scroll-mt-32 rounded-2xl border border-slate-200 bg-white shadow-sm open:border-sky-300 open:shadow-md"><summary className="cursor-pointer list-none p-5"><div className="flex gap-3"><span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-sky-100 text-xs font-black text-sky-800">{card.id}</span><div><h3 className="font-black leading-6">{card.question}</h3><p className="mt-1 text-xs font-bold text-sky-700">Example: {card.example}</p></div><span className="ml-auto text-xl text-sky-500 transition group-open:rotate-45">+</span></div></summary><div className="border-t border-slate-100 p-5"><p className="text-xs font-black uppercase tracking-wider text-slate-400">You should say</p><ul className="mt-2 space-y-1 text-sm text-slate-600">{card.prompts.map(prompt=><li key={prompt}>• {prompt}</li>)}</ul><div className="mt-5 grid gap-4 sm:grid-cols-2"><div><p className="text-xs font-black uppercase tracking-wider text-slate-400">Quick notes</p>{card.notes.map(note=><p key={note} className="mt-1 text-xs leading-5 text-slate-600">• {note}</p>)}</div><div><p className="text-xs font-black uppercase tracking-wider text-slate-400">Useful phrases</p>{card.vocabulary.map(phrase=><p key={phrase} className="mt-1 text-xs font-semibold leading-5 text-sky-800">• {phrase}</p>)}</div></div><div className="mt-5 rounded-2xl border border-sky-200 bg-sky-50 p-4"><p className="text-xs font-black uppercase tracking-wider text-sky-800">Individual cue-card story</p><div className="mt-3 space-y-2 text-sm leading-6 text-slate-700">{skillActivityCardStory(card,"activity").map(([label,text])=><p key={label}><strong className="text-sky-950">{label}:</strong> {text}</p>)}</div></div></div></details>})}</div>
+  </section>)}</div>
+</main>}

@@ -49,3 +49,12 @@ export function objectCardStory(card: Pick<StorySource, "question" | "notes" | "
     ["Reflection", `Overall, I value it for its ${list(card.vocabulary.slice(0, 3).map(lowerFirst))}. That is why it is a natural and memorable example for me.`],
   ] as const;
 }
+
+export function skillActivityCardStory(card: Pick<StorySource, "question" | "notes" | "vocabulary"> & { example: string }, kind: string) {
+  return [
+    ["Opening", `I'd like to describe ${lowerFirst(card.example)}, which is the ${kind} I immediately associate with this topic.`],
+    ["Background", `It became relevant to me because ${lowerFirst(card.notes[0] ?? `it plays a useful role in my life`)}.`],
+    ["Development", `The main details I would explain are ${list(card.notes.slice(1).map(lowerFirst))}. These points connect my example directly to the cue card.`],
+    ["Reflection", `Overall, it has given me ${list(card.vocabulary.slice(0, 3).map(lowerFirst))}. That is why it is a natural and memorable example for me.`],
+  ] as const;
+}

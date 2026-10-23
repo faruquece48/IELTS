@@ -22,6 +22,8 @@ const navItems = [
     ]
   },
   { label: "Personal", href: "/personal", submenu: [
+      { label: "Traffic", href: "/personal/traffic" },
+      { label: "Dhaka Route Map", href: "/personal/traffic/map" },
       { label: "Quran", href: "/personal/quran" },
       { label: "Timer", href: "/personal/timer" },
       { label: "Professor", href: "/personal/professor" },

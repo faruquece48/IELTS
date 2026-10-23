@@ -74,6 +74,40 @@ function currentMinuteIso() {
   return now.toISOString();
 }
 
+function googleRouteCoordinates() {
+  const points = [...location.href.matchAll(/!1d(-?\d+(?:\.\d+)?)!2d(-?\d+(?:\.\d+)?)/g)]
+    .map((match) => [Number(match[1]), Number(match[2])])
+    .filter(([longitude, latitude]) => Number.isFinite(longitude) && Number.isFinite(latitude));
+  if (points.length < 2) return null;
+  return {
+    source: "google-maps-extension",
+    origin: points[0],
+    destination: points[points.length - 1],
+    ...(points.length > 2 ? { path: points } : {}),
+    capturedAt: new Date().toISOString(),
+  };
+}
+
+function normalizedPlace(value) {
+  return String(value || "").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+}
+
+function placeMatches(value, aliases) {
+  const normalized = normalizedPlace(value);
+  return aliases.some((alias) => {
+    const candidate = normalizedPlace(alias);
+    return candidate.length > 3 && (normalized.includes(candidate) || candidate.includes(normalized));
+  });
+}
+
+function studyRouteId() {
+  try {
+    return new URL(location.href).searchParams.get("study_route_id") || "";
+  } catch {
+    return "";
+  }
+}
+
 async function estimateTrafficPortions() {
   const response = await chrome.runtime.sendMessage({ type: "CAPTURE_VISIBLE_TRAFFIC" }).catch(() => null);
   if (!response?.image) return null;
@@ -118,6 +152,10 @@ async function estimateTrafficPortions() {
 }
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+  if (message?.type === "CAPTURE_NOW") {
+    automaticallyRecordRoute(true).then(() => sendResponse({ captured: true })).catch(() => sendResponse({ captured: false }));
+    return true;
+  }
   if (message?.type !== "CAPTURE_ROUTE") return;
   const inputs = routeInputs();
   const details = routeDetails()[0] || { duration: "", distance: "", routeName: "", routeSummary: "" };
@@ -135,12 +173,14 @@ let lastObservedSignature = "";
 let extensionActive = true;
 let collectionEnabled = false;
 let snapshotInterval;
+let readinessInterval;
 let routeObserver;
 
 function stopCollector() {
   extensionActive = false;
   clearTimeout(captureTimer);
   clearInterval(snapshotInterval);
+  clearInterval(readinessInterval);
   routeObserver?.disconnect();
 }
 
@@ -156,24 +196,38 @@ async function automaticallyRecordRoute(forceSnapshot = false) {
     if (!forceSnapshot && signature === lastObservedSignature) return;
     lastObservedSignature = signature;
 
-    const stored = await chrome.storage.local.get(["trips", "lastAutoSignature", "monitoredRoutes"]);
+    const stored = await chrome.storage.local.get(["lastAutoSignature", "monitoredRoutes"]);
     if (!forceSnapshot && stored.lastAutoSignature === signature) return;
     const savedAt = currentMinuteIso();
     const trafficPortions = await estimateTrafficPortions();
+    const routeCoordinates = googleRouteCoordinates();
     const snapshots = routes.map((route) => ({
       id: crypto.randomUUID(), ...inputs, ...route, travelMode: mode,
       notes: "Automatic one-minute shortest-route snapshot", savedAt, url: location.href, automatic: true,
-      ...(trafficPortions ? { trafficPortions } : {})
+      ...(trafficPortions ? { trafficPortions } : {}),
+      ...(routeCoordinates ? { routeCoordinates } : {})
     }));
-    const trips = Array.isArray(stored.trips) ? stored.trips : [];
     const monitoredRoutes = Array.isArray(stored.monitoredRoutes) ? stored.monitoredRoutes : [];
     const monitorKey = `${inputs.start}|${inputs.destination}`.toLowerCase();
-    const monitoredRoute = { key: monitorKey, start: inputs.start, destination: inputs.destination, url: location.href, savedAt };
-    await chrome.storage.local.set({
-      trips: [...snapshots, ...trips].slice(0, 10000),
-      lastAutoSignature: signature,
-      monitoredRoutes: [monitoredRoute, ...monitoredRoutes.filter((route) => route.key !== monitorKey)].slice(0, 50)
+    const configuredRoute = monitoredRoutes.find((route) => route.builtIn && route.id === studyRouteId()) || monitoredRoutes.filter((route) => {
+      const startAliases = route.startAliases || [route.start.split(",")[0].toLowerCase()];
+      const destinationAliases = route.destinationAliases || [route.destination.split(",")[0].toLowerCase()];
+      const firstWaypointAliases = route.waypoints?.[0] ? [route.waypoints[0].split(",")[0]] : [];
+      return route.builtIn && placeMatches(inputs.start, startAliases) && (placeMatches(inputs.destination, destinationAliases) || placeMatches(inputs.destination, firstWaypointAliases));
+    }).sort((first, second) => {
+      const page = normalizedPlace(location.href);
+      const matchingWaypoints = (route) => (route.waypoints || []).slice(1, 3).filter((waypoint) => page.includes(normalizedPlace(waypoint))).length;
+      return matchingWaypoints(second) - matchingWaypoints(first);
+    })[0];
+    const monitoredRoute = configuredRoute
+      ? { ...configuredRoute, start: inputs.start, destination: inputs.destination, url: location.href, savedAt, ...(routeCoordinates ? { routeCoordinates } : {}) }
+      : { key: monitorKey, start: inputs.start, destination: inputs.destination, url: location.href, savedAt, ...(routeCoordinates ? { routeCoordinates } : {}) };
+    snapshots.forEach((snapshot) => {
+      if (configuredRoute?.roadName) snapshot.roadName = configuredRoute.roadName;
+      if (configuredRoute?.id) snapshot.roadId = configuredRoute.id;
     });
+    const saved = await chrome.runtime.sendMessage({ type: "SAVE_ROUTE_SNAPSHOT", snapshots, monitoredRoute, signature });
+    if (!saved?.saved) throw new Error(saved?.error || "The background worker could not save the route snapshot.");
   } catch (error) {
     if (String(error).includes("Extension context invalidated")) stopCollector();
     else throw error;
@@ -199,4 +253,4 @@ chrome.storage.onChanged.addListener((changes, area) => {
   clearTimeout(captureTimer);
   if (collectionEnabled) scheduleAutomaticCapture();
 });
-snapshotInterval = setInterval(() => automaticallyRecordRoute(true), 60_000);
+readinessInterval = setInterval(() => automaticallyRecordRoute(false), 5_000);

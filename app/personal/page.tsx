@@ -10,6 +10,12 @@ const tools = [
     icon: "↗",
   },
   {
+    title: "Dhaka Route Map",
+    description: "See all ten monitored Dhaka traffic corridors together and highlight each route on an interactive city map.",
+    href: "/personal/traffic/map",
+    icon: "MAP",
+  },
+  {
     title: "Quran Reader",
     description: "Read the scanned Mushaf, preview the complete PDF, or jump directly to any Surah.",
     href: "/personal/quran",

@@ -1,10 +1,10 @@
 {
   "manifest_version": 3,
   "name": "Maps Trip Time Recorder",
-  "version": "1.3.2",
-  "description": "Capture and save route times from Google Maps.",
+  "version": "2.6.1",
+  "description": "Track ten long, junction-based Dhaka survey circuits and save route times from Google Maps.",
   "permissions": ["storage", "activeTab", "scripting", "downloads", "alarms", "tabs", "debugger"],
-  "host_permissions": ["https://www.google.com/maps/*", "https://maps.google.com/*", "https://www.google.com.bd/maps/*"],
+  "host_permissions": ["https://www.google.com/maps/*", "https://maps.google.com/*", "https://www.google.com.bd/maps/*", "http://localhost:3000/*", "http://127.0.0.1:3000/*"],
   "action": {
     "default_title": "Save Google Maps trip",
     "default_popup": "popup.html"
@@ -15,7 +15,7 @@
   "content_scripts": [
     {
       "matches": ["https://www.google.com/maps/*", "https://maps.google.com/*", "https://www.google.com.bd/maps/*"],
-      "js": ["content.js"],
+      "js": ["dhaka-roads.js", "content.js"],
       "run_at": "document_idle"
     },
     {

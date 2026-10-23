@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import Navbar from "@/components/Navbar";
+import { DHAKA_TRAFFIC_ROADS } from "@/lib/dhakaTrafficRoads";
 
 type Trip = {
   id: string;
@@ -18,6 +19,8 @@ type Trip = {
   savedAt: string;
   url?: string;
   automatic?: boolean;
+  roadId?: string;
+  roadName?: string;
   trafficPortions?: {
     green: number;
     yellow: number;
@@ -28,6 +31,23 @@ type Trip = {
     sampledPixels: number;
   };
 };
+
+type MonitoredRoute = {
+  key: string;
+  start: string;
+  destination: string;
+  url?: string;
+  builtIn?: boolean;
+  id?: string;
+  roadName?: string;
+};
+
+function safeMonitoredRoutes(value: unknown): MonitoredRoute[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter((route): route is MonitoredRoute => Boolean(route && typeof route === "object" &&
+    typeof (route as MonitoredRoute).key === "string" && typeof (route as MonitoredRoute).start === "string" &&
+    typeof (route as MonitoredRoute).destination === "string"));
+}
 
 function TrafficPortion({ value, color, distance }: { value?: number; color: string; distance: number }) {
   if (value === undefined) return <span className="text-xs text-slate-400">—</span>;
@@ -96,6 +116,26 @@ function routeKey(trip: Trip) {
   return `${trip.start.trim().toLocaleLowerCase()}|${trip.destination.trim().toLocaleLowerCase()}`;
 }
 
+function configuredRoadForTrip(trip: Trip) {
+  const start = trip.start.toLowerCase();
+  const destination = trip.destination.toLowerCase();
+  return DHAKA_TRAFFIC_ROADS.find((road) => {
+    if (trip.roadId === road.id || trip.roadName?.toLowerCase() === road.name.toLowerCase()) return true;
+    const startAliases: readonly string[] = road.startAliases;
+    const destinationAliases: readonly string[] = road.destinationAliases;
+    return startAliases.some((alias) => start.includes(alias)) && (destinationAliases.some((alias) => destination.includes(alias)) || road.firstJunctionAliases.some((alias) => destination.includes(alias)));
+  });
+}
+
+function trackedRouteKey(trip: Trip) {
+  const road = configuredRoadForTrip(trip);
+  return road ? `dhaka-road:${road.id}` : routeKey(trip);
+}
+
+function routeElementId(key: string) {
+  return `traffic-route-${key.replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "")}`;
+}
+
 function safeTrips(value: unknown): Trip[] {
   if (!Array.isArray(value)) return [];
   return value.filter((item): item is Trip => {
@@ -115,23 +155,39 @@ function roundedDate(value: string) {
 
 export default function TrafficTracker() {
   const [trips, setTrips] = useState<Trip[]>([]);
+  const [monitoredRoutes, setMonitoredRoutes] = useState<MonitoredRoute[]>([]);
   const [connected, setConnected] = useState(false);
   const [checked, setChecked] = useState(false);
   const [search, setSearch] = useState("");
   const [mode, setMode] = useState("All modes");
   const [day, setDay] = useState("");
+  const [selectedRouteKey, setSelectedRouteKey] = useState("");
 
   useEffect(() => {
+    let cancelled = false;
+    async function loadFileRecords() {
+      try {
+        const response = await fetch("/api/traffic", { cache: "no-store" });
+        if (!response.ok) return;
+        const data = await response.json();
+        if (cancelled) return;
+        setTrips(safeTrips(data.trips));
+        setMonitoredRoutes(safeMonitoredRoutes(data.monitoredRoutes));
+      } catch { /* The next poll retries when the local server is available. */ }
+    }
     function receive(event: MessageEvent) {
       if (event.source !== window || event.origin !== window.location.origin || event.data?.type !== TRAFFIC_MESSAGE) return;
-      setTrips(safeTrips(event.data.trips));
+      if (Array.isArray(event.data.trips)) setTrips(safeTrips(event.data.trips));
+      if (Array.isArray(event.data.monitoredRoutes)) setMonitoredRoutes(safeMonitoredRoutes(event.data.monitoredRoutes));
       setConnected(true);
       setChecked(true);
     }
     window.addEventListener("message", receive);
+    void loadFileRecords();
+    const poller = window.setInterval(loadFileRecords, 5000);
     window.postMessage({ type: TRAFFIC_REQUEST }, window.location.origin);
     const timer = window.setTimeout(() => setChecked(true), 1200);
-    return () => { window.removeEventListener("message", receive); window.clearTimeout(timer); };
+    return () => { cancelled = true; window.removeEventListener("message", receive); window.clearInterval(poller); window.clearTimeout(timer); };
   }, []);
 
   const shortestTrips = useMemo(() => {
@@ -146,18 +202,20 @@ export default function TrafficTracker() {
     return [...byJourneyMinute.values()];
   }, [trips]);
 
-  const modes = useMemo(() => ["All modes", ...new Set(shortestTrips.map((trip) => trip.travelMode).filter(Boolean) as string[])], [shortestTrips]);
+  const trackedTrips = useMemo(() => shortestTrips.filter((trip) => configuredRoadForTrip(trip)), [shortestTrips]);
+
+  const modes = useMemo(() => ["All modes", ...new Set(trackedTrips.map((trip) => trip.travelMode).filter(Boolean) as string[])], [trackedTrips]);
   const visible = useMemo(() => {
     const query = search.trim().toLowerCase();
-    return shortestTrips.filter((trip) => mode === "All modes" || trip.travelMode === mode)
+    return trackedTrips.filter((trip) => mode === "All modes" || trip.travelMode === mode)
       .filter((trip) => !day || trip.savedAt.slice(0, 10) === day)
       .filter((trip) => !query || `${trip.start} ${trip.destination} ${trip.routeName || ""} ${trip.duration} ${trip.distance || ""} ${trip.travelMode || ""} ${trip.notes || ""}`.toLowerCase().includes(query))
       .sort((a, b) => Date.parse(b.savedAt) - Date.parse(a.savedAt));
-  }, [shortestTrips, search, mode, day]);
+  }, [trackedTrips, search, mode, day]);
 
   const routeGroups = useMemo(() => {
     const groups = new Map<string, Trip[]>();
-    visible.forEach((trip) => groups.set(routeKey(trip), [...(groups.get(routeKey(trip)) || []), trip]));
+    visible.forEach((trip) => groups.set(trackedRouteKey(trip), [...(groups.get(trackedRouteKey(trip)) || []), trip]));
     return [...groups.values()].map((records) => {
       const measured = records.map((trip) => ({ minutes: durationMinutes(trip.duration), kilometres: distanceKilometres(trip.distance) }))
         .filter((item) => item.minutes > 0 && item.kilometres > 0);
@@ -167,15 +225,40 @@ export default function TrafficTracker() {
     });
   }, [visible]);
 
+  const routesWaitingForData = useMemo(() => {
+    const configured: MonitoredRoute[] = DHAKA_TRAFFIC_ROADS.map((road) => ({
+      key: `dhaka-road:${road.id}`, id: road.id, roadName: road.name,
+      start: road.start, destination: road.destination, builtIn: true,
+    }));
+    return configured.filter((route) => !trackedTrips.some((trip) => configuredRoadForTrip(trip)?.id === route.id));
+  }, [trackedTrips]);
+
+  const routeNavigation = useMemo(() => [
+    ...routeGroups.map(({ records }) => ({
+      key: trackedRouteKey(records[0]),
+      label: configuredRoadForTrip(records[0])?.name || records[0].roadName || `${records[0].start} → ${records[0].destination}`,
+      count: records.length,
+    })),
+    ...routesWaitingForData.map((route) => ({
+      key: route.key,
+      label: route.roadName || `${route.start} → ${route.destination}`,
+      count: 0,
+    })),
+  ], [routeGroups, routesWaitingForData]);
+
+  const activeRouteKey = routeNavigation.some((route) => route.key === selectedRouteKey)
+    ? selectedRouteKey
+    : routeNavigation[0]?.key || "";
+
   const stats = useMemo(() => {
-    const measured = shortestTrips.map((trip) => durationMinutes(trip.duration)).filter((value) => value > 0);
-    const routes = new Set(shortestTrips.map((trip) => `${trip.start.toLowerCase()}|${trip.destination.toLowerCase()}`));
+    const measured = trackedTrips.map((trip) => durationMinutes(trip.duration)).filter((value) => value > 0);
+    const routes = new Set(trackedTrips.map((trip) => trackedRouteKey(trip)));
     return {
       routes: routes.size,
       fastest: measured.length ? Math.min(...measured) : 0,
-      latest: shortestTrips.reduce<Trip | undefined>((best, trip) => !best || Date.parse(trip.savedAt) > Date.parse(best.savedAt) ? trip : best, undefined),
+      latest: trackedTrips.reduce<Trip | undefined>((best, trip) => !best || Date.parse(trip.savedAt) > Date.parse(best.savedAt) ? trip : best, undefined),
     };
-  }, [shortestTrips]);
+  }, [trackedTrips]);
 
   async function exportExcel() {
     const ExcelJS = (await import("exceljs")).default;
@@ -222,8 +305,10 @@ export default function TrafficTracker() {
     window.setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
-  function clearAllData() {
-    if (!window.confirm("Clear all traffic snapshots and stop monitoring every saved route?")) return;
+  async function clearAllData() {
+    if (!window.confirm("Clear all traffic snapshots? The ten built-in Dhaka roads will continue to be monitored.")) return;
+    const response = await fetch("/api/traffic", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: "{}" });
+    if (!response.ok) return;
     setTrips([]);
     setSearch("");
     setMode("All modes");
@@ -241,7 +326,7 @@ export default function TrafficTracker() {
 
     <section className="border-b border-emerald-900/10 bg-gradient-to-br from-emerald-950 via-teal-900 to-slate-900 text-white">
       <div className="mx-auto grid max-w-[1500px] gap-8 px-4 py-9 sm:px-6 lg:grid-cols-[1fr_auto] lg:px-8">
-        <div><p className="text-xs font-black uppercase tracking-[.24em] text-teal-300">Personal utility</p><h1 className="mt-2 text-4xl font-black tracking-tight">Traffic trip recorder</h1><p className="mt-3 max-w-2xl text-sm leading-6 text-teal-50/80">Open a journey in Google Maps and review the shortest travel time and its matching distance for every minute.</p></div>
+        <div><p className="text-xs font-black uppercase tracking-[.24em] text-teal-300">Dhaka traffic monitor</p><h1 className="mt-2 text-4xl font-black tracking-tight">Traffic trip recorder</h1><p className="mt-3 max-w-2xl text-sm leading-6 text-teal-50/80">Track ten major Dhaka roads every minute while keeping your existing saved routes.</p></div>
         <a href="https://www.google.com/maps/dir/" target="_blank" rel="noreferrer" className="self-center rounded-xl bg-amber-300 px-5 py-3 text-sm font-black text-slate-950 shadow-lg transition hover:bg-amber-200">Open Google Maps ↗</a>
       </div>
     </section>
@@ -249,8 +334,13 @@ export default function TrafficTracker() {
     <div className="mx-auto max-w-[1500px] space-y-5 px-4 py-6 sm:px-6 lg:px-8">
       {checked && !connected && <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm leading-6 text-amber-950"><strong>Connect the Chrome extension to see your history.</strong> Load <code className="rounded bg-amber-100 px-1.5 py-0.5 text-xs">chrome-extensions/maps-trip-recorder</code> as an unpacked extension, then reload this page. The extension keeps the data in Chrome and shares it with this dashboard.</div>}
       <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        {[["Snapshots", String(shortestTrips.length)], ["Routes", String(stats.routes)], ["Fastest time", stats.fastest ? `${stats.fastest} min` : "—"], ["Latest reading", stats.latest?.duration || "—"]].map(([label, value]) => <div key={label} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><p className="text-xs font-black uppercase tracking-wider text-slate-400">{label}</p><p className="mt-2 text-2xl font-black text-slate-950">{value}</p></div>)}
+        {[["Snapshots", String(trackedTrips.length)], ["Routes", String(stats.routes)], ["Fastest time", stats.fastest ? `${stats.fastest} min` : "—"], ["Latest reading", stats.latest?.duration || "—"]].map(([label, value]) => <div key={label} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"><p className="text-xs font-black uppercase tracking-wider text-slate-400">{label}</p><p className="mt-2 text-2xl font-black text-slate-950">{value}</p></div>)}
       </section>
+
+      <nav aria-label="Traffic routes" className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+        <p className="px-1 pb-2 text-xs font-black uppercase tracking-[.18em] text-slate-400">Navigate to route</p>
+        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">{routeNavigation.map((route, index) => <button key={route.key} type="button" aria-pressed={activeRouteKey === route.key} onClick={() => setSelectedRouteKey(route.key)} className={`flex min-w-0 items-center gap-2 rounded-xl border px-3 py-2 text-left text-xs font-black transition ${activeRouteKey === route.key ? "border-teal-700 bg-teal-700 text-white shadow-sm" : "border-slate-200 bg-slate-50 text-slate-700 hover:border-teal-500 hover:bg-teal-50 hover:text-teal-800"}`}><span className={`grid h-5 w-5 shrink-0 place-items-center rounded-full text-[9px] ${activeRouteKey === route.key ? "bg-white text-teal-800" : "bg-teal-700 text-white"}`}>{index + 1}</span><span className="min-w-0 flex-1 leading-4">{route.label}</span><span className={`shrink-0 rounded-md px-1.5 py-0.5 text-[9px] ring-1 ${activeRouteKey === route.key ? "bg-white/15 text-white ring-white/25" : "bg-white text-slate-400 ring-slate-200"}`}>{route.count}</span></button>)}</div>
+      </nav>
 
       <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
         <div className="flex flex-wrap gap-2 p-3">
@@ -259,11 +349,11 @@ export default function TrafficTracker() {
           <input aria-label="Recorded date" type="date" value={day} onChange={(event) => setDay(event.target.value)} className="rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm" />
           {(search || day || mode !== "All modes") && <button onClick={() => { setSearch(""); setDay(""); setMode("All modes"); }} className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-600">Clear</button>}
           <button onClick={() => void exportExcel()} disabled={!visible.length} className="rounded-xl bg-teal-700 px-4 py-2 text-sm font-black text-white disabled:cursor-not-allowed disabled:opacity-40">Export {visible.length ? visible.length : ""} Excel</button>
-          <button onClick={clearAllData} disabled={!trips.length} className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-black text-rose-700 disabled:cursor-not-allowed disabled:opacity-40">Clear all data</button>
+          <button onClick={() => void clearAllData()} disabled={!trips.length} className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-2 text-sm font-black text-rose-700 disabled:cursor-not-allowed disabled:opacity-40">Clear all data</button>
         </div>
       </section>
 
-      {routeGroups.map(({ records }) => <details key={routeKey(records[0])} className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+      {routeGroups.filter(({ records }) => trackedRouteKey(records[0]) === activeRouteKey).map(({ records }) => <details id={routeElementId(trackedRouteKey(records[0]))} open key={trackedRouteKey(records[0])} className="group scroll-mt-24 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
         <summary className="flex cursor-pointer list-none flex-nowrap items-center gap-4 overflow-x-auto bg-gradient-to-r from-slate-950 to-emerald-950 px-5 py-3 text-white">
           <h2 title={`${records[0].start} → ${records[0].destination}`} className="min-w-0 flex-1 truncate text-base font-black lg:text-lg">{records[0].start} <span className="text-teal-300">→</span> {records[0].destination}</h2>
           <JourneySummary records={records} />
@@ -285,8 +375,18 @@ export default function TrafficTracker() {
         </table></div>
       </details>)}
 
-      {!routeGroups.length && <section className="rounded-3xl border border-slate-200 bg-white px-6 py-20 text-center shadow-sm"><p className="font-black text-slate-400">{trips.length ? "No records match these filters." : connected ? "No trips recorded yet." : "Waiting for extension data…"}</p><p className="mt-2 text-sm text-slate-400">Choose a route in Google Maps and leave the tab open to collect snapshots.</p></section>}
-      <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs font-semibold text-slate-500"><span>{visible.length} of {shortestTrips.length} snapshots across {routeGroups.length} route{routeGroups.length === 1 ? "" : "s"}</span><span className={connected ? "text-emerald-700" : "text-amber-700"}>{connected ? "● Extension connected" : "● Extension not detected"}</span></div>
+      {routesWaitingForData.filter((route) => route.key === activeRouteKey).map((route) => <details id={routeElementId(route.key)} open key={route.key} className="group scroll-mt-24 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+        <summary className="flex cursor-pointer list-none flex-nowrap items-center gap-4 overflow-x-auto bg-gradient-to-r from-slate-950 to-emerald-950 px-5 py-3 text-white">
+          <h2 title={`${route.start} → ${route.destination}`} className="min-w-0 flex-1 truncate text-base font-black lg:text-lg">{route.start} <span className="text-teal-300">→</span> {route.destination}</h2>
+          <span className="shrink-0 whitespace-nowrap rounded-lg bg-white/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-wide text-teal-100 ring-1 ring-white/15">0 snapshots · Avg —</span>
+          <div className="flex shrink-0 items-center gap-2">{[["Green", "#34d399"], ["Yellow", "#facc15"], ["Red", "#ef4444"], ["Maroon", "#be123c"]].map(([label, color]) => <span key={label} className="flex items-center gap-1.5 whitespace-nowrap rounded-lg bg-white/10 px-2.5 py-1.5 text-[10px] font-black uppercase tracking-wide ring-1 ring-white/15"><i className="h-2 w-2 rounded-sm" style={{ backgroundColor: color }} />{label} —</span>)}</div>
+          <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-white/10 text-lg font-black transition group-open:rotate-180" aria-hidden="true">⌄</span>
+        </summary>
+        <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-4"><div><p className="text-xs font-black uppercase tracking-[.16em] text-teal-700">{route.roadName || (route.builtIn ? "Dhaka road" : "Saved route")}</p><p className="mt-1 text-sm font-semibold text-slate-500">{connected ? "Waiting for the first traffic snapshot." : "Connect the extension to begin collecting snapshots."}</p></div>{route.url && <a href={route.url} target="_blank" rel="noreferrer" className="rounded-xl bg-teal-700 px-4 py-2 text-xs font-black text-white hover:bg-teal-800">Open map ↗</a>}</div>
+      </details>)}
+
+      {!routeGroups.length && !routesWaitingForData.length && <section className="rounded-3xl border border-slate-200 bg-white px-6 py-20 text-center shadow-sm"><p className="font-black text-slate-400">No records match these filters.</p></section>}
+      <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs font-semibold text-slate-500"><span>{visible.length} of {trackedTrips.length} snapshots across {routeGroups.length} route{routeGroups.length === 1 ? "" : "s"}</span><span className={connected ? "text-emerald-700" : "text-amber-700"}>{connected ? "● Extension connected" : "● Extension not detected"}</span></div>
     </div>
   </main>;
 }
